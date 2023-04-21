@@ -14,13 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package v1
+package core
 
 import (
-	"k8s.io/kubernetes/staging/src/k8s.io/apimachinery/pkg/api/resource"
-	"k8s.io/kubernetes/staging/src/k8s.io/apimachinery/pkg/util/intstr"
 	metav1 "minik8s/pkg/apis/meta/v1"
 	"minik8s/pkg/types"
+
+	"k8s.io/apimachinery/pkg/api/resource"
+	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
 const (
