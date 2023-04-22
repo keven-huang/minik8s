@@ -8,6 +8,7 @@ package dockerClient
 import (
 	"context"
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"io"
 )
@@ -91,6 +92,9 @@ func PullImages(targets []string) error {
 	return nil
 }
 
+// PullOneImage 拉取一个镜像
+// ImagePull自带重试功能
+// 如果没有找到，会报panic
 func PullOneImage(target string) error {
 	print("start to pull image: ", target)
 	cli, err := GetNewClient()
@@ -106,4 +110,57 @@ func PullOneImage(target string) error {
 	defer out.Close()
 	io.Copy(io.Discard, out)
 	return nil
+}
+
+// 根据containerId start一个已有的container
+// 有些容器可能无法使用
+func StartOneContainer(id string) error {
+	cli, err := GetNewClient()
+	if err != nil {
+		return err
+	}
+	err = cli.ContainerStart(context.Background(), id, types.ContainerStartOptions{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// 如果容器没有启动，等价于start
+func RestartContainer(id string) error {
+	cli, err := GetNewClient()
+	if err != nil {
+		return err
+	}
+	err = cli.ContainerRestart(context.Background(), id, container.StopOptions{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// KillContainer 向id-container发送一个signal
+// 比如SIGKILL, SIGINT
+func KillContainer(id string, signal string) error {
+	cli, err := GetNewClient()
+	if err != nil {
+		return err
+	}
+	err = cli.ContainerKill(context.Background(), id, signal)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func GetContainerInfo(id string) (types.ContainerJSON, error) {
+	cli, err := GetNewClient()
+	if err != nil {
+		return types.ContainerJSON{}, err
+	}
+	info, err := cli.ContainerInspect(context.Background(), id)
+	if err != nil {
+		return types.ContainerJSON{}, err
+	}
+	return info, nil
 }
