@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	clientv3 "go.etcd.io/etcd/clientv3"
+	"go.etcd.io/etcd/client/v3"
 )
 
 var (
@@ -26,7 +26,7 @@ type Result struct {
 // constructort of etcdstore
 func InitEtcdStore() (*EtcdStore, error) {
 	cli, err := clientv3.New(clientv3.Config{
-		Endpoints:   []string{"http://127.0.0.1:30000"},
+		Endpoints:   []string{"http://127.0.0.1:2379"},
 		DialTimeout: 5 * time.Second,
 	})
 	fmt.Printf("in\n")
@@ -66,18 +66,18 @@ func (store *EtcdStore) Get(key string) ([]Result, error) {
 	for _, v := range resp.Kvs {
 		fmt.Printf("type: %s key: %s value: %s\n", "GET", v.Key, v.Value)
 	}
-	// if len(resp.Kvs) == 0 {
-	// 	return []Result{}, err
-	// } else {
-	// 	res := []Result{}
-	// 	for _, ev := range resp.Kvs {
-	// 		res = append(res, Result{
-	// 			key: string(ev.Key),
-	// 			val: string(ev.Value),
-	// 		})
-	// 	}
-	// 	return res, err
-	// }
+	if len(resp.Kvs) == 0 {
+		return []Result{}, err
+	} else {
+		res := []Result{}
+		for _, ev := range resp.Kvs {
+			res = append(res, Result{
+				key: string(ev.Key),
+				val: string(ev.Value),
+			})
+		}
+		return res, err
+	}
 	return []Result{}, err
 }
 

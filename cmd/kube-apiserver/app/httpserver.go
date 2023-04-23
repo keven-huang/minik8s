@@ -39,5 +39,8 @@ func NewServer() *Server {
 }
 
 func (s *Server) Run() {
-	s.router.Run(":8080")
+	err := s.router.Run(":8080")
+	if err != nil {
+		return
+	}
 }
