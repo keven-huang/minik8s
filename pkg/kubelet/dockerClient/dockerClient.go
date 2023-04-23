@@ -7,10 +7,14 @@ package dockerClient
 
 import (
 	"context"
+	"fmt"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
+	"github.com/docker/go-connections/nat"
 	"io"
+	"minik8s/pkg/api/core"
+	"minik8s/pkg/kubelet"
 )
 
 func GetNewClient() (*client.Client, error) {
@@ -57,7 +61,6 @@ func ImageInSet(image string, imageSet []string) bool {
 			return true
 		}
 	}
-	print("Image doesn't exist: %v", image)
 	return false
 }
 
@@ -79,6 +82,7 @@ func PullImages(targets []string) error {
 		}
 		if flag == false {
 			filteredTarget = append(filteredTarget, image)
+			fmt.Printf("Image doesn't exist: %v\n", image)
 		}
 	}
 	if filteredTarget != nil {
@@ -153,6 +157,45 @@ func KillContainer(id string, signal string) error {
 	return nil
 }
 
+func StopContainer(id string) error {
+	cli, err := GetNewClient()
+	if err != nil {
+		return err
+	}
+	err = cli.ContainerStop(context.Background(), id, container.StopOptions{})
+	return err
+}
+
+func DeleteContainer(id string) error {
+	cli, err := GetNewClient()
+	if err != nil {
+		return err
+	}
+	_, err = cli.ContainerInspect(context.Background(), id)
+	if err != nil {
+		return nil
+	}
+	err = cli.ContainerStop(context.Background(), id, container.StopOptions{})
+	if err != nil {
+		return err
+	}
+	err = cli.ContainerRemove(context.Background(), id, types.ContainerRemoveOptions{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeleteContainers(ids []string) error {
+	for _, name := range ids {
+		err := DeleteContainer(name)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func GetContainerInfo(id string) (types.ContainerJSON, error) {
 	cli, err := GetNewClient()
 	if err != nil {
@@ -163,4 +206,143 @@ func GetContainerInfo(id string) (types.ContainerJSON, error) {
 		return types.ContainerJSON{}, err
 	}
 	return info, nil
+}
+
+/*
+获取容器的网络设置
+如果用在pause容器中，可以获取pod的网络设置
+*/
+func GetNetworkSettings(id string) (*types.NetworkSettings, error) {
+	cli, err := GetNewClient()
+	if err != nil {
+		return nil, err
+	}
+	res, err := cli.ContainerInspect(context.Background(), id)
+	if err != nil {
+		return nil, err
+	}
+	return res.NetworkSettings, nil
+}
+
+func CreateContainer(con core.Container) (container.CreateResponse, error) {
+	cli, err := GetNewClient()
+	if err != nil {
+		return container.CreateResponse{}, err
+	}
+	err = PullImages([]string{con.Image})
+	if err != nil {
+		return container.CreateResponse{}, err
+	}
+	resp, err := cli.ContainerCreate(context.Background(),
+		&container.Config{Image: con.Image, Entrypoint: con.EntryPoint},
+		&container.HostConfig{}, nil, nil, con.Name)
+	return resp, err
+}
+
+func CreatePauseContainer(name string, ports []kubelet.Port) (container.CreateResponse, error) {
+	cli, err := GetNewClient()
+	if err != nil {
+		return container.CreateResponse{}, err
+	}
+	// this for outside-call
+	err = PullImages([]string{kubelet.PAUSE_NAME})
+	if err != nil {
+		return container.CreateResponse{}, err
+	}
+	var portSet nat.PortSet
+	portSet = make(nat.PortSet, len(ports))
+	for _, port := range ports {
+		if port.Protocol == "tcp" {
+			res, err := nat.NewPort("tcp", port.PortNumber)
+			if err != nil {
+				return container.CreateResponse{}, err
+			}
+			portSet[res] = struct{}{}
+			continue
+		}
+		if port.Protocol == "udp" {
+			res, err := nat.NewPort("udp", port.PortNumber)
+			if err != nil {
+				return container.CreateResponse{}, err
+			}
+			portSet[res] = struct{}{}
+			continue
+		}
+		panic("unsupported network protocol")
+	}
+	response, err := cli.ContainerCreate(context.Background(), &container.Config{
+		Image:        kubelet.PAUSE_IMAGE_NAME,
+		ExposedPorts: portSet,
+	}, &container.HostConfig{
+		IpcMode: container.IPCModeShareable,
+		DNS:     []string{kubelet.DnsAddress},
+	}, nil, nil, name)
+	if err != nil {
+		panic(err.Error())
+	}
+	return response, err
+}
+
+func CreatePod(containers []core.Container) ([]core.ContainerMeta, *types.NetworkSettings, error) {
+	cli, err := GetNewClient()
+	if err != nil {
+		return nil, nil, err
+	}
+	var totalPorts []kubelet.Port
+	var res []core.ContainerMeta
+	images := []string{kubelet.PAUSE_IMAGE_NAME}
+	names := []string{kubelet.PAUSE_NAME}
+	curPauseName := kubelet.PAUSE_NAME
+	for _, v := range containers {
+		curPauseName += "_" + v.Name
+		names = append(names, v.Name)
+		images = append(images, v.Image)
+		for _, port := range v.Ports {
+			totalPorts = append(totalPorts, port)
+		}
+	}
+	// 首先删除之前同名的container
+	err = DeleteContainers(names)
+	if err != nil {
+		return nil, nil, err
+	}
+	// 拉取镜像列表
+	err = PullImages(images)
+	if err != nil {
+		return nil, nil, err
+	}
+	// 创建pause
+	pauseContainer, err := CreatePauseContainer(curPauseName, totalPorts)
+	if err != nil {
+		return nil, nil, err
+	}
+	curPauseID := pauseContainer.ID
+	res = append(res, core.ContainerMeta{Name: curPauseName, Id: curPauseID})
+	for _, v := range containers {
+		resp, err := cli.ContainerCreate(context.Background(), &container.Config{
+			Image:      v.Image,
+			Entrypoint: v.EntryPoint,
+			Cmd:        v.Command,
+		}, &container.HostConfig{
+			NetworkMode: container.NetworkMode("container:" + curPauseID),
+			IpcMode:     container.IpcMode("container:" + curPauseID),
+			PidMode:     container.PidMode("container:" + curPauseID),
+		}, nil, nil, v.Name)
+		if err != nil {
+			return nil, nil, err
+		}
+		res = append(res, core.ContainerMeta{Name: v.Name, Id: resp.ID})
+	}
+	// 启动
+	for _, v := range res {
+		err := cli.ContainerStart(context.Background(), v.Id, types.ContainerStartOptions{})
+		if err != nil {
+			return nil, nil, err
+		}
+	}
+	netSetting, err := GetNetworkSettings(curPauseID)
+	if err != nil {
+		return nil, nil, err
+	}
+	return res, netSetting, nil
 }
