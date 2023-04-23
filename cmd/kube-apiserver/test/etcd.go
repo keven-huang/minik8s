@@ -13,7 +13,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	etcdstore.PutKey("hello", "3")
+	etcdstore.Put("hello", "3")
 	res, err := etcdstore.Get("hello")
-	fmt.Printf("get  = %v", res[0])
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("res: %s", res[0])
 }
