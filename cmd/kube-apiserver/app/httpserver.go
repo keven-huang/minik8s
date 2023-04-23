@@ -10,6 +10,7 @@ import (
 
 // k8s api-server分为三层: 1. restful api 2. 鉴权 3. Registry
 
+// TODO : registry scheme
 type Server struct {
 	// Api routes
 	router *gin.Engine
@@ -30,9 +31,15 @@ func NewServer() *Server {
 	// api 配置
 	{
 		router.GET(apiconfig.PATH, s.Get)
-		router.POST(apiconfig.PATH, s.Put)
+		router.PUT(apiconfig.PATH, s.Put)
+		router.POST(apiconfig.PATH, s.POST)
 		router.DELETE(apiconfig.PATH, s.Delete)
-		router.PATCH(apiconfig.PATH, s.Update)
+	}
+	// Pod Handler
+	{
+		router.GET(apiconfig.POD_PATH, s.GetPod)
+		router.PUT(apiconfig.POD_PATH, s.AddPod)
+		router.DELETE(apiconfig.POD_PATH, s.DeletePod)
 	}
 
 	return s
