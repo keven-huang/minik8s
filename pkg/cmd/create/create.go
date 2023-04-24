@@ -29,11 +29,11 @@ func NewCmdCreate() *cobra.Command {
 	o := NewCreateOptions()
 
 	cmd := &cobra.Command{
-		Use:   "create -f FILENAME",
+		Use:   "create [-f FILENAME]",
 		Short: "Create a resource from a file or from stdin",
 		Run: func(cmd *cobra.Command, args []string) {
 			if o.Filename == "" {
-				fmt.Print("Error: must specify one of -f\n\n")
+				fmt.Print("Error: must specify one -f\n\n")
 				return
 			}
 			//fmt.Println(o.Filename, args)

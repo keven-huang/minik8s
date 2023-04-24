@@ -39,7 +39,7 @@ func NewServer() *Server {
 	{
 		router.GET(apiconfig.POD_PATH, s.GetPod)
 		router.PUT(apiconfig.POD_PATH, s.AddPod)
-		router.DELETE(apiconfig.POD_PATH, s.DeletePod)
+		router.POST(apiconfig.POD_PATH, s.DeletePod)
 	}
 
 	return s

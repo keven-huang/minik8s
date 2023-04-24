@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/pkg/api/core"
 	v1 "minik8s/pkg/apis/meta/v1"
 	"net/http"
@@ -73,6 +74,7 @@ func (s *Server) AddPod(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Pod Name Duplicate.",
 		})
+		return
 	}
 
 	// pod data
@@ -88,6 +90,7 @@ func (s *Server) AddPod(c *gin.Context) {
 			"message": "etcd put pod failed.",
 		})
 		log.Println(err)
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"message": "add pod success.",
@@ -96,37 +99,74 @@ func (s *Server) AddPod(c *gin.Context) {
 
 // GetPod Body传入Pod.Name
 func (s *Server) GetPod(c *gin.Context) {
-	val, _ := io.ReadAll(c.Request.Body)
-	key := c.Request.URL.Path + "/" + string(val)
+	if c.Query("all") == "true" {
+		// delete the keys
+		res, err := s.etcdstore.GetAll(apiconfig.POD_PATH)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"message": "get all pods successfully.",
+			"Pods":    res,
+		})
+		return
+	}
+
+	PodName := c.Query("PodName")
+	key := c.Request.URL.Path + "/" + string(PodName)
 	res, err := s.etcdstore.Get(key)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "etcd get pod failed",
 		})
-	}
-	pod := core.Pod{}
-	err = json.Unmarshal([]byte(res[0]), &pod)
-	if err != nil {
-		log.Println(err)
 		return
 	}
+	//pod := core.Pod{}
+	//err = json.Unmarshal([]byte(res[0]), &pod)
+	//if err != nil {
+	//	log.Println(err)
+	//	return
+	//}
 	c.JSON(http.StatusOK, gin.H{
-		"message": pod,
+		"message": "get pod successfully.",
+		"Pods":    res,
 	})
 }
 
 func (s *Server) DeletePod(c *gin.Context) {
-	val, _ := io.ReadAll(c.Request.Body)
-	key := c.Request.URL.Path + "/" + string(val)
-	err := s.etcdstore.Del(key)
+	err := c.Request.ParseForm()
+	if err != nil {
+		return
+	}
+	if c.Request.Form.Get("all") == "true" {
+		// delete the keys
+		num, err := s.etcdstore.DelAll(apiconfig.POD_PATH)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"message":   "delete all pods successfully.",
+			"deleteNum": num,
+		})
+		return
+	}
+
+	PodName := c.Request.PostForm.Get("PodName")
+	key := c.Request.URL.Path + "/" + PodName
+	err = s.etcdstore.Del(key)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "delete pod failed",
+			"error":   err,
 		})
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"message": "delete pod success",
+		"message":       "delete pod success",
+		"deletePodName": PodName,
 	})
 }
