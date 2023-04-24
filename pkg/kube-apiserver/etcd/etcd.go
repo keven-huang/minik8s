@@ -111,6 +111,7 @@ func (store *EtcdStore) DelAll(prefix string) (int64, error) {
 	return deleteRes.Deleted, nil
 }
 
+// TO DO: close channel and client maintain
 // watch
 func (store *EtcdStore) Watch(key string) <-chan Event {
 	watchchan := make(chan Event)
@@ -134,11 +135,11 @@ func (store *EtcdStore) Watch(key string) <-chan Event {
 	return watchchan
 }
 
-// perfix watch
-func (store *EtcdStore) PerfixWatch(prefixkey string) <-chan Event {
+// prefix watch
+func (store *EtcdStore) PrefixWatch(prefixkey string) <-chan Event {
 	watchchan := make(chan Event)
 	watcher := func(c chan<- Event) {
-		wat := store.client.Watch(context.Background(), prefixkey)
+		wat := store.client.Watch(context.Background(), prefixkey, clientv3.WithPrefix())
 		for w := range wat {
 			for _, event := range w.Events {
 				fmt.Println("etcd have watched")
