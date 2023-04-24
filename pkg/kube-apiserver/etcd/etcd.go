@@ -36,10 +36,10 @@ func InitEtcdStore() (*EtcdStore, error) {
 
 // operations : put
 func (store *EtcdStore) Put(key string, val string) error {
-	ctx, cal := context.WithTimeout(context.Background(), requestTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
+	defer cancel()
 	kv := clientv3.NewKV(store.client)
 	_, err := kv.Put(ctx, key, val)
-	cal()
 	if err != nil {
 		fmt.Println(err)
 		log.Fatal(err)
@@ -49,9 +49,31 @@ func (store *EtcdStore) Put(key string, val string) error {
 
 // operations : get
 func (store *EtcdStore) Get(key string) ([]string, error) {
-	fmt.Printf("in\n")
+	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
+	defer cancel()
 	kv := clientv3.NewKV(store.client)
-	resp, err := kv.Get(context.TODO(), key)
+	resp, err := kv.Get(ctx, key)
+	if err != nil {
+		fmt.Printf("get to etcd failed, err:%v\n", err)
+		log.Fatal(err)
+	}
+	if len(resp.Kvs) == 0 {
+		return []string{}, err
+	} else {
+		res := []string{}
+		for _, ev := range resp.Kvs {
+			res = append(res, string(ev.Value))
+		}
+		return res, err
+	}
+}
+
+// operations : get
+func (store *EtcdStore) GetAll(prefix string) ([]string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
+	defer cancel()
+	kv := clientv3.NewKV(store.client)
+	resp, err := kv.Get(ctx, prefix, clientv3.WithPrefix(), clientv3.WithSort(clientv3.SortByKey, clientv3.SortAscend))
 	if err != nil {
 		fmt.Printf("get to etcd failed, err:%v\n", err)
 		log.Fatal(err)
@@ -69,11 +91,24 @@ func (store *EtcdStore) Get(key string) ([]string, error) {
 
 // operation : del
 func (store *EtcdStore) Del(key string) error {
-	_, err := store.client.Delete(context.TODO(), key)
+	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
+	defer cancel()
+	_, err := store.client.Delete(ctx, key)
 	if err != nil {
 		log.Fatal(err)
 	}
 	return err
+}
+
+// DelAll delete all keys with prefix
+func (store *EtcdStore) DelAll(prefix string) (int64, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
+	defer cancel()
+	deleteRes, err := store.client.Delete(ctx, prefix, clientv3.WithPrefix())
+	if err != nil {
+		log.Fatal(err)
+	}
+	return deleteRes.Deleted, nil
 }
 
 // watch
