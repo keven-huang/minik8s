@@ -7,7 +7,7 @@ import (
 )
 
 func VolumeExp() (volume.Volume, error) {
-	return dockerClient.CreateVolume("E:/tmp/", "volume01")
+	return dockerClient.CreateVolume("volume01")
 }
 
 func main() {

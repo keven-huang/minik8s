@@ -216,14 +216,12 @@ func GetContainerInfo(id string) (types.ContainerJSON, error) {
 	return info, nil
 }
 
-func CreateVolume(absolutePath string, name string) (volume.Volume, error) {
+func CreateVolume(name string) (volume.Volume, error) {
 	cli, err := GetNewClient()
 	if err != nil {
 		return volume.Volume{}, err
 	}
-	mapOptions := map[string]string{
-		"MountPoint": absolutePath,
-	}
+	mapOptions := map[string]string{}
 	resp, err := cli.VolumeCreate(context.Background(), volume.CreateOptions{
 		Name:       name,
 		Driver:     kubelet.DEFAULT_DRIVER,
