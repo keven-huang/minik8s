@@ -72,6 +72,7 @@ func PullImages(targets []string) error {
 		return err
 	}
 	var filteredTarget []string
+	m := make(map[string]int)
 	for _, image := range targets {
 		var flag bool
 		for _, historyImage := range historyImages {
@@ -80,9 +81,14 @@ func PullImages(targets []string) error {
 				break
 			}
 		}
+		_, ok := m[image]
+		if ok == true {
+			continue
+		}
 		if flag == false {
 			filteredTarget = append(filteredTarget, image)
 			fmt.Printf("Image doesn't exist: %v\n", image)
+			m[image] = 1
 		}
 	}
 	if filteredTarget != nil {
@@ -234,18 +240,18 @@ func CreateContainer(con core.Container) (container.CreateResponse, error) {
 		return container.CreateResponse{}, err
 	}
 	resp, err := cli.ContainerCreate(context.Background(),
-		&container.Config{Image: con.Image, Entrypoint: con.EntryPoint},
+		&container.Config{Image: con.Image, Entrypoint: con.EntryPoint, Tty: con.Tty},
 		&container.HostConfig{}, nil, nil, con.Name)
 	return resp, err
 }
 
-func CreatePauseContainer(name string, ports []kubelet.Port) (container.CreateResponse, error) {
+func CreatePauseContainer(name string, ports []core.Port) (container.CreateResponse, error) {
 	cli, err := GetNewClient()
 	if err != nil {
 		return container.CreateResponse{}, err
 	}
 	// this for outside-call
-	err = PullImages([]string{kubelet.PAUSE_NAME})
+	err = PullImages([]string{kubelet.PAUSE_IMAGE_NAME})
 	if err != nil {
 		return container.CreateResponse{}, err
 	}
@@ -288,7 +294,7 @@ func CreatePod(containers []core.Container) ([]core.ContainerMeta, *types.Networ
 	if err != nil {
 		return nil, nil, err
 	}
-	var totalPorts []kubelet.Port
+	var totalPorts []core.Port
 	var res []core.ContainerMeta
 	images := []string{kubelet.PAUSE_IMAGE_NAME}
 	names := []string{kubelet.PAUSE_NAME}
@@ -323,6 +329,7 @@ func CreatePod(containers []core.Container) ([]core.ContainerMeta, *types.Networ
 			Image:      v.Image,
 			Entrypoint: v.EntryPoint,
 			Cmd:        v.Command,
+			Tty:        v.Tty,
 		}, &container.HostConfig{
 			NetworkMode: container.NetworkMode("container:" + curPauseID),
 			IpcMode:     container.IpcMode("container:" + curPauseID),

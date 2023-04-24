@@ -1,9 +1,5 @@
 package core
 
-import (
-	"minik8s/pkg/kubelet"
-)
-
 type Container struct {
 	// container's name
 	Name  string `json:"name" yaml:"name"`
@@ -13,9 +9,16 @@ type Container struct {
 	Command    []string `json:"command" yaml:"command"`
 	EntryPoint []string `json:"entryPoint" yaml:"entryPoint"`
 	// ports
-	Ports []kubelet.Port `json:"ports" yaml:"ports"`
+	Ports []Port `json:"ports" yaml:"ports"`
 	// limit resource
 	LimitResource Limit `json:"limitResource" yaml:"limitResource"`
+	// TTY, if it is true and entry-point is 'sh', the container will not exit
+	Tty bool `json:"tty" yaml:"tty"`
+}
+
+type Port struct {
+	Protocol   string // tcp, udp
+	PortNumber string // number
 }
 
 type Limit struct {

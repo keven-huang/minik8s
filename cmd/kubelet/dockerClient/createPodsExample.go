@@ -2,23 +2,45 @@ package main
 
 import (
 	"minik8s/pkg/api/core"
-	"minik8s/pkg/kubelet"
 	"minik8s/pkg/kubelet/dockerClient"
 )
 
 func main() {
 	//alpine()
 	//pause()
-	//twoAlpine()
-	ubuntu()
+	twoUbuntu()
+	//minorUbuntu()
+	//ubuntu()
 	//nginx()
+}
+
+func minorUbuntu() {
+	c1 := core.Container{
+		Image:   "minor_ubuntu:v1",
+		Name:    "ubuntu_01",
+		Command: []string{"/bin/sh"},
+		Tty:     true,
+	}
+	c2 := core.Container{
+		Image:   "minor_ubuntu:v1",
+		Name:    "ubuntu_02",
+		Command: []string{"/bin/sh"},
+		Tty:     true,
+	}
+	cons := []core.Container{c1, c2}
+	metas, _, err := dockerClient.CreatePod(cons)
+	if err != nil {
+		panic(err.Error())
+	} else {
+		print(metas)
+	}
 }
 
 func nginx() {
 	c1 := core.Container{
-		Image:   "nginx",
-		Name:    "nginx",
-		Command: []string{"/bin/sh"},
+		Image:      "nginx",
+		Name:       "nginx",
+		EntryPoint: []string{"/bin/sh"},
 	}
 	resp, err := dockerClient.CreateContainer(c1)
 	if err != nil {
@@ -33,7 +55,7 @@ func ubuntu() {
 	c1 := core.Container{
 		Image:      "ubuntu",
 		Name:       "ubuntu_test01",
-		EntryPoint: []string{"echo", "hello"},
+		EntryPoint: []string{"sh"},
 	}
 	resp, err := dockerClient.CreateContainer(c1)
 	if err != nil {
@@ -44,16 +66,18 @@ func ubuntu() {
 	}
 }
 
-func twoAlpine() {
+func twoUbuntu() {
 	c1 := core.Container{
-		Image:   "alpine",
-		Name:    "alpine_01",
+		Image:   "chasingdreams/minor_ubuntu:v1",
+		Name:    "ubuntu_01",
 		Command: []string{"/bin/sh"},
+		Tty:     true,
 	}
 	c2 := core.Container{
-		Image:   "alpine",
-		Name:    "alpine_02",
+		Image:   "chasingdreams/minor_ubuntu:v1",
+		Name:    "ubuntu_02",
 		Command: []string{"/bin/sh"},
+		Tty:     true,
 	}
 	cons := []core.Container{c1, c2}
 	metas, _, err := dockerClient.CreatePod(cons)
@@ -65,7 +89,7 @@ func twoAlpine() {
 }
 
 func pause() {
-	var empty []kubelet.Port
+	var empty []core.Port
 	resp, err := dockerClient.CreatePauseContainer("test1_pause", empty)
 	if err != nil {
 		panic("fun")
