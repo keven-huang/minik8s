@@ -83,10 +83,12 @@ func (store *EtcdStore) Watch(key string) <-chan Event {
 		wat := store.client.Watch(context.Background(), key)
 		for w := range wat {
 			for _, event := range w.Events {
+				fmt.Println("etcd have watched")
+				fmt.Print(string(event.Kv.Key), " ", string(event.Kv.Value), " ", event.Type, "\n")
 				var watchedEvent Event
 				watchedEvent.Type = getType(event)
-				watchedEvent.key = string(event.Kv.Key)
-				watchedEvent.val = event.Kv.Value
+				watchedEvent.Key = string(event.Kv.Key)
+				watchedEvent.Val = string(event.Kv.Value)
 				c <- watchedEvent
 			}
 		}

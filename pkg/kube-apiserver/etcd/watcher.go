@@ -13,8 +13,8 @@ const (
 
 type Event struct {
 	Type EventType
-	key  string
-	val  []byte
+	Key  string
+	Val  string
 }
 
 // help function

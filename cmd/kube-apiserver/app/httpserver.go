@@ -41,6 +41,12 @@ func NewServer() *Server {
 		router.DELETE(apiconfig.POD_PATH, s.DeletePod)
 	}
 
+	{
+		router.GET(apiconfig.POD_PATH+"/:name", s.Watch)
+	}
+	//test
+	{
+	}
 	return s
 }
 

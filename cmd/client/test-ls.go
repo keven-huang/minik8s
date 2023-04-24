@@ -1,4 +1,4 @@
-package client
+package main
 
 import (
 	"fmt"
@@ -9,9 +9,14 @@ import (
 func watch_resource() {
 	// initialize informer
 	informer := informer.NewInformer("/api/v1/pods/a")
-	informer.AddEventHandler(tool.Added, func(event tool.Event) {
+	informer.AddEventHandler(tool.Modified, func(event tool.Event) {
 		// handle event
-		fmt.Println(event.Type)
+		fmt.Println("in handler")
+		fmt.Println(event.Key)
 	})
 	informer.Run()
+}
+
+func main() {
+	watch_resource()
 }

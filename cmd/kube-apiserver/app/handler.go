@@ -98,6 +98,12 @@ func (s *Server) AddPod(c *gin.Context) {
 func (s *Server) GetPod(c *gin.Context) {
 	val, _ := io.ReadAll(c.Request.Body)
 	key := c.Request.URL.Path + "/" + string(val)
+
+	if c.Query("watch") == "true" {
+		s.Watch(c)
+		return
+	}
+
 	res, err := s.etcdstore.Get(key)
 	if err != nil {
 		log.Println(err)
@@ -140,19 +146,24 @@ func (s *Server) Watch(c *gin.Context) {
 		fmt.Printf("http server does not support flush\n")
 		return
 	}
+	w.Header().Set("Connection", "keep-alive")
 	w.Header().Set("Transfer-Encoding", "chunked")
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
-	sender := func() {
-		for {
-			select {
-			case res := <-resChan:
-				{
-					resp, _ := json.Marshal(res)
-					fmt.Fprintf(w, string(resp))
-					flusher.Flush()
-				}
+	flusher.Flush()
+	fmt.Println("in sender")
+	for {
+		select {
+		case res, ok := <-resChan:
+			if !ok {
+				// resChan 已关闭，退出循环
+				return
 			}
+			fmt.Println("send watch response")
+			resp, _ := json.Marshal(res)
+			fmt.Println(string(resp))
+			fmt.Fprintf(w, string(resp))
+			flusher.Flush()
 		}
 	}
-	go sender()
 }
