@@ -21,10 +21,9 @@ type EtcdStore struct {
 // constructort of etcdstore
 func InitEtcdStore() (*EtcdStore, error) {
 	cli, err := clientv3.New(clientv3.Config{
-		Endpoints:   []string{"http://127.0.0.1:30000"},
+		Endpoints:   []string{"http://127.0.0.1:2379"},
 		DialTimeout: 5 * time.Second,
 	})
-	fmt.Printf("in\n")
 	if err != nil {
 		fmt.Printf("connect to etcd failed, err: %v\n", err)
 	}
@@ -45,7 +44,6 @@ func (store *EtcdStore) Put(key string, val string) error {
 		fmt.Println(err)
 		log.Fatal(err)
 	}
-	fmt.Printf("out\n")
 	return err
 }
 
@@ -79,13 +77,24 @@ func (store *EtcdStore) Del(key string) error {
 }
 
 // watch
-func (store *EtcdStore) Listen(key string) {
-	wat := store.client.Watch(context.Background(), key)
-	for w := range wat {
-		for _, v := range w.Events {
-			fmt.Printf("type: %s key: %s value: %s", v.Type, v.Kv.Key, v.Kv.Value)
+func (store *EtcdStore) Watch(key string) <-chan Event {
+	watchchan := make(chan Event)
+	watcher := func(c chan<- Event) {
+		wat := store.client.Watch(context.Background(), key)
+		for w := range wat {
+			for _, event := range w.Events {
+				var watchedEvent Event
+				watchedEvent.Type = getType(event)
+				watchedEvent.key = string(event.Kv.Key)
+				watchedEvent.val = event.Kv.Value
+				c <- watchedEvent
+			}
 		}
+		close(c)
+		log.Println("watcher closed")
 	}
+	go watcher(watchchan)
+	return watchchan
 }
 
 // perfix watch

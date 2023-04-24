@@ -27,7 +27,6 @@ func NewServer() *Server {
 		log.Fatal(err)
 	}
 	s := &Server{router: router, etcdstore: etcdstore}
-
 	// api 配置
 	{
 		router.GET(apiconfig.PATH, s.Get)

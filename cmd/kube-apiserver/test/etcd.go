@@ -13,7 +13,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	etcdstore.Put("hello", "3")
+	etcdstore.Put("hello", "1023")
 	res, err := etcdstore.Get("hello")
 	if err != nil {
 		log.Fatal(err)

@@ -112,3 +112,29 @@ func (s *Server) DeletePod(c *gin.Context) {
 		"message": "delete pod success",
 	})
 }
+
+func (s *Server) Watch(c *gin.Context) {
+	key := c.Request.URL.Path
+	resChan := s.etcdstore.Watch(key)
+	w := c.Writer
+	flusher, ok := w.(http.Flusher)
+	if !ok {
+		fmt.Printf("http server does not support flush\n")
+		return
+	}
+	w.Header().Set("Transfer-Encoding", "chunked")
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+	sender := func() {
+		for {
+			select {
+			case res := <-resChan:
+				{
+					resp, _ := json.Marshal(res)
+					fmt.Fprintf(w, string(resp))
+					flusher.Flush()
+				}
+			}
+		}
+	}
+	go sender()
+}
