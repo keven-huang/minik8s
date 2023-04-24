@@ -14,6 +14,15 @@ type Container struct {
 	LimitResource Limit `json:"limitResource" yaml:"limitResource"`
 	// TTY, if it is true and entry-point is 'sh', the container will not exit
 	Tty bool `json:"tty" yaml:"tty"`
+	// the mounted volumes in a pod
+	VolumeMounts []VolumeMount `yaml:"volumeMounts" json:"volumeMounts"`
+}
+
+type VolumeMount struct {
+	// volumeName
+	Name string `yaml:"name" json:"name"`
+	// mountpath
+	MountPath string `yaml:"mountPath" json:"mountPath"`
 }
 
 type Port struct {

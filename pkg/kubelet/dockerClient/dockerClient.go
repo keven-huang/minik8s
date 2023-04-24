@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/mount"
+	"github.com/docker/docker/api/types/volume"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
 	"io"
@@ -214,6 +216,26 @@ func GetContainerInfo(id string) (types.ContainerJSON, error) {
 	return info, nil
 }
 
+func CreateVolume(absolutePath string, name string) (volume.Volume, error) {
+	cli, err := GetNewClient()
+	if err != nil {
+		return volume.Volume{}, err
+	}
+	mapOptions := map[string]string{
+		"MountPoint": absolutePath,
+	}
+	resp, err := cli.VolumeCreate(context.Background(), volume.CreateOptions{
+		Name:       name,
+		Driver:     kubelet.DEFAULT_DRIVER,
+		DriverOpts: mapOptions,
+	})
+	if err != nil {
+		panic(err.Error())
+		return volume.Volume{}, err
+	}
+	return resp, nil
+}
+
 /*
 获取容器的网络设置
 如果用在pause容器中，可以获取pod的网络设置
@@ -239,9 +261,22 @@ func CreateContainer(con core.Container) (container.CreateResponse, error) {
 	if err != nil {
 		return container.CreateResponse{}, err
 	}
+	var mountsInfo []mount.Mount
+	if con.VolumeMounts != nil {
+		for _, volume := range con.VolumeMounts {
+			mountsInfo = append(mountsInfo, mount.Mount{
+				Type:   mount.TypeVolume,
+				Source: volume.Name,
+				Target: volume.MountPath,
+			})
+		}
+	}
+
 	resp, err := cli.ContainerCreate(context.Background(),
 		&container.Config{Image: con.Image, Entrypoint: con.EntryPoint, Tty: con.Tty},
-		&container.HostConfig{}, nil, nil, con.Name)
+		&container.HostConfig{
+			Mounts: mountsInfo,
+		}, nil, nil, con.Name)
 	return resp, err
 }
 
@@ -325,6 +360,18 @@ func CreatePod(containers []core.Container) ([]core.ContainerMeta, *types.Networ
 	curPauseID := pauseContainer.ID
 	res = append(res, core.ContainerMeta{Name: curPauseName, Id: curPauseID})
 	for _, v := range containers {
+		// 配置容器的挂载
+		var mountsInfo []mount.Mount
+		if v.VolumeMounts != nil {
+			for _, volume := range v.VolumeMounts {
+				mountsInfo = append(mountsInfo, mount.Mount{
+					Type:   mount.TypeVolume,
+					Source: volume.Name,
+					Target: volume.MountPath,
+				})
+			}
+		}
+		// 创建容器
 		resp, err := cli.ContainerCreate(context.Background(), &container.Config{
 			Image:      v.Image,
 			Entrypoint: v.EntryPoint,
@@ -334,6 +381,7 @@ func CreatePod(containers []core.Container) ([]core.ContainerMeta, *types.Networ
 			NetworkMode: container.NetworkMode("container:" + curPauseID),
 			IpcMode:     container.IpcMode("container:" + curPauseID),
 			PidMode:     container.PidMode("container:" + curPauseID),
+			Mounts:      mountsInfo,
 		}, nil, nil, v.Name)
 		if err != nil {
 			return nil, nil, err
