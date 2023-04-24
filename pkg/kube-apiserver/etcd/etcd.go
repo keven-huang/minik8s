@@ -100,3 +100,24 @@ func (store *EtcdStore) Watch(key string) <-chan Event {
 }
 
 // perfix watch
+func (store *EtcdStore) PerfixWatch(prefixkey string) <-chan Event {
+	watchchan := make(chan Event)
+	watcher := func(c chan<- Event) {
+		wat := store.client.Watch(context.Background(), prefixkey)
+		for w := range wat {
+			for _, event := range w.Events {
+				fmt.Println("etcd have watched")
+				fmt.Print(string(event.Kv.Key), " ", string(event.Kv.Value), " ", event.Type, "\n")
+				var watchedEvent Event
+				watchedEvent.Type = getType(event)
+				watchedEvent.Key = string(event.Kv.Key)
+				watchedEvent.Val = string(event.Kv.Value)
+				c <- watchedEvent
+			}
+		}
+		close(c)
+		log.Println("watcher closed")
+	}
+	go watcher(watchchan)
+	return watchchan
+}

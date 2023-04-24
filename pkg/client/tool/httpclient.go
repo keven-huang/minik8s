@@ -42,10 +42,10 @@ func Watch(resourses string) WatchInterface {
 			if n != 0 || err != io.EOF {
 				event := Event{}
 				err = json.Unmarshal([]byte(buf[:n]), &event)
-				fmt.Println("unmarshal:", event.Key, event.Val, event.Type)
 				if err != nil {
-					fmt.Println("unmarshal error:", err)
+					continue
 				}
+				fmt.Println("unmarshal:", event.Key, event.Val, event.Type)
 				// send event to watcher.resultChan
 				wc <- event
 			} else {
