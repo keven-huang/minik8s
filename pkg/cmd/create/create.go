@@ -2,11 +2,14 @@ package create
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/spf13/cobra"
 	"io"
+	"minik8s/cmd/kube-apiserver/app/apiconfig"
+	"minik8s/pkg/api/core"
+	myJson "minik8s/pkg/util/json"
 	"net/http"
-	"os"
 )
 
 // CreateOptions is the commandline options for 'create' sub command
@@ -55,50 +58,83 @@ func (o *CreateOptions) RunCreate(cmd *cobra.Command, args []string) error {
 
 	filename := o.Filename
 
-	// 读取Pod YAML文件
-	file, err := os.Open(filename)
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-
-	// Read the YAML file
-	yamlFile, err := io.ReadAll(file)
+	pod := &core.Pod{}
+	err := myJson.GetFromYaml(filename, pod)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(string(yamlFile))
+	// 序列化
+	// 调试用法，前面多两个空格，易于阅读
+	//data, err := json.MarshalIndent(pod, "", "  ")
+	data, err := json.Marshal(pod)
+	if err != nil {
+		fmt.Println("failed to marshal person:", err)
+	} else {
+		//fmt.Println(string(data))
+	}
 
-	// 解析YAML文件
-	//var obj unstructured.Unstructured
-	//decoder := yaml.NewYAMLOrJSONDecoder(&yamlFile, len(yamlFile))
-	//if err := decoder.Decode(&obj); err != nil {
-	//	panic(err)
-	//}
-	//
-	//// 将解析后的对象转换为Pod对象
-	//var pod corev1.Pod
-	//if err := runtime.DefaultUnstructuredConverter.FromUnstructured(obj.Object, &pod); err != nil {
-	//	panic(err)
-	//}
-	//
-	//// 输出Pod的名称
-	//fmt.Printf("Pod name: %s\n", pod.ObjectMeta.Name)
+	// 反序列化
+	pod2 := &core.Pod{}
+	err = json.Unmarshal(data, pod2)
+	if err != nil {
+		return err
+	}
+	fmt.Println(pod2)
+
+	// 检查序列化和反序列化的结果
+	myJson.CheckDeepEqual(pod, pod2)
 
 	// Send a POST request to kube-apiserver to create the pod
-	resp, err := http.Post("http://localhost:8001/api/v1/namespaces/default/pods",
-		"application/yaml",
-		bytes.NewBuffer(yamlFile))
+	// 创建 PUT 请求
+	req, err := http.NewRequest("PUT", apiconfig.Server_URL+apiconfig.POD_PATH, bytes.NewBuffer(data))
 	if err != nil {
+		fmt.Println("Error creating request:", err)
 		return err
 	}
 
-	if resp.StatusCode != http.StatusCreated {
-		return fmt.Errorf("failed to create pod: %v", resp.Status)
+	// 发送请求
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Error sending request:", err)
+		return err
 	}
+	defer resp.Body.Close()
+
+	// 打印响应结果
+	fmt.Println("Response Status:", resp.Status)
+	// 读取响应主体内容到字节数组
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println("Error reading response body:", err)
+		return err
+	}
+
+	// 将字节数组转换为字符串并打印
+	fmt.Println("Response Body:", string(bodyBytes))
 
 	fmt.Println("pod created successfully")
 	return nil
 
 }
+
+// "k8s.io/apimachinery/pkg/runtime/serializer/json"
+//var s runtime.Serializer
+//// Yaml decides whether yaml or json
+//option := json.SerializerOptions{Yaml: false, Pretty: false, Strict: false}
+//// json
+//s = json.NewSerializerWithOptions(json.DefaultMetaFactory, nil, nil, option)
+//
+//// 将对象编码为字节数组
+//buf := new(bytes.Buffer)
+//if err := s.Encode(*pod, buf); err != nil {
+//	panic(err)
+//}
+
+//obj, gvk, err := s.Decode([]byte(test.data), &schema.GroupVersionKind{Kind: "Test", Group: "other", Version: "blah"}, &core.Pod{})
+//
+//if !reflect.DeepEqual(test.expectedGVK, gvk) {
+//	logTestCase(t, test)
+//	t.Errorf("%d: unexpected GVK: %v", i, gvk)
+//}

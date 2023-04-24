@@ -21,7 +21,7 @@ type EtcdStore struct {
 // constructort of etcdstore
 func InitEtcdStore() (*EtcdStore, error) {
 	cli, err := clientv3.New(clientv3.Config{
-		Endpoints:   []string{"http://127.0.0.1:30000"},
+		Endpoints:   []string{"http://127.0.0.1:2379"},
 		DialTimeout: 5 * time.Second,
 	})
 	fmt.Printf("in\n")
