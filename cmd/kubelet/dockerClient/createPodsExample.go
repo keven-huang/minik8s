@@ -67,17 +67,27 @@ func ubuntu() {
 }
 
 func twoUbuntu() {
+	port1 := core.Port{
+		Protocol:   "tcp",
+		PortNumber: "58851",
+	}
+	port2 := core.Port{
+		Protocol:   "tcp",
+		PortNumber: "58852",
+	}
 	c1 := core.Container{
-		Image:   "chasingdreams/minor_ubuntu:v1",
+		Image:   "chasingdreams/minor_ubuntu:v2",
 		Name:    "ubuntu_01",
-		Command: []string{"/bin/sh"},
+		Command: []string{"/bin/bash"},
 		Tty:     true,
+		Ports:   []core.Port{port1},
 	}
 	c2 := core.Container{
-		Image:   "chasingdreams/minor_ubuntu:v1",
+		Image:   "chasingdreams/minor_ubuntu:v2",
 		Name:    "ubuntu_02",
-		Command: []string{"/bin/sh"},
+		Command: []string{"/bin/bash"},
 		Tty:     true,
+		Ports:   []core.Port{port2},
 	}
 	cons := []core.Container{c1, c2}
 	metas, _, err := dockerClient.CreatePod(cons)
