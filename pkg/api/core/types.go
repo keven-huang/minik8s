@@ -3877,7 +3877,7 @@ type EphemeralContainerCommon struct {
 
 // EphemeralContainerCommon converts to Container. All fields must be kept in sync between
 // these two types.
-var _ = Container(EphemeralContainerCommon{})
+//var _ = Container(EphemeralContainerCommon{})
 
 // An EphemeralContainer is a temporary container that you may add to an existing Pod for
 // user-initiated activities such as debugging. Ephemeral containers have no resource or
@@ -6750,4 +6750,3 @@ type ContainerMeta struct {
 	Name string
 	Id   string
 }
-
