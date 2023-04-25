@@ -22,18 +22,18 @@ func (w *watcher) ResultChan() <-chan Event {
 
 type ListWatcher interface {
 	// List should return a resource type specific collection of items.
-	List()
+	List(resource string) []ListRes
 	// Watch should return a resource type specific watch.Interface that watches for changes to items.
 	Watch(resourceVersion string) WatchInterface
 }
 
 type listwatcher struct {
-	ListFunc  func()
+	ListFunc  func(resource string) []ListRes
 	WatchFunc func(resourceVersion string) WatchInterface
 }
 
-func (lw *listwatcher) List() {
-	lw.ListFunc()
+func (lw *listwatcher) List(resource string) []ListRes {
+	return lw.ListFunc(resource)
 }
 
 func (lw *listwatcher) Watch(resourceVersion string) WatchInterface {
@@ -43,7 +43,8 @@ func (lw *listwatcher) Watch(resourceVersion string) WatchInterface {
 // NewListWatchFromClient creates a ListWatch from the specified client, resource, namespace and field selector.
 func NewListWatchFromClient(resource string) ListWatcher {
 	return &listwatcher{
-		ListFunc: func() {
+		ListFunc: func(resource string) []ListRes {
+			return List(resource)
 		},
 		WatchFunc: func(resource string) WatchInterface {
 			return Watch(resource)

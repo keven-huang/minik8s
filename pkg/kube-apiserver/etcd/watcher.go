@@ -17,6 +17,12 @@ type Event struct {
 	Val  string
 }
 
+type ListRes struct {
+	ResourceVersion string
+	Key             string
+	Value           string
+}
+
 // help function
 func getType(event *clientv3.Event) EventType {
 	switch event.Type {
