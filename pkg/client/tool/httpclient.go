@@ -28,7 +28,8 @@ func Watch(resourses string) WatchInterface {
 	watcher.resultChan = make(chan Event)
 	reader := func(wc chan<- Event) {
 		fmt.Println("start watch")
-		url := "http://127.0.0.1:8080" + resourses + "?watch=true"
+		//url := "http://127.0.0.1:8080" + resourses + "?watch=true"
+		url := "http://127.0.0.1:8080/watch" + resourses + "?prefix=true"
 		resp, err := http.Get(url)
 		if err != nil {
 			// handle error

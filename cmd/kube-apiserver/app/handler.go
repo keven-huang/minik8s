@@ -99,11 +99,6 @@ func (s *Server) AddPod(c *gin.Context) {
 
 // GetPod Body传入Pod.Name
 func (s *Server) GetPod(c *gin.Context) {
-	if c.Query("watch") == "true" {
-		s.Watch(c)
-		return
-	}
-
 	if c.Query("all") == "true" {
 		// delete the keys
 		res, err := s.etcdstore.GetAll(apiconfig.POD_PATH)
@@ -177,8 +172,16 @@ func (s *Server) DeletePod(c *gin.Context) {
 }
 
 func (s *Server) Watch(c *gin.Context) {
-	key := c.Request.URL.Path
-	resChan := s.etcdstore.Watch(key)
+	key := c.Request.URL.Path[6:]
+	fmt.Println("path:", c.Request.URL.Path)
+	fmt.Println("key:", key)
+
+	var isPrefix = true
+	if c.Query("prefix") == "false" {
+		isPrefix = false
+	}
+
+	resChan := s.etcdstore.Watch(key, isPrefix)
 	w := c.Writer
 	flusher, ok := w.(http.Flusher)
 	if !ok {

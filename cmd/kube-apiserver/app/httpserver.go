@@ -42,7 +42,7 @@ func NewServer() *Server {
 	}
 
 	{
-		router.GET(apiconfig.POD_PATH+"/:name", s.Watch)
+		router.GET("/watch/*resource", s.Watch)
 	}
 	//test
 	{

@@ -8,7 +8,7 @@ import (
 
 func watch_resource() {
 	// initialize informer
-	informer := informer.NewInformer("/api/v1/pods/a")
+	informer := informer.NewInformer("/api/v1/pods")
 	informer.AddEventHandler(tool.Modified, func(event tool.Event) {
 		// handle event
 		fmt.Println("in handler")
