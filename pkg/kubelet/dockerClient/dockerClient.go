@@ -291,6 +291,9 @@ func CreatePauseContainer(name string, ports []core.Port) (container.CreateRespo
 	var portSet nat.PortSet
 	portSet = make(nat.PortSet, len(ports))
 	for _, port := range ports {
+		if port.Protocol == "" {
+			port.Protocol = "tcp"
+		}
 		if port.Protocol == "tcp" {
 			res, err := nat.NewPort("tcp", port.PortNumber)
 			if err != nil {
@@ -322,7 +325,9 @@ func CreatePauseContainer(name string, ports []core.Port) (container.CreateRespo
 	return response, err
 }
 
-func CreatePod(containers []core.Container) ([]core.ContainerMeta, *types.NetworkSettings, error) {
+func CreatePod(pod core.Pod) ([]core.ContainerMeta, *types.NetworkSettings, error) {
+	containers := pod.Spec.Containers
+
 	cli, err := GetNewClient()
 	if err != nil {
 		return nil, nil, err

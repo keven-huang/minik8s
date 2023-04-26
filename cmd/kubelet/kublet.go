@@ -23,15 +23,26 @@ func main() {
 			return
 		}
 
-		for _, container := range pod.Spec.Containers {
-			resp, err := dockerClient.CreateContainer(container)
-			if err != nil {
-				panic("Pod: " + pod.Name + "container: " + container.Name)
-			} else {
-				fmt.Println("Container ID: ", resp.ID)
-				fmt.Println("Warn: ", resp.Warnings)
-			}
+		metaData, netSetting, err := dockerClient.CreatePod(*pod)
+		if err != nil {
+			fmt.Println(err)
+			return
 		}
+
+		for _, meta := range metaData {
+			fmt.Println(meta.Name, meta.Id)
+		}
+		fmt.Println(netSetting)
+
+		//for _, container := range pod.Spec.Containers {
+		//	resp, err := dockerClient.CreateContainer(container)
+		//	if err != nil {
+		//		panic("Pod: " + pod.Name + "  container: " + container.Name)
+		//	} else {
+		//		fmt.Println("Container ID: ", resp.ID)
+		//		fmt.Println("Warn: ", resp.Warnings)
+		//	}
+		//}
 
 	})
 	Informer.Run()

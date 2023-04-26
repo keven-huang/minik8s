@@ -28,7 +28,9 @@ func minorUbuntu() {
 		Tty:     true,
 	}
 	cons := []core.Container{c1, c2}
-	metas, _, err := dockerClient.CreatePod(cons)
+	var pod = core.Pod{}
+	pod.Spec.Containers = cons
+	metas, _, err := dockerClient.CreatePod(pod)
 	if err != nil {
 		panic(err.Error())
 	} else {
@@ -90,7 +92,9 @@ func twoUbuntu() {
 		Ports:   []core.Port{port2},
 	}
 	cons := []core.Container{c1, c2}
-	metas, _, err := dockerClient.CreatePod(cons)
+	var pod = core.Pod{}
+	pod.Spec.Containers = cons
+	metas, _, err := dockerClient.CreatePod(pod)
 	if err != nil {
 		panic(err.Error())
 	} else {
