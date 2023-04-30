@@ -23,6 +23,33 @@ type Event struct {
 	Val  string
 }
 
+type ListRes struct {
+	ResourceVersion string
+	Key             string
+	Value           string
+}
+
+func List(resource string) []ListRes {
+	url := "http://127.0.0.1:8080" + resource
+	resp, err := http.Get(url)
+	if err != nil {
+		// handle error
+		fmt.Println("http get error:", err)
+	}
+	defer resp.Body.Close()
+	reader := resp.Body
+	data, err := io.ReadAll(reader)
+	if err != nil {
+		return nil
+	}
+	var resList []ListRes
+	err = json.Unmarshal(data, &resList)
+	if err != nil {
+		return nil
+	}
+	return resList
+}
+
 func Watch(resourses string) WatchInterface {
 	watcher := &watcher{}
 	watcher.resultChan = make(chan Event)
@@ -81,8 +108,4 @@ func Watch(resourses string) WatchInterface {
 	}
 	go reader(watcher.resultChan)
 	return watcher
-}
-
-func List() {
-
 }

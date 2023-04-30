@@ -314,3 +314,85 @@ type Volume struct {
 
 type VolumeSource struct {
 }
+
+// Node is a worker node in Kubernetes.
+// Each node will have a unique identifier in the cache (i.e. in etcd).
+type Node struct {
+	metav1.TypeMeta `json:",inline"`
+	// Standard object's metadata.
+	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+	// +optional
+	metav1.ObjectMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
+
+	// Spec defines the behavior of a node.
+	// https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+	// +optional
+	Spec NodeSpec `json:"spec,omitempty" protobuf:"bytes,2,opt,name=spec"`
+
+	// Most recently observed status of the node.
+	// Populated by the system.
+	// Read-only.
+	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+	// +optional
+	Status NodeStatus `json:"status,omitempty" protobuf:"bytes,3,opt,name=status"`
+}
+
+// NodeSpec describes the attributes that a node is created with.
+type NodeSpec struct {
+	// PodCIDR represents the pod IP range assigned to the node.
+	// +optional
+	PodCIDR string `json:"podCIDR,omitempty" protobuf:"bytes,1,opt,name=podCIDR"`
+	// Unschedulable controls node schedulability of new pods. By default, node is schedulable.
+	// More info: https://kubernetes.io/docs/concepts/nodes/node/#manual-node-administration
+	// +optional
+	Unschedulable bool `json:"unschedulable,omitempty" protobuf:"varint,4,opt,name=unschedulable"`
+	// If specified, the node's taints.
+	// +optional
+	Taints []Taint `json:"taints,omitempty" protobuf:"bytes,5,opt,name=taints"`
+}
+
+// Taint represents a taint on a node.
+// The node this Taint is attached to has the "effect" on
+// any pod that does not tolerate the Taint.
+type Taint struct {
+	// Required. The taint key to be applied to a node.
+	Key string `json:"key" protobuf:"bytes,1,opt,name=key"`
+	// The taint value corresponding to the taint key.
+	// +optional
+	Value string `json:"value,omitempty" protobuf:"bytes,2,opt,name=value"`
+	// Required. The effect of the taint on pods
+	// that do not tolerate the taint.
+	// Valid effects are NoSchedule, PreferNoSchedule and NoExecute.
+	Effect TaintEffect `json:"effect" protobuf:"bytes,3,opt,name=effect,casttype=TaintEffect"`
+	// TimeAdded represents the time at which the taint was added.
+	// It is only written for NoExecute taints.
+	// +optional
+	TimeAdded *metav1.Time `json:"timeAdded,omitempty" protobuf:"bytes,4,opt,name=timeAdded"`
+}
+
+// +enum
+type TaintEffect string
+
+// Describe a container image
+type ContainerImage struct {
+	// Names by which this image is known.
+	// e.g. ["kubernetes.example/hyperkube:v1.0.7", "cloud-vendor.registry.example/cloud-vendor/hyperkube:v1.0.7"]
+	// +optional
+	Names []string `json:"names" protobuf:"bytes,1,rep,name=names"`
+	// The size of the image in bytes.
+	// +optional
+	SizeBytes int64 `json:"sizeBytes,omitempty" protobuf:"varint,2,opt,name=sizeBytes"`
+}
+
+// NodeStatus is information about the current status of a node.
+type NodeStatus struct {
+	// List of container images on this node
+	// +optional
+	Images []ContainerImage `json:"images,omitempty" protobuf:"bytes,8,rep,name=images"`
+	// List of attachable volumes in use (mounted) by the node.
+	// +optional
+	//VolumesInUse []UniqueVolumeName `json:"volumesInUse,omitempty" protobuf:"bytes,9,rep,name=volumesInUse"`
+	// List of volumes that are attached to the node.
+	// +optional
+	//VolumesAttached []AttachedVolume `json:"volumesAttached,omitempty" protobuf:"bytes,10,rep,name=volumesAttached"`
+}
