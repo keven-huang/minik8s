@@ -17,6 +17,6 @@ func watchResource() {
 	Informer.Run()
 }
 
-func main() {
-	watchResource()
-}
+// func main() {
+// 	watchResource()
+// }

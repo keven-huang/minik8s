@@ -69,7 +69,7 @@ func (store *EtcdStore) Get(key string) ([]string, error) {
 }
 
 // operations : get
-func (store *EtcdStore) GetAll(prefix string) ([]string, error) {
+func (store *EtcdStore) GetAll(prefix string) ([]ListRes, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
 	defer cancel()
 	kv := clientv3.NewKV(store.client)
@@ -79,11 +79,11 @@ func (store *EtcdStore) GetAll(prefix string) ([]string, error) {
 		log.Fatal(err)
 	}
 	if len(resp.Kvs) == 0 {
-		return []string{}, err
+		return []ListRes{}, err
 	} else {
-		res := []string{}
+		res := []ListRes{}
 		for _, ev := range resp.Kvs {
-			res = append(res, string(ev.Value))
+			res = append(res, ListRes{ResourceVersion: ev.Version, Key: string(ev.Key), Value: string(ev.Value)})
 		}
 		return res, err
 	}

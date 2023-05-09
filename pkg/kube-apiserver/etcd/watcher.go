@@ -18,7 +18,7 @@ type Event struct {
 }
 
 type ListRes struct {
-	ResourceVersion string
+	ResourceVersion int64
 	Key             string
 	Value           string
 }
