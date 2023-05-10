@@ -18,7 +18,20 @@ type Spec struct {
 	Ports []Port `json:"ports" yaml:"ports"`
 	// 用户指定的clusterIP, 对type有要求
 	ClusterIP string `json:"clusterIP" yaml:"clusterIP"`
+	// 状态
+	Status ServiceStatus `json:"status" yaml:"status"`
 }
+
+type ServiceStatus struct {
+	Err   error  `yaml:"err" json:"err"`
+	Phase string `yaml:"phase" json:"phase"` // creating, running, error
+}
+
+const (
+	ServiceRunningPhase  string = "running"
+	ServiceCreatingPhase string = "creating"
+	ServiceErrorPhase    string = "error"
+)
 
 type Type string
 
