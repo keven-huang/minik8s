@@ -4,8 +4,10 @@ go 1.20
 
 require (
 	github.com/gin-gonic/gin v1.9.0
+	github.com/go-playground/assert/v2 v2.2.0
 	github.com/spf13/cobra v1.7.0
 	go.etcd.io/etcd/client/v3 v3.5.8
+	gotest.tools/v3 v3.4.0
 	k8s.io/apimachinery v0.27.1
 	k8s.io/client-go v0.27.1
 )

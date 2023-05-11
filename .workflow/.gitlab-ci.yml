@@ -12,6 +12,7 @@ test:
   only:
     - apiserver
   script:
-    - ./bin/kube-apiserver.go
+    - ./bin/kube-apiserver
+    -  go test ../cmd/kube-apiserver/test/etcd_test.go
   tags:
     - test
