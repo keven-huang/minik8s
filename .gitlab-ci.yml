@@ -1,0 +1,20 @@
+stages:
+  - build
+  - test
+
+cache:
+  key: ${CI_BUILD_REF_NAME}
+  paths:
+    - bin/
+
+default:
+  image: $DEFAULT_CI_IMAGE
+  tags:
+    - test
+  # All jobs are interruptible by default
+  interruptible: true
+  # Default job timeout set to 90m https://gitlab.com/gitlab-com/gl-infra/infrastructure/-/issues/10520
+  timeout: 90m
+
+include:
+  - local: .workflow/*.gitlab-ci.yml
