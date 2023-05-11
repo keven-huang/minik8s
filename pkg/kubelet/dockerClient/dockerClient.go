@@ -16,7 +16,7 @@ import (
 	"github.com/docker/go-connections/nat"
 	"io"
 	"minik8s/pkg/api/core"
-	"minik8s/pkg/kubelet"
+	"minik8s/pkg/kubelet/config"
 )
 
 func GetNewClient() (*client.Client, error) {
@@ -224,7 +224,7 @@ func CreateVolume(name string) (volume.Volume, error) {
 	mapOptions := map[string]string{}
 	resp, err := cli.VolumeCreate(context.Background(), volume.CreateOptions{
 		Name:       name,
-		Driver:     kubelet.DEFAULT_DRIVER,
+		Driver:     config.DEFAULT_DRIVER,
 		DriverOpts: mapOptions,
 	})
 	if err != nil {
@@ -284,7 +284,7 @@ func CreatePauseContainer(name string, ports []core.Port) (container.CreateRespo
 		return container.CreateResponse{}, err
 	}
 	// this for outside-call
-	err = PullImages([]string{kubelet.PAUSE_IMAGE_NAME})
+	err = PullImages([]string{config.PAUSE_IMAGE_NAME})
 	if err != nil {
 		return container.CreateResponse{}, err
 	}
@@ -313,11 +313,11 @@ func CreatePauseContainer(name string, ports []core.Port) (container.CreateRespo
 		panic("unsupported network protocol")
 	}
 	response, err := cli.ContainerCreate(context.Background(), &container.Config{
-		Image:        kubelet.PAUSE_IMAGE_NAME,
+		Image:        config.PAUSE_IMAGE_NAME,
 		ExposedPorts: portSet,
 	}, &container.HostConfig{
 		IpcMode: container.IPCModeShareable,
-		DNS:     []string{kubelet.DnsAddress},
+		DNS:     []string{config.DnsAddress},
 	}, nil, nil, name)
 	if err != nil {
 		panic(err.Error())
@@ -334,9 +334,9 @@ func CreatePod(pod core.Pod) ([]core.ContainerMeta, *types.NetworkSettings, erro
 	}
 	var totalPorts []core.Port
 	var res []core.ContainerMeta
-	images := []string{kubelet.PAUSE_IMAGE_NAME}
-	names := []string{kubelet.PAUSE_NAME}
-	curPauseName := kubelet.PAUSE_NAME
+	images := []string{config.PAUSE_IMAGE_NAME}
+	names := []string{config.PAUSE_NAME}
+	curPauseName := config.PAUSE_NAME
 	for _, v := range containers {
 		curPauseName += "_" + v.Name
 		names = append(names, v.Name)
@@ -412,8 +412,8 @@ func CreatePod(pod core.Pod) ([]core.ContainerMeta, *types.NetworkSettings, erro
 func DeletePod(pod core.Pod) error {
 	containers := pod.Spec.Containers
 
-	names := []string{kubelet.PAUSE_NAME}
-	curPauseName := kubelet.PAUSE_NAME
+	names := []string{config.PAUSE_NAME}
+	curPauseName := config.PAUSE_NAME
 	for _, v := range containers {
 		curPauseName += "_" + v.Name
 		names = append(names, v.Name)
