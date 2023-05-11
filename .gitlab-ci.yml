@@ -14,7 +14,7 @@ build:
   script:
     - go build -o /bin/apiserver ./cmd/kube-apiserver/kube-apiserver.go
   tags:
-    - testing
+    - test_docker
 
 test:
   stage: test
@@ -23,5 +23,5 @@ test:
   script:
     - ./bin/apiserver
   tags:
-    - testing
+    - test_docker
 
