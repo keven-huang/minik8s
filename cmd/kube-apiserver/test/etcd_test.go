@@ -1,22 +1,23 @@
 package main
 
 import (
-	"fmt"
-	"log"
+	"errors"
 	"minik8s/pkg/kube-apiserver/etcd"
+	"testing"
+
+	"github.com/go-playground/assert/v2"
+	"gotest.tools/v3/assert"
 )
 
-func main() {
+func TestEtcd(t *testing.T) {
 	// initialize etcd
-	fmt.Printf("===etcd test===\n")
 	etcdstore, err := etcd.InitEtcdStore()
 	if err != nil {
-		log.Fatal(err)
+		assert.Error(t, errors.New("etcd establish wrong"), "")
 	}
 	etcdstore.Put("hello", "1023")
 	res, err := etcdstore.Get("hello")
 	if err != nil {
-		log.Fatal(err)
+		assert.Error(t, errors.New("etcd get wrong"), "")
 	}
-	fmt.Printf("res: %s", res[0])
 }
