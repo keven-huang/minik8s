@@ -16,5 +16,24 @@ default:
   # Default job timeout set to 90m https://gitlab.com/gitlab-com/gl-infra/infrastructure/-/issues/10520
   timeout: 90m
 
-include:
-  - local: .workflow/*.gitlab-ci.yml
+# include:
+#   - local: .workflow/*.gitlab-ci.yml
+
+build:
+  stage: build
+  only:
+    - apiserver
+  script:
+    - go build -o bin/apiserver ../cmd/kube-apiserver/kube-apiserver.go
+  tags:
+    - test
+
+test:
+  stage: test
+  only:
+    - apiserver
+  script:
+    - ./bin/kube-apiserver
+    -  go test ../cmd/kube-apiserver/test/etcd_test.go
+  tags:
+    - test
