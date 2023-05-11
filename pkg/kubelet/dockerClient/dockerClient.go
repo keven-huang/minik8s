@@ -350,6 +350,10 @@ func CreatePod(pod core.Pod) ([]core.ContainerMeta, *types.NetworkSettings, erro
 	if err != nil {
 		return nil, nil, err
 	}
+	err = DeleteContainer(curPauseName)
+	if err != nil {
+		return nil, nil, err
+	}
 	// 拉取镜像列表
 	err = PullImages(images)
 	if err != nil {
@@ -403,4 +407,18 @@ func CreatePod(pod core.Pod) ([]core.ContainerMeta, *types.NetworkSettings, erro
 		return nil, nil, err
 	}
 	return res, netSetting, nil
+}
+
+func DeletePod(pod core.Pod) error {
+	containers := pod.Spec.Containers
+
+	names := []string{kubelet.PAUSE_NAME}
+	curPauseName := kubelet.PAUSE_NAME
+	for _, v := range containers {
+		curPauseName += "_" + v.Name
+		names = append(names, v.Name)
+	}
+	names = append(names, curPauseName)
+	err := DeleteContainers(names)
+	return err
 }
