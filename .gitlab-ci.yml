@@ -10,7 +10,7 @@ cache:
 default:
   image: $DEFAULT_CI_IMAGE
   tags:
-    - test
+    - testing
   # All jobs are interruptible by default
   interruptible: true
   # Default job timeout set to 90m https://gitlab.com/gitlab-com/gl-infra/infrastructure/-/issues/10520
@@ -24,9 +24,9 @@ build:
   only:
     - apiserver
   script:
-    - go build -o bin/apiserver ../cmd/kube-apiserver/kube-apiserver.go
+    - go build -o bin/apiserver ./cmd/kube-apiserver/kube-apiserver.go
   tags:
-    - test
+    - testing
 
 test:
   stage: test
@@ -34,6 +34,6 @@ test:
     - apiserver
   script:
     - ./bin/kube-apiserver
-    -  go test ../cmd/kube-apiserver/test/etcd_test.go
+    -  go test ./cmd/kube-apiserver/test/etcd_test.go
   tags:
-    - test
+    - testing
