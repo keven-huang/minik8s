@@ -65,11 +65,11 @@ func (s *Scheduler) Schedule(pod *core.Pod) {
 
 func (s *Scheduler) GetNode() []core.Node {
 	// TODO : can optimize by cache
-	res := s.NodeInformer.List()
-	nodes := []core.Node{}
-	for _, v := range res {
+	res := s.NodeInformer.GetCache()
+	var nodes []core.Node
+	for _, val := range *res {
 		node := core.Node{}
-		err := json.Unmarshal([]byte(v.Value), &node)
+		err := json.Unmarshal([]byte(val), &node)
 		if err != nil {
 			continue
 		}

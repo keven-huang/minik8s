@@ -134,7 +134,7 @@ func UpdatePod(c *gin.Context, s *Server) {
 		return
 	}
 	key := c.Request.URL.Path + "/" + pod.Name
-	pod.Status.Phase = "Pended" // TODO
+	//pod.Status.Phase = "Pended"
 	body, _ := json.Marshal(pod)
 	err = s.Etcdstore.Put(key, string(body))
 	if err != nil {

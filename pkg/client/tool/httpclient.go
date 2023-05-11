@@ -134,16 +134,43 @@ func UpdatePod(pod *core.Pod) error {
 }
 
 func AddNode(node *core.Node) error {
-	url := "http://127.0.0.1:8080" + "/api/v1/nodes"
+	url := apiconfig.Server_URL + apiconfig.NODE_PATH
 	data, err := json.Marshal(node)
 	if err != nil {
 		return err
 	}
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
+	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(data))
 	if err != nil {
 		return err
 	}
+
+	// 发送请求
+	client := &http.Client{}
+	resp, err := client.Do(req)
 	defer resp.Body.Close()
 	fmt.Println("Response Status:", resp.Status)
 	return nil
+}
+
+func GetTypeName(event Event) string {
+	var s string
+	switch event.Type {
+	case Added:
+		{
+			s = "Add"
+		}
+	case Modified:
+		{
+			s = "Modify"
+		}
+	case Deleted:
+		{
+			s = "Delete"
+		}
+	case Error:
+		{
+			s = "Error"
+		}
+	}
+	return s
 }

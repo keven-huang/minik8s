@@ -13,6 +13,7 @@ type Informer interface {
 	Stop()
 	Get(key string) string
 	Set(key string, val string)
+	GetCache() *map[string]string
 }
 
 type informer struct {
@@ -21,6 +22,10 @@ type informer struct {
 	lw       tool.ListWatcher
 	handlers map[tool.EventType]EventHandler
 	cache    map[string]string
+}
+
+func (i *informer) GetCache() *map[string]string {
+	return &i.cache
 }
 
 func (i *informer) AddEventHandler(etype tool.EventType, handler EventHandler) {

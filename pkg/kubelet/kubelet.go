@@ -10,24 +10,33 @@ import (
 	"minik8s/pkg/kubelet/dockerClient"
 )
 
-type Kublet struct {
+type Kubelet struct {
 	PodInformer informer.Informer
+	node        core.Node
 }
 
-func NewKublet() *Kublet {
-	return &Kublet{
-		PodInformer: informer.NewInformer(apiconfig.POD_PATH),
+func NewKubelet(name string) (*Kubelet, error) {
+	node := core.Node{}
+	node.Name = name
+	err := tool.AddNode(&node)
+	if err != nil {
+		return nil, err
 	}
+	return &Kubelet{
+		PodInformer: informer.NewInformer(apiconfig.POD_PATH),
+		node:        node,
+	}, nil
 }
 
-func (k *Kublet) Register() {
+func (k *Kubelet) Register() {
 	k.PodInformer.AddEventHandler(tool.Added, k.CreatePod)
+	k.PodInformer.AddEventHandler(tool.Modified, k.CreatePod)
 	k.PodInformer.AddEventHandler(tool.Deleted, k.DeletePod)
 }
 
-func (k *Kublet) CreatePod(event tool.Event) {
+func (k *Kubelet) CreatePod(event tool.Event) {
 	// handle event
-	fmt.Println("In AddPod EventHandler:")
+	fmt.Println("In AddPod/ModifyPod EventHandler: ", tool.GetTypeName(event))
 	fmt.Println("event.Key: ", event.Key)
 	fmt.Println("event.Val: ", event.Val)
 	k.PodInformer.Set(event.Key, event.Val)
@@ -36,6 +45,11 @@ func (k *Kublet) CreatePod(event tool.Event) {
 	err := json.Unmarshal([]byte(event.Val), pod)
 	if err != nil {
 		fmt.Println(err)
+		return
+	}
+
+	if pod.Spec.NodeName != k.node.Name {
+		fmt.Println("Not mine. Node:", pod.Spec.NodeName)
 		return
 	}
 
@@ -54,7 +68,7 @@ func (k *Kublet) CreatePod(event tool.Event) {
 	fmt.Println("-----------")
 }
 
-func (k *Kublet) DeletePod(event tool.Event) {
+func (k *Kubelet) DeletePod(event tool.Event) {
 	// handle event
 	fmt.Println("In DeletePod EventHandler:")
 	fmt.Println("event.Key: ", event.Key)
@@ -74,6 +88,6 @@ func (k *Kublet) DeletePod(event tool.Event) {
 	}
 }
 
-func (k *Kublet) Run() {
+func (k *Kubelet) Run() {
 	k.PodInformer.Run()
 }
