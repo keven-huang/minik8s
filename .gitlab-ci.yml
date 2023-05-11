@@ -5,14 +5,14 @@ stages:
 cache:
   key: ${CI_BUILD_REF_NAME}
   paths:
-    - /test/bin/
+    - /bin/
 
 build:
   stage: build
   only:
     - apiserver
   script:
-    - go build -o /test/bin/apiserver ./cmd/kube-apiserver/kube-apiserver.go
+    - go build -o /bin/apiserver ./cmd/kube-apiserver/kube-apiserver.go
   tags:
     - testing
 
@@ -21,7 +21,7 @@ test:
   only:
     - apiserver
   script:
-    - ./test/bin/apiserver
+    - ./bin/apiserver
   tags:
     - testing
 
