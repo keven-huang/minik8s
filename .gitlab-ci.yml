@@ -22,6 +22,7 @@ test:
     - apiserver
   script:
     - go test ./cmd/kube-apiserver/test/etcd_test.go
+    # - go test ./...
   tags:
     - testing
 
