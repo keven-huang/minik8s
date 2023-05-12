@@ -12,7 +12,7 @@ build:
   only:
     - apiserver
   script:
-    - echo "CloudOS_g15_1" | sudo -S /usr/local/go/bin/go build -o /bin/apiserver ./cmd/kube-apiserver/kube-apiserver.go
+    - sudo /usr/local/go/bin/go build -o /bin/apiserver ./cmd/kube-apiserver/kube-apiserver.go
   tags:
     - testing
 
@@ -22,7 +22,7 @@ test:
   only:
     - apiserver
   script:
-    - echo "CloudOS_g15_1" | sudo -S /usr/local/go/bin/go test ./cmd/kube-apiserver/test/etcd_test.go
+    - sudo /usr/local/go/bin/go test ./cmd/kube-apiserver/test/etcd_test.go
     # - go test ./...
   tags:
     - testing
