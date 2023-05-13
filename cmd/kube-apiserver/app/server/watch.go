@@ -9,8 +9,16 @@ import (
 )
 
 func Watch(c *gin.Context, s *Server) {
-	key := c.Request.URL.Path
-	resChan := s.Etcdstore.Watch(key)
+	key := c.Request.URL.Path[6:]
+	fmt.Println("path:", c.Request.URL.Path)
+	fmt.Println("key:", key)
+
+	var isPrefix = true
+	if c.Query("prefix") == "false" {
+		isPrefix = false
+	}
+
+	resChan := s.Etcdstore.Watch(key, isPrefix)
 	w := c.Writer
 	flusher, ok := w.(http.Flusher)
 	if !ok {

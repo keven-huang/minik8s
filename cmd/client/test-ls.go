@@ -6,17 +6,17 @@ import (
 	"minik8s/pkg/client/tool"
 )
 
-func watch_resource() {
+func watchResource() {
 	// initialize informer
-	informer := informer.NewInformer("/api/v1/pods/a")
-	informer.AddEventHandler(tool.Modified, func(event tool.Event) {
+	Informer := informer.NewInformer("/api/v1/pods")
+	Informer.AddEventHandler(tool.Modified, func(event tool.Event) {
 		// handle event
-		fmt.Println("in handler")
-		fmt.Println(event.Key)
+		fmt.Println("in modified handler")
+
 	})
-	informer.Run()
+	Informer.Run()
 }
 
-func main() {
-	watch_resource()
-}
+// func main() {
+// 	watchResource()
+// }

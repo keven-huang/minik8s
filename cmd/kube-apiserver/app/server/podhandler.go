@@ -53,10 +53,6 @@ func AddPod(c *gin.Context, s *Server) {
 
 // GetPod Body传入Pod.Name
 func GetPod(c *gin.Context, s *Server) {
-	if c.Query("watch") == "true" {
-		Watch(c, s)
-		return
-	}
 
 	if c.Query("all") == "true" {
 		// delete the keys
@@ -128,5 +124,29 @@ func DeletePod(c *gin.Context, s *Server) {
 	c.JSON(http.StatusOK, gin.H{
 		"message":       "delete pod success",
 		"deletePodName": PodName,
+	})
+}
+
+func UpdatePod(c *gin.Context, s *Server) {
+	val, _ := io.ReadAll(c.Request.Body)
+	pod := core.Pod{}
+	err := json.Unmarshal([]byte(val), &pod)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	key := c.Request.URL.Path + "/" + pod.Name
+	pod.Status.Phase = "Pended" // TODO
+	body, _ := json.Marshal(pod)
+	err = s.Etcdstore.Put(key, string(body))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "etcd put pod failed.",
+		})
+		log.Println(err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "update pod success.",
 	})
 }

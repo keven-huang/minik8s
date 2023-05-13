@@ -69,7 +69,7 @@ func (store *EtcdStore) Get(key string) ([]string, error) {
 }
 
 // operations : get
-func (store *EtcdStore) GetAll(prefix string) ([]string, error) {
+func (store *EtcdStore) GetAll(prefix string) ([]ListRes, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
 	defer cancel()
 	kv := clientv3.NewKV(store.client)
@@ -79,11 +79,11 @@ func (store *EtcdStore) GetAll(prefix string) ([]string, error) {
 		log.Fatal(err)
 	}
 	if len(resp.Kvs) == 0 {
-		return []string{}, err
+		return []ListRes{}, err
 	} else {
-		res := []string{}
+		res := []ListRes{}
 		for _, ev := range resp.Kvs {
-			res = append(res, string(ev.Value))
+			res = append(res, ListRes{ResourceVersion: ev.Version, Key: string(ev.Key), Value: string(ev.Value)})
 		}
 		return res, err
 	}
@@ -113,14 +113,20 @@ func (store *EtcdStore) DelAll(prefix string) (int64, error) {
 
 // TO DO: close channel and client maintain
 // watch
-func (store *EtcdStore) Watch(key string) <-chan Event {
-	watchchan := make(chan Event)
+func (store *EtcdStore) Watch(key string, isPrefix bool) <-chan Event {
+	watchChan := make(chan Event)
 	watcher := func(c chan<- Event) {
-		wat := store.client.Watch(context.Background(), key)
+		var wat clientv3.WatchChan
+		if isPrefix {
+			wat = store.client.Watch(context.Background(), key, clientv3.WithPrefix())
+		} else {
+			wat = store.client.Watch(context.Background(), key)
+		}
 		for w := range wat {
 			for _, event := range w.Events {
 				fmt.Println("etcd have watched")
 				fmt.Print(string(event.Kv.Key), " ", string(event.Kv.Value), " ", event.Type, "\n")
+				fmt.Print(event.Kv.Version, " ", event.Kv.CreateRevision, " ", event.Kv.ModRevision, "\n")
 				var watchedEvent Event
 				watchedEvent.Type = getType(event)
 				watchedEvent.Key = string(event.Kv.Key)
@@ -131,29 +137,6 @@ func (store *EtcdStore) Watch(key string) <-chan Event {
 		close(c)
 		log.Println("watcher closed")
 	}
-	go watcher(watchchan)
-	return watchchan
-}
-
-// prefix watch
-func (store *EtcdStore) PrefixWatch(prefixkey string) <-chan Event {
-	watchchan := make(chan Event)
-	watcher := func(c chan<- Event) {
-		wat := store.client.Watch(context.Background(), prefixkey, clientv3.WithPrefix())
-		for w := range wat {
-			for _, event := range w.Events {
-				fmt.Println("etcd have watched")
-				fmt.Print(string(event.Kv.Key), " ", string(event.Kv.Value), " ", event.Type, "\n")
-				var watchedEvent Event
-				watchedEvent.Type = getType(event)
-				watchedEvent.Key = string(event.Kv.Key)
-				watchedEvent.Val = string(event.Kv.Value)
-				c <- watchedEvent
-			}
-		}
-		close(c)
-		log.Println("watcher closed")
-	}
-	go watcher(watchchan)
-	return watchchan
+	go watcher(watchChan)
+	return watchChan
 }

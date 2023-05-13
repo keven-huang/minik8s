@@ -8,6 +8,7 @@ type EventHandler func(event tool.Event)
 
 type Informer interface {
 	AddEventHandler(etype tool.EventType, handler EventHandler)
+	List() []tool.ListRes
 	Run()
 	Stop()
 }
@@ -21,6 +22,10 @@ type informer struct {
 
 func (i *informer) AddEventHandler(etype tool.EventType, handler EventHandler) {
 	i.handlers[etype] = handler
+}
+
+func (i *informer) List() []tool.ListRes {
+	return i.lw.List(i.resource)
 }
 
 func (i *informer) Run() {
