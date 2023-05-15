@@ -23,4 +23,5 @@ var HandlerTable = []Handler{
 	{Type: "PUT", Path: apiconfig.POD_PATH, Eventhandler: AddPod},
 	{Type: "DELETE", Path: apiconfig.POD_PATH, Eventhandler: DeletePod},
 	{Type: "POST", Path: apiconfig.POD_PATH, Eventhandler: UpdatePod},
-	{Type: "GET", Path: "/watch/*resource", Eventhandler: Watch}}
+	{Type: "GET", Path: "/watch/*resource", Eventhandler: Watch},
+	{Type: "POST", Path: apiconfig.JOB_PATH, Eventhandler: AddJob}}

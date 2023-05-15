@@ -119,23 +119,3 @@ func (o *CreateOptions) RunCreate(cmd *cobra.Command, args []string) error {
 	return nil
 
 }
-
-// "k8s.io/apimachinery/pkg/runtime/serializer/json"
-//var s runtime.Serializer
-//// Yaml decides whether yaml or json
-//option := json.SerializerOptions{Yaml: false, Pretty: false, Strict: false}
-//// json
-//s = json.NewSerializerWithOptions(json.DefaultMetaFactory, nil, nil, option)
-//
-//// 将对象编码为字节数组
-//buf := new(bytes.Buffer)
-//if err := s.Encode(*pod, buf); err != nil {
-//	panic(err)
-//}
-
-//obj, gvk, err := s.Decode([]byte(test.data), &schema.GroupVersionKind{Kind: "Test", Group: "other", Version: "blah"}, &core.Pod{})
-//
-//if !reflect.DeepEqual(test.expectedGVK, gvk) {
-//	logTestCase(t, test)
-//	t.Errorf("%d: unexpected GVK: %v", i, gvk)
-//}
