@@ -9,8 +9,10 @@ import (
 	"minik8s/pkg/api/core"
 	myJson "minik8s/pkg/util/json"
 	"net/http"
+	"os"
 
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v3"
 )
 
 // CreateOptions is the commandline options for 'create' sub command
@@ -53,18 +55,53 @@ func NewCmdCreate() *cobra.Command {
 
 // RunCreate performs the creation
 func (o *CreateOptions) RunCreate(cmd *cobra.Command, args []string) error {
+	fmt.Println("in run create")
+
 	if len(args) != 0 {
 		return fmt.Errorf("unexpected args: %v", args)
 	}
 
 	filename := o.Filename
-
-	pod := &core.Pod{}
-	err := myJson.GetFromYaml(filename, pod)
+	file, err := os.Open(filename)
 	if err != nil {
-		return err
+		return fmt.Errorf("cannot open file %s", filename)
+	}
+	defer file.Close()
+	// Read the YAML file
+	var dataMap map[string]interface{}
+
+	yamlFile, err := io.ReadAll(file)
+	if err != nil {
+		return fmt.Errorf("read yaml error")
 	}
 
+	err = yaml.Unmarshal(yamlFile, &dataMap)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	// get kind
+	var kind string
+	kind = dataMap["kind"].(string)
+	fmt.Println("kind:", kind)
+	switch kind {
+	case "Pod":
+		err = createPod(yamlFile)
+	}
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
+}
+
+func createPod(yamlfile []byte) error {
+	// 解析文件
+	pod := &core.Pod{}
+	err := yaml.Unmarshal(yamlfile, pod)
+	if err != nil {
+		return fmt.Errorf("unmarshal yaml error")
+	}
 	// 序列化
 	// 调试用法，前面多两个空格，易于阅读
 	//data, err := json.MarshalIndent(pod, "", "  ")
@@ -72,9 +109,10 @@ func (o *CreateOptions) RunCreate(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		fmt.Println("failed to marshal person:", err)
 	} else {
-		//fmt.Println(string(data))
+		// fmt.Println(string(data))
 	}
 
+	// FIX（hjm） : 这两步后续可以去掉，只是为了调试
 	// 反序列化
 	pod2 := &core.Pod{}
 	err = json.Unmarshal(data, pod2)
@@ -117,5 +155,4 @@ func (o *CreateOptions) RunCreate(cmd *cobra.Command, args []string) error {
 
 	fmt.Println("pod created successfully")
 	return nil
-
 }

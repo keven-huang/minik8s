@@ -1,45 +1,39 @@
 package json
 
 import (
-	"bytes"
 	"fmt"
-	"io"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/util/yaml"
-	"os"
 	"reflect"
 )
 
-func GetFromYaml(filename string, a interface{}) error {
-	// 读取Pod YAML文件
-	file, err := os.Open(filename)
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-	// Read the YAML file
-	yamlFile, err := io.ReadAll(file)
-	if err != nil {
-		return err
-	}
+// func GetFromYaml(filename string, a interface{}) error {
+// 	// 读取Pod YAML文件
+// 	file, err := os.Open(filename)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	defer file.Close()
+// 	// Read the YAML file
+// 	yamlFile, err := io.ReadAll(file)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	fmt.Println("The file is:\n", string(yamlFile))
+// 	fmt.Println("The file is:\n", string(yamlFile))
 
-	// 解析YAML文件
-	var yamlObj unstructured.Unstructured
-	decoder := yaml.NewYAMLOrJSONDecoder(bytes.NewReader(yamlFile), len(yamlFile))
-	if err := decoder.Decode(&yamlObj); err != nil {
-		panic(err)
-	}
+// 	// 解析YAML文件
+// 	var yamlObj unstructured.Unstructured
+// 	decoder := yaml.NewYAMLOrJSONDecoder(bytes.NewReader(yamlFile), len(yamlFile))
+// 	if err := decoder.Decode(&yamlObj); err != nil {
+// 		panic(err)
+// 	}
 
-	// 将解析后的对象转换为对应的类型
-	if err := runtime.DefaultUnstructuredConverter.FromUnstructured(yamlObj.Object, a); err != nil {
-		panic(err)
-	}
+// 	// 将解析后的对象转换为对应的类型
+// 	if err := runtime.DefaultUnstructuredConverter.FromUnstructured(yamlObj.Object, a); err != nil {
+// 		panic(err)
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
 func compareStruct(a, b interface{}) {
 	av := reflect.ValueOf(a)
