@@ -6,11 +6,10 @@ require (
 	github.com/docker/docker v23.0.4+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/gin-gonic/gin v1.9.0
-	github.com/go-playground/assert/v2 v2.2.0
 	github.com/spf13/cobra v1.7.0
 	go.etcd.io/etcd/client/v3 v3.5.8
-	gotest.tools/v3 v3.4.0
 	gopkg.in/yaml.v3 v3.0.1
+	gotest.tools/v3 v3.4.0
 	k8s.io/apimachinery v0.27.1
 	k8s.io/client-go v0.27.1
 )
@@ -81,11 +80,6 @@ require (
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-<<<<<<< HEAD
-	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gotest.tools/v3 v3.4.0 // indirect
-=======
->>>>>>> kubectl
 	k8s.io/api v0.27.1 // indirect
 	k8s.io/klog/v2 v2.90.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20230308215209-15aac26d736a // indirect

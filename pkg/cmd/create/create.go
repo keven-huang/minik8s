@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/pkg/api/core"
 	myJson "minik8s/pkg/util/json"
@@ -87,6 +88,8 @@ func (o *CreateOptions) RunCreate(cmd *cobra.Command, args []string) error {
 	switch kind {
 	case "Pod":
 		err = createPod(yamlFile)
+	case "Job":
+		err = createJob(yamlFile)
 	}
 	if err != nil {
 		fmt.Println(err)
@@ -154,5 +157,42 @@ func createPod(yamlfile []byte) error {
 	fmt.Println("Response Body:", string(bodyBytes))
 
 	fmt.Println("pod created successfully")
+	return nil
+}
+
+func createJob(yamlfile []byte) error {
+	job := &core.Job{}
+	err := yaml.Unmarshal(yamlfile, job)
+	if err != nil {
+		return fmt.Errorf("unmarshal yaml error")
+	}
+	jobs := job.Spec.Jobs
+	for _, job := range jobs {
+		jobUpload := &core.JobUpload{}
+		// 读取 job program
+		program_path := job.Program
+		program, err := ioutil.ReadFile(program_path)
+		if err != nil {
+			return fmt.Errorf("read program error")
+		}
+		jobUpload.JobName = job.JobName
+		jobUpload.Program = program
+		// 生成slurm文件
+		jobUpload.Slurm = job.GenerateSlurm()
+		// 序列化
+		data, err := json.Marshal(jobUpload)
+		if err != nil {
+			fmt.Println("failed to marshal gpu file:", err)
+		}
+		// 发送请求
+		resp, err := http.Post(apiconfig.JOB_PATH, "application/json", bytes.NewBuffer(data))
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != 200 {
+			return fmt.Errorf("job upload failed")
+		}
+	}
 	return nil
 }
