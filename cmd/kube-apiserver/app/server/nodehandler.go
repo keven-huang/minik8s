@@ -7,6 +7,7 @@ import (
 	"log"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/pkg/api/core"
+	"minik8s/pkg/util/random"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -15,7 +16,7 @@ import (
 func GetNode(c *gin.Context, s *Server) {
 	if c.Query("all") == "true" {
 		// delete the keys
-		res, err := s.Etcdstore.GetAll(apiconfig.NODE_PATH)
+		res, err := s.Etcdstore.GetWithPrefix(apiconfig.NODE_PATH)
 		if err != nil {
 			log.Println(err)
 			return
@@ -45,15 +46,21 @@ func AddNode(c *gin.Context, s *Server) {
 		return
 	}
 	key := c.Request.URL.Path + "/" + node.Name
-	res, _ := s.Etcdstore.Get(key)
-	if len(res) > 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Node Name Duplicate.",
-		})
-		return
-	}
-	// node data
-	err = s.Etcdstore.Put(key, string(val))
+	//res, _ := s.Etcdstore.Get(key)
+
+	// 重名就当做覆盖
+	//if len(res) > 0 {
+	//	c.JSON(web.StatusBadRequest, gin.H{
+	//		"message": "Node Name Duplicate.",
+	//	})
+	//	return
+	//}
+
+	node.UID = random.GenerateUUID()
+
+	body, _ := json.Marshal(node)
+
+	err = s.Etcdstore.Put(key, string(body))
 	if err != nil {
 		fmt.Print(err)
 		return
