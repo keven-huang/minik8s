@@ -1,5 +1,7 @@
 package kube_proxy
 
+import "minik8s/pkg/client/informer"
+
 // PodChain pod chain, 一条链对应一个pod
 type PodChain struct {
 	// 名字
@@ -56,4 +58,11 @@ type DNatRule struct {
 	Table string
 	// father chain, 父链
 	FatherChain string
+}
+
+type KubeProxy struct {
+	ServiceInformer informer.Informer
+	// serviceName+Port -> SvcChain
+	ServiceName2SvcChain map[string]map[string]*SvcChain
+	stopChan             <-chan bool
 }

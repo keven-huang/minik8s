@@ -206,7 +206,7 @@ func (chain *SvcChain) DeleteChain() error {
 	return err
 }
 
-func (chain *SvcChain) UpdateChain(newPods []PodInfo) {
+func (chain *SvcChain) UpdateChain(newPods []*PodInfo) {
 	shouldRemain := make(map[string]*PodChain)
 	for k, v := range chain.Name2Chain {
 		flag := false
@@ -248,7 +248,7 @@ func (chain *SvcChain) UpdateChain(newPods []PodInfo) {
 			}
 			chain.Name2Chain[pod.Name] = podChain
 		} else { // create new chain
-			podChain = NewPodChain(chain.Protocol, pod, chain.Table, chain.Name, total)
+			podChain = NewPodChain(chain.Protocol, *pod, chain.Table, chain.Name, total)
 			err = podChain.ApplyChain()
 			if err != nil {
 				panic(err.Error())
@@ -274,10 +274,12 @@ func Init() {
 	if err != nil {
 		panic(err.Error())
 	}
+	// 增加OUTPUT链
 	err = ipt.Insert("nat", "OUTPUT", 1, "-j", "SERVICE", "-s", "0/0", "-d", "0/0", "-p", "all")
 	if err != nil {
 		panic(err.Error())
 	}
+	// 增加PREROUTING链
 	err = ipt.Insert("nat", "PREROUTING", 1, "-j", "SERVICE", "-s", "0/0", "-d", "0/0", "-p", "all")
 	if err != nil {
 		panic(err.Error())

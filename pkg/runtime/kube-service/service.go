@@ -54,6 +54,7 @@ func (rs *RuntimeService) findPods(isCreate bool) error {
 	// 使用client发送更新的通知给api-server，使其更新etcd
 	// 仿照add-node中的addNode方法
 	//ifUpdate := false
+	var newNameIp []service.PodNameAndIp
 	if len(filtedPods) == 0 { // no pod, error
 		if isCreate {
 			rs.ServiceConfig.ServiceSpec.Status.Phase = service.ServiceErrorPhase
@@ -66,6 +67,10 @@ func (rs *RuntimeService) findPods(isCreate bool) error {
 	} else {
 		rs.ServiceConfig.ServiceSpec.Status.Phase = service.ServiceRunningPhase
 		rs.ServiceConfig.ServiceSpec.Status.Err = nil
+		for _, val := range rs.Pods {
+			newNameIp = append(newNameIp, service.PodNameAndIp{Name: val.Name, Ip: val.Status.PodIP})
+		}
+		rs.ServiceConfig.PodNameAndIps = newNameIp
 	}
 	// update etcd by client method
 	err := tool.UpdateService(rs.ServiceConfig)

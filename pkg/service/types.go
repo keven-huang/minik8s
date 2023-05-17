@@ -1,10 +1,19 @@
 package service
 
-import metav1 "minik8s/pkg/apis/meta/v1"
+import (
+	metav1 "minik8s/pkg/apis/meta/v1"
+)
 
 type Service struct {
 	ServiceMeta metav1.ObjectMeta `json:"metadata" yaml:"metadata"`
 	ServiceSpec Spec              `json:"spec" yaml:"spec"`
+	// 这实际上是runtime的内容, 但是为了按照service的资源让kube-proxy监听，就简单合并到了service中
+	PodNameAndIps []PodNameAndIp `json:"podNameAndIps" yaml:"podNameAndIps"`
+}
+
+type PodNameAndIp struct {
+	Name string `json:"name" yaml:"name"`
+	Ip   string `yaml:"ip" json:"ip"`
 }
 
 type Spec struct {
