@@ -2157,7 +2157,7 @@ type HTTPGetAction struct {
 type URIScheme string
 
 const (
-	// URISchemeHTTP means that the scheme used will be http://
+	// URISchemeHTTP means that the scheme used will be web://
 	URISchemeHTTP URIScheme = "HTTP"
 	// URISchemeHTTPS means that the scheme used will be https://
 	URISchemeHTTPS URIScheme = "HTTPS"
@@ -2528,7 +2528,7 @@ type ProbeHandler struct {
 	// Exec specifies the action to take.
 	// +optional
 	Exec *ExecAction `json:"exec,omitempty" protobuf:"bytes,1,opt,name=exec"`
-	// HTTPGet specifies the http request to perform.
+	// HTTPGet specifies the web request to perform.
 	// +optional
 	HTTPGet *HTTPGetAction `json:"httpGet,omitempty" protobuf:"bytes,2,opt,name=httpGet"`
 	// TCPSocket specifies an action involving a TCP port.
@@ -2546,7 +2546,7 @@ type LifecycleHandler struct {
 	// Exec specifies the action to take.
 	// +optional
 	Exec *ExecAction `json:"exec,omitempty" protobuf:"bytes,1,opt,name=exec"`
-	// HTTPGet specifies the http request to perform.
+	// HTTPGet specifies the web request to perform.
 	// +optional
 	HTTPGet *HTTPGetAction `json:"httpGet,omitempty" protobuf:"bytes,2,opt,name=httpGet"`
 	// Deprecated. TCPSocket is NOT supported as a LifecycleHandler and kept

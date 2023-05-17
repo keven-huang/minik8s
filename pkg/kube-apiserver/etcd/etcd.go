@@ -68,8 +68,28 @@ func (store *EtcdStore) Get(key string) ([]string, error) {
 	}
 }
 
+func (store *EtcdStore) GetExact(prefix string) ([]ListRes, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
+	defer cancel()
+	kv := clientv3.NewKV(store.client)
+	resp, err := kv.Get(ctx, prefix)
+	if err != nil {
+		fmt.Printf("get to etcd failed, err:%v\n", err)
+		log.Fatal(err)
+	}
+	if len(resp.Kvs) == 0 {
+		return []ListRes{}, err
+	} else {
+		res := []ListRes{}
+		for _, ev := range resp.Kvs {
+			res = append(res, ListRes{ResourceVersion: ev.Version, Key: string(ev.Key), Value: string(ev.Value)})
+		}
+		return res, err
+	}
+}
+
 // operations : get
-func (store *EtcdStore) GetAll(prefix string) ([]ListRes, error) {
+func (store *EtcdStore) GetWithPrefix(prefix string) ([]ListRes, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
 	defer cancel()
 	kv := clientv3.NewKV(store.client)
@@ -124,8 +144,8 @@ func (store *EtcdStore) Watch(key string, isPrefix bool) <-chan Event {
 		}
 		for w := range wat {
 			for _, event := range w.Events {
-				fmt.Println("etcd have watched")
-				fmt.Print(string(event.Kv.Key), " ", string(event.Kv.Value), " ", event.Type, "\n")
+				fmt.Println("[etcd] etcd have watched")
+				fmt.Print(string(event.Kv.Key), " ", event.Type, "\n")
 				fmt.Print(event.Kv.Version, " ", event.Kv.CreateRevision, " ", event.Kv.ModRevision, "\n")
 				var watchedEvent Event
 				watchedEvent.Type = getType(event)
