@@ -4,13 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
+	"github.com/spf13/cobra"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/pkg/api/core"
 	myJson "minik8s/pkg/util/json"
-	"net/http"
-
-	"github.com/spf13/cobra"
+	"minik8s/pkg/util/web"
 )
 
 // CreateOptions is the commandline options for 'create' sub command
@@ -30,7 +28,7 @@ func NewCmdCreate() *cobra.Command {
 	o := NewCreateOptions()
 
 	cmd := &cobra.Command{
-		Use:   "create [-f FILENAME]",
+		Use:   "create TYPE [-f FILENAME]",
 		Short: "Create a resource from a file or from stdin",
 		Run: func(cmd *cobra.Command, args []string) {
 			if o.Filename == "" {
@@ -53,10 +51,29 @@ func NewCmdCreate() *cobra.Command {
 
 // RunCreate performs the creation
 func (o *CreateOptions) RunCreate(cmd *cobra.Command, args []string) error {
-	if len(args) != 0 {
-		return fmt.Errorf("unexpected args: %v", args)
+	if len(args) < 1 {
+		fmt.Println("[kubectl] [create] [RunCreate] must have TYPE.")
+		return nil
 	}
 
+	switch args[0] {
+	case "pod":
+		{
+			return o.RunCreatePod(cmd, args)
+		}
+	case "replicaset":
+		{
+			return o.RunCreateReplicaSet(cmd, args)
+		}
+	default:
+		{
+			fmt.Printf("[kubectl] [create] [RunCreate] %s is not supported.\n", args[0])
+			return nil
+		}
+	}
+}
+
+func (o *CreateOptions) RunCreatePod(cmd *cobra.Command, args []string) error {
 	filename := o.Filename
 
 	pod := &core.Pod{}
@@ -70,54 +87,54 @@ func (o *CreateOptions) RunCreate(cmd *cobra.Command, args []string) error {
 	//data, err := json.MarshalIndent(pod, "", "  ")
 	data, err := json.Marshal(pod)
 	if err != nil {
-		fmt.Println("failed to marshal person:", err)
+		fmt.Println("[kubectl] [create] [RunCreatePod] failed to marshal:", err)
 	} else {
-		//fmt.Println(string(data))
+		//fmt.Println("[kubectl] [create] [RunCreatePod]\n", string(data))
 	}
-
-	// 反序列化
-	pod2 := &core.Pod{}
-	err = json.Unmarshal(data, pod2)
-	if err != nil {
-		return err
-	}
-	fmt.Println(pod2)
-
-	// 检查序列化和反序列化的结果
-	myJson.CheckDeepEqual(pod, pod2)
 
 	// Send a POST request to kube-apiserver to create the pod
 	// 创建 PUT 请求
-	req, err := http.NewRequest("PUT", apiconfig.Server_URL+apiconfig.POD_PATH, bytes.NewBuffer(data))
+	err = web.SendHttpRequest("PUT", apiconfig.Server_URL+apiconfig.POD_PATH,
+		web.WithPrefix("[kubectl] [create] [RunCreate] "),
+		web.WithBody(bytes.NewBuffer(data)),
+		web.WithLog(true))
 	if err != nil {
-		fmt.Println("Error creating request:", err)
 		return err
 	}
 
-	// 发送请求
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Println("Error sending request:", err)
-		return err
-	}
-	defer resp.Body.Close()
-
-	// 打印响应结果
-	fmt.Println("Response Status:", resp.Status)
-	// 读取响应主体内容到字节数组
-	bodyBytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Println("Error reading response body:", err)
-		return err
-	}
-
-	// 将字节数组转换为字符串并打印
-	fmt.Println("Response Body:", string(bodyBytes))
-
-	fmt.Println("pod created successfully")
 	return nil
+}
 
+func (o *CreateOptions) RunCreateReplicaSet(cmd *cobra.Command, args []string) error {
+	filename := o.Filename
+
+	r := &core.ReplicaSet{}
+	err := myJson.GetFromYaml(filename, r)
+	if err != nil {
+		return err
+	}
+
+	// 序列化
+	// 调试用法，前面多两个空格，易于阅读
+	//data, err := json.MarshalIndent(pod, "", "  ")
+	data, err := json.Marshal(r)
+	if err != nil {
+		fmt.Println("[kubectl] [create] [RunCreateReplicaSet] failed to marshal:", err)
+	} else {
+		//fmt.Println("[kubectl] [create] [RunCreateReplicaSet] ", string(data))
+	}
+
+	// Send a POST request to kube-apiserver to create the replicaset
+	// 创建 PUT 请求
+	err = web.SendHttpRequest("PUT", apiconfig.Server_URL+apiconfig.REPLICASET_PATH,
+		web.WithPrefix("[kubectl] [create] [RunCreateReplicaSet] "),
+		web.WithBody(bytes.NewBuffer(data)),
+		web.WithLog(true))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // "k8s.io/apimachinery/pkg/runtime/serializer/json"
