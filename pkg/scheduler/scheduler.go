@@ -30,7 +30,7 @@ func (s *Scheduler) Register() {
 }
 
 func (s *Scheduler) AddPod(event tool.Event) {
-	fmt.Println("add pod")
+	fmt.Println("[scheduler] [AddPod] add pod")
 	pod := &core.Pod{}
 	err := json.Unmarshal([]byte(event.Val), &pod)
 	if err != nil {
@@ -59,7 +59,7 @@ func (s *Scheduler) Schedule(pod *core.Pod) {
 	var nodeName string
 	nodeName = roundrobin_strategy(node)
 	pod.Spec.NodeName = nodeName
-	fmt.Println("schedule to node:", nodeName)
+	fmt.Println("[scheduler] [Schedule] schedule to node:", nodeName)
 	tool.UpdatePod(pod)
 }
 
