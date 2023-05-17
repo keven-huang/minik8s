@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/spf13/cobra"
-	"io"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
-	"net/http"
+	"minik8s/pkg/kube-apiserver/etcd"
+	"minik8s/pkg/util/web"
 	"net/url"
 )
 
@@ -44,8 +44,8 @@ func NewCmdGet() *cobra.Command {
 }
 
 type GetRespond struct {
-	Pods    []string `json:"Pods"`
-	Message string   `json:"message"`
+	Results []etcd.ListRes `json:"Results"`
+	Message string         `json:"message"`
 }
 
 // RunGet performs the creation
@@ -61,41 +61,30 @@ func (o *GetOptions) RunGet(cmd *cobra.Command, args []string) error {
 	if o.GetAll {
 		values.Add("all", "true")
 	}
+
+	values.Add("prefix", "true")
+
 	if len(args) > 1 {
-		values.Add("PodName", args[1])
+		values.Add("Name", args[1])
 		//body = bytes.NewBuffer([]byte(args[1]))
 	}
-	req, err := http.NewRequest("GET", apiconfig.Server_URL+apiconfig.POD_PATH+"?"+values.Encode(), nil)
-	if err != nil {
-		fmt.Println("Error creating request:", err)
-		return err
-	}
 
-	// 发送请求
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Println("Error sending request:", err)
-		return err
-	}
-	defer resp.Body.Close()
+	bodyBytes := make([]byte, 0)
 
-	// 打印响应结果
-	fmt.Println("Response Status:", resp.Status)
-	// 读取响应主体内容到字节数组
-	bodyBytes, err := io.ReadAll(resp.Body)
+	err := web.SendHttpRequest("GET", apiconfig.Server_URL+apiconfig.POD_PATH+"?"+values.Encode(),
+		web.WithPrefix("[kubectl] [get] [RunGet] "),
+		web.WithLog(true),
+		web.WithBodyBytes(&bodyBytes))
 	if err != nil {
-		fmt.Println("Error reading response body:", err)
 		return err
 	}
 
 	// 将字节数组转换为字符串并打印
-	//fmt.Println("Response Body:", string(bodyBytes))
 	var s GetRespond
 	json.Unmarshal(bodyBytes, &s)
-	fmt.Println(s.Pods)
+	fmt.Println("[kubectl] [get] [RunGet] Results:", s.Results)
 
-	fmt.Println("pod Get successfully")
+	fmt.Println("[kubectl] [get] [RunGet] pod Get successfully")
+
 	return nil
-
 }

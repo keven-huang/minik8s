@@ -8,6 +8,8 @@ import (
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/pkg/api/core"
 	v1 "minik8s/pkg/apis/meta/v1"
+	"minik8s/pkg/kube-apiserver/etcd"
+	"minik8s/pkg/util/random"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -35,6 +37,7 @@ func AddPod(c *gin.Context, s *Server) {
 	pod.Status.Phase = "Pending"
 	pod.ObjectMeta.CreationTimestamp = v1.Now()
 	pod.ObjectMeta.Generation = 1
+	pod.UID = random.GenerateUUID()
 
 	body, _ := json.Marshal(pod)
 
@@ -53,10 +56,10 @@ func AddPod(c *gin.Context, s *Server) {
 
 // GetPod Body传入Pod.Name
 func GetPod(c *gin.Context, s *Server) {
-	fmt.Println("In GetPod")
+	fmt.Println("[api-server] [podHandler] [GetPod]")
 	if c.Query("all") == "true" {
 		// delete the keys
-		res, err := s.Etcdstore.GetAll(apiconfig.POD_PATH)
+		res, err := s.Etcdstore.GetWithPrefix(apiconfig.POD_PATH)
 		if err != nil {
 			log.Println(err)
 			return
@@ -65,9 +68,19 @@ func GetPod(c *gin.Context, s *Server) {
 		return
 	}
 
-	PodName := c.Query("PodName")
+	PodName := c.Query("Name")
 	key := c.Request.URL.Path + "/" + string(PodName)
-	res, err := s.Etcdstore.Get(key)
+
+	var res []etcd.ListRes
+	var err error
+
+	if c.Query("prefix") == "true" {
+		res, err = s.Etcdstore.GetWithPrefix(key)
+		fmt.Println(res)
+	} else {
+		res, err = s.Etcdstore.GetExact(key)
+	}
+
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -75,15 +88,10 @@ func GetPod(c *gin.Context, s *Server) {
 		})
 		return
 	}
-	//pod := core.Pod{}
-	//err = json.Unmarshal([]byte(res[0]), &pod)
-	//if err != nil {
-	//	log.Println(err)
-	//	return
-	//}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "get pod successfully.",
-		"Pods":    res,
+		"Results": res,
 	})
 }
 
@@ -134,7 +142,7 @@ func UpdatePod(c *gin.Context, s *Server) {
 		return
 	}
 	key := c.Request.URL.Path + "/" + pod.Name
-	//pod.Status.Phase = "Pended"
+
 	body, _ := json.Marshal(pod)
 	err = s.Etcdstore.Put(key, string(body))
 	if err != nil {

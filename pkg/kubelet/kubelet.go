@@ -1,6 +1,7 @@
 package kubelet
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
@@ -8,6 +9,7 @@ import (
 	"minik8s/pkg/client/informer"
 	"minik8s/pkg/client/tool"
 	"minik8s/pkg/kubelet/dockerClient"
+	"minik8s/pkg/util/web"
 )
 
 type Kubelet struct {
@@ -35,6 +37,7 @@ func (k *Kubelet) Register() {
 }
 
 func (k *Kubelet) CreatePod(event tool.Event) {
+	prefix := "[kubelet] [CreatePod] "
 	// handle event
 	fmt.Println("In AddPod/ModifyPod EventHandler: ", tool.GetTypeName(event))
 	fmt.Println("event.Key: ", event.Key)
@@ -44,18 +47,40 @@ func (k *Kubelet) CreatePod(event tool.Event) {
 	pod := &core.Pod{}
 	err := json.Unmarshal([]byte(event.Val), pod)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(prefix, err)
 		return
 	}
 
 	if pod.Spec.NodeName != k.node.Name {
-		fmt.Println("Not mine. Node:", pod.Spec.NodeName)
+		fmt.Println(prefix, "Not mine. The node of the pod is :", pod.Spec.NodeName)
 		return
+	}
+
+	if pod.Status.Phase != "Pending" {
+		fmt.Println(prefix, "phase is not satisfied:", pod.Status.Phase)
+		return
+	}
+
+	for i, v := range pod.Spec.Containers {
+		pod.Spec.Containers[i].Name = pod.Name + "-" + v.Name
 	}
 
 	metaData, netSetting, err := dockerClient.CreatePod(*pod)
 	if err != nil {
 		fmt.Println(err)
+		return
+	}
+
+	pod.Status.Phase = "Running"
+	// 创建成功 修改Status
+	data, err := json.Marshal(pod)
+	if err != nil {
+		fmt.Println(prefix, "failed to marshal:", err)
+	}
+
+	err = web.SendHttpRequest("POST", apiconfig.Server_URL+apiconfig.POD_PATH,
+		web.WithPrefix(prefix), web.WithBody(bytes.NewBuffer(data)))
+	if err != nil {
 		return
 	}
 
@@ -73,6 +98,7 @@ func (k *Kubelet) DeletePod(event tool.Event) {
 	fmt.Println("In DeletePod EventHandler:")
 	fmt.Println("event.Key: ", event.Key)
 	fmt.Println("event.Val: ", k.PodInformer.Get(event.Key))
+	k.PodInformer.Delete(event.Key)
 
 	pod := &core.Pod{}
 	err := json.Unmarshal([]byte(k.PodInformer.Get(event.Key)), pod)

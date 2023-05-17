@@ -3,9 +3,8 @@ package delete
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"io"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
-	"net/http"
+	"minik8s/pkg/util/web"
 	"net/url"
 )
 
@@ -59,35 +58,13 @@ func (o *DeleteOptions) RunDelete(cmd *cobra.Command, args []string) error {
 		values.Add("PodName", args[1])
 		//body = bytes.NewBuffer([]byte(args[1]))
 	}
-	req, err := http.NewRequest("DELETE", apiconfig.Server_URL+apiconfig.POD_PATH+"?"+values.Encode(), nil)
+
+	err := web.SendHttpRequest("DELETE", apiconfig.Server_URL+apiconfig.POD_PATH+"?"+values.Encode(),
+		web.WithPrefix("[kubectl] [delete] [RunDelete] "),
+		web.WithLog(true))
 	if err != nil {
-		fmt.Println("Error creating request:", err)
 		return err
 	}
-
-	// 设置请求头，以指示请求体中包含表单数据
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-	// 发送请求
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Println("Error sending request:", err)
-		return err
-	}
-	defer resp.Body.Close()
-
-	// 打印响应结果
-	fmt.Println("Response Status:", resp.Status)
-	// 读取响应主体内容到字节数组
-	bodyBytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Println("Error reading response body:", err)
-		return err
-	}
-
-	// 将字节数组转换为字符串并打印
-	fmt.Println("Response Body:", string(bodyBytes))
 
 	fmt.Println("pod Delete successfully")
 	return nil
