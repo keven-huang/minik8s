@@ -1,8 +1,8 @@
-package kube_service
+package main
 
-import kube_service "minik8s/pkg/runtime/kube-service"
+import kubeservice "minik8s/pkg/runtime/kube-service"
 
 func main() {
-	sm := kube_service.NewServiceManager()
+	sm := kubeservice.NewServiceManager()
 	sm.Run()
 }
