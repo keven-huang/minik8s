@@ -14,7 +14,7 @@ import (
 )
 
 func AddPod(c *gin.Context, s *Server) {
-	fmt.Println("in add pod")
+	fmt.Println("In AddPod.")
 	val, _ := io.ReadAll(c.Request.Body)
 	pod := core.Pod{}
 	err := json.Unmarshal([]byte(val), &pod)
@@ -53,7 +53,7 @@ func AddPod(c *gin.Context, s *Server) {
 
 // GetPod Body传入Pod.Name
 func GetPod(c *gin.Context, s *Server) {
-
+	fmt.Println("In GetPod")
 	if c.Query("all") == "true" {
 		// delete the keys
 		res, err := s.Etcdstore.GetAll(apiconfig.POD_PATH)
@@ -61,10 +61,7 @@ func GetPod(c *gin.Context, s *Server) {
 			log.Println(err)
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{
-			"message": "get all pods successfully.",
-			"Pods":    res,
-		})
+		c.JSON(http.StatusOK, res)
 		return
 	}
 
@@ -91,12 +88,12 @@ func GetPod(c *gin.Context, s *Server) {
 }
 
 func DeletePod(c *gin.Context, s *Server) {
-	fmt.Println("in delete")
+	fmt.Println("In DeletePod")
 	err := c.Request.ParseForm()
 	if err != nil {
 		return
 	}
-	if c.Request.Form.Get("all") == "true" {
+	if c.Query("all") == "true" {
 		// delete the keys
 		num, err := s.Etcdstore.DelAll(apiconfig.POD_PATH)
 		if err != nil {
@@ -110,7 +107,8 @@ func DeletePod(c *gin.Context, s *Server) {
 		return
 	}
 
-	PodName := c.Request.PostForm.Get("PodName")
+	PodName := c.Query("PodName")
+	fmt.Println("PodName:", PodName)
 	key := c.Request.URL.Path + "/" + PodName
 	err = s.Etcdstore.Del(key)
 	if err != nil {
@@ -136,7 +134,7 @@ func UpdatePod(c *gin.Context, s *Server) {
 		return
 	}
 	key := c.Request.URL.Path + "/" + pod.Name
-	pod.Status.Phase = "Pended" // TODO
+	//pod.Status.Phase = "Pended"
 	body, _ := json.Marshal(pod)
 	err = s.Etcdstore.Put(key, string(body))
 	if err != nil {

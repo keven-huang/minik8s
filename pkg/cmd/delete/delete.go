@@ -7,7 +7,6 @@ import (
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"net/http"
 	"net/url"
-	"strings"
 )
 
 // DeleteOptions is the commandline options for 'delete' sub command
@@ -60,7 +59,7 @@ func (o *DeleteOptions) RunDelete(cmd *cobra.Command, args []string) error {
 		values.Add("PodName", args[1])
 		//body = bytes.NewBuffer([]byte(args[1]))
 	}
-	req, err := http.NewRequest("POST", apiconfig.Server_URL+apiconfig.POD_PATH, strings.NewReader(values.Encode()))
+	req, err := http.NewRequest("DELETE", apiconfig.Server_URL+apiconfig.POD_PATH+"?"+values.Encode(), nil)
 	if err != nil {
 		fmt.Println("Error creating request:", err)
 		return err

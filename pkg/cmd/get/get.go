@@ -93,7 +93,7 @@ func (o *GetOptions) RunGet(cmd *cobra.Command, args []string) error {
 	//fmt.Println("Response Body:", string(bodyBytes))
 	var s GetRespond
 	json.Unmarshal(bodyBytes, &s)
-	fmt.Println(s.Pods[0])
+	fmt.Println(s.Pods)
 
 	fmt.Println("pod Get successfully")
 	return nil
