@@ -7,6 +7,7 @@ import (
 	"io"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/pkg/api/core"
+	"minik8s/pkg/service"
 	"net/http"
 	"time"
 )
@@ -169,7 +170,7 @@ func UpdateService(service *service.Service) error {
 
 // TODO 讨论确定一下api-sver的rest-api用法
 func DeleteService(service *service.Service) error {
-	url := apiconfig.Server_URL + apiconfig.SERVICE_PATH + service.ServiceSpec.Name
+	url := apiconfig.Server_URL + apiconfig.SERVICE_PATH + "/" + service.ServiceSpec.Name
 	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		return err
