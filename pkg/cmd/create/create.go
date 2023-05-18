@@ -73,15 +73,7 @@ func (o *CreateOptions) RunCreate(cmd *cobra.Command, args []string) error {
 	}
 }
 
-func (o *CreateOptions) RunCreatePod(cmd *cobra.Command, args []string) error {
-	filename := o.Filename
-
-	pod := &core.Pod{}
-	err := myJson.GetFromYaml(filename, pod)
-	if err != nil {
-		return err
-	}
-
+func CreatePod(pod *core.Pod) error {
 	// 序列化
 	// 调试用法，前面多两个空格，易于阅读
 	//data, err := json.MarshalIndent(pod, "", "  ")
@@ -98,6 +90,22 @@ func (o *CreateOptions) RunCreatePod(cmd *cobra.Command, args []string) error {
 		web.WithPrefix("[kubectl] [create] [RunCreate] "),
 		web.WithBody(bytes.NewBuffer(data)),
 		web.WithLog(true))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *CreateOptions) RunCreatePod(cmd *cobra.Command, args []string) error {
+	filename := o.Filename
+
+	pod := &core.Pod{}
+	err := myJson.GetFromYaml(filename, pod)
+	if err != nil {
+		return err
+	}
+
+	err = CreatePod(pod)
 	if err != nil {
 		return err
 	}

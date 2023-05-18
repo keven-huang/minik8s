@@ -28,5 +28,6 @@ var HandlerTable = []Handler{
 	{Type: "POST", Path: apiconfig.POD_PATH, Eventhandler: UpdatePod},
 	// ReplicaSet
 	{Type: "PUT", Path: apiconfig.REPLICASET_PATH, Eventhandler: AddReplicaSet},
+	{Type: "POST", Path: apiconfig.REPLICASET_PATH, Eventhandler: UpdateReplicaSet},
 	// watch
 	{Type: "GET", Path: "/watch/*resource", Eventhandler: Watch}}

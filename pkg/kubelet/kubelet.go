@@ -32,16 +32,26 @@ func NewKubelet(name string) (*Kubelet, error) {
 
 func (k *Kubelet) Register() {
 	k.PodInformer.AddEventHandler(tool.Added, k.CreatePod)
-	k.PodInformer.AddEventHandler(tool.Modified, k.CreatePod)
+	k.PodInformer.AddEventHandler(tool.Modified, k.UpdatePod)
 	k.PodInformer.AddEventHandler(tool.Deleted, k.DeletePod)
 }
 
 func (k *Kubelet) CreatePod(event tool.Event) {
 	prefix := "[kubelet] [CreatePod] "
 	// handle event
-	fmt.Println("In AddPod/ModifyPod EventHandler: ", tool.GetTypeName(event))
-	fmt.Println("event.Key: ", event.Key)
-	fmt.Println("event.Val: ", event.Val)
+	fmt.Println(prefix, "event.Type: ", tool.GetTypeName(event))
+	fmt.Println(prefix, "event.Key: ", event.Key)
+	fmt.Println(prefix, "event.Val: ", event.Val)
+	k.PodInformer.Set(event.Key, event.Val)
+
+}
+
+func (k *Kubelet) UpdatePod(event tool.Event) {
+	prefix := "[kubelet] [UpdatePod] "
+	// handle event
+	fmt.Println(prefix, "event.Type: ", tool.GetTypeName(event))
+	fmt.Println(prefix, "event.Key: ", event.Key)
+	fmt.Println(prefix, "event.Val: ", event.Val)
 	k.PodInformer.Set(event.Key, event.Val)
 
 	pod := &core.Pod{}
@@ -71,8 +81,9 @@ func (k *Kubelet) CreatePod(event tool.Event) {
 		return
 	}
 
-	pod.Status.Phase = "Running"
 	// 创建成功 修改Status
+	pod.Status.Phase = "Running"
+
 	data, err := json.Marshal(pod)
 	if err != nil {
 		fmt.Println(prefix, "failed to marshal:", err)

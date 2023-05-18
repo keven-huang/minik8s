@@ -2,7 +2,6 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"io"
 	"log"
@@ -12,11 +11,12 @@ import (
 )
 
 func AddReplicaSet(c *gin.Context, s *Server) {
+	prefix := "[api-server] [AddReplicaSet] "
 	val, _ := io.ReadAll(c.Request.Body)
 	r := core.ReplicaSet{}
 	err := json.Unmarshal([]byte(val), &r)
 	if err != nil {
-		log.Println(err)
+		log.Println("[ERROR] ", prefix, err)
 		return
 	}
 	key := c.Request.URL.Path + "/" + r.Name
@@ -34,7 +34,27 @@ func AddReplicaSet(c *gin.Context, s *Server) {
 
 	err = s.Etcdstore.Put(key, string(body))
 	if err != nil {
-		fmt.Print(err)
+		log.Println("[ERROR] ", prefix, err)
+		return
+	}
+}
+
+func UpdateReplicaSet(c *gin.Context, s *Server) {
+	prefix := "[api-server] [UpdateReplicaSet] "
+	val, _ := io.ReadAll(c.Request.Body)
+	r := core.ReplicaSet{}
+	err := json.Unmarshal([]byte(val), &r)
+	if err != nil {
+		log.Println("[ERROR] ", prefix, err)
+		return
+	}
+	key := c.Request.URL.Path + "/" + r.Name
+
+	body, _ := json.Marshal(r)
+
+	err = s.Etcdstore.Put(key, string(body))
+	if err != nil {
+		log.Println("[ERROR] ", prefix, err)
 		return
 	}
 }
