@@ -222,6 +222,10 @@ type PodSpec struct {
 	// requirements.
 	// +optional
 	NodeName string `json:"nodeName,omitempty" protobuf:"bytes,10,opt,name=nodeName"`
+	// whether pod is to support GPU job
+	// +optional
+	GPUJob     bool   `json:"gpu,omitempty" protobuf:"bytes,11,opt,name=gpu"`
+	GPUJobName string `json:"gpuJobName,omitempty" protobuf:"bytes,12,opt,name=gpuJobName"`
 }
 
 // Pod is a collection of containers that can run on a host. This resource is created

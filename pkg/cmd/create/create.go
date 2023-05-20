@@ -56,7 +56,6 @@ func NewCmdCreate() *cobra.Command {
 
 // RunCreate performs the creation
 func (o *CreateOptions) RunCreate(cmd *cobra.Command, args []string) error {
-	fmt.Println("in run create")
 
 	if len(args) != 0 {
 		return fmt.Errorf("unexpected args: %v", args)
@@ -166,33 +165,51 @@ func createJob(yamlfile []byte) error {
 	if err != nil {
 		return fmt.Errorf("unmarshal yaml error")
 	}
-	jobs := job.Spec.Jobs
-	for _, job := range jobs {
-		jobUpload := &core.JobUpload{}
-		// 读取 job program
-		program_path := job.Program
-		program, err := ioutil.ReadFile(program_path)
-		if err != nil {
-			return fmt.Errorf("read program error")
-		}
-		jobUpload.JobName = job.JobName
-		jobUpload.Program = program
-		// 生成slurm文件
-		jobUpload.Slurm = job.GenerateSlurm()
-		// 序列化
-		data, err := json.Marshal(jobUpload)
-		if err != nil {
-			fmt.Println("failed to marshal gpu file:", err)
-		}
-		// 发送请求
-		resp, err := http.Post(apiconfig.JOB_PATH, "application/json", bytes.NewBuffer(data))
-		if err != nil {
-			return err
-		}
-		defer resp.Body.Close()
-		if resp.StatusCode != 200 {
-			return fmt.Errorf("job upload failed")
-		}
+	// 发送job信息至apiserver保存
+	job_data, err := json.Marshal(job)
+	if err != nil {
+		fmt.Println("marshal job error:", err)
+		return fmt.Errorf("marshal job error")
 	}
+	job_data_resp, err := http.Post(apiconfig.Server_URL+apiconfig.JOB_PATH, "application/json", bytes.NewBuffer(job_data))
+	if err != nil {
+		fmt.Println("Error sending request:", err)
+		return err
+	}
+	defer job_data_resp.Body.Close()
+	if job_data_resp.StatusCode != 200 {
+		return fmt.Errorf("job upload failed")
+	}
+
+	jobUpload := &core.JobUpload{}
+	// 读取 job program
+	program_path := job.Spec.JobTask.Program
+	program, err := ioutil.ReadFile(program_path)
+	if err != nil {
+		return fmt.Errorf("read program error")
+	}
+	jobUpload.JobName = job.Spec.JobTask.JobName
+	jobUpload.Program = program
+	// 生成slurm文件
+	jobUpload.Slurm = job.Spec.JobTask.GenerateSlurm()
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	// 序列化
+	filedata, err := json.Marshal(jobUpload)
+	if err != nil {
+		fmt.Println("failed to marshal gpu file:", err)
+	}
+	// 发送job文件至apiserver保存
+	resp, err := http.Post(apiconfig.Server_URL+apiconfig.JOB_FILE_PATH, "application/json", bytes.NewBuffer(filedata))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("job file upload failed")
+	}
+
 	return nil
 }

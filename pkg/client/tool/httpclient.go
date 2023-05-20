@@ -113,6 +113,31 @@ func Watch(resourses string) WatchInterface {
 	return watcher
 }
 
+func AddPod(pod *core.Pod) error {
+	url := apiconfig.Server_URL + apiconfig.POD_PATH
+	data, err := json.Marshal(pod)
+	if err != nil {
+		fmt.Println("failed to marshal person:", err)
+		return err
+	}
+	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(data))
+	if err != nil {
+		return err
+	}
+	client := http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode == 200 {
+		fmt.Println("add pod success")
+	} else {
+		return fmt.Errorf("add pod failed")
+	}
+	return nil
+}
+
 func UpdatePod(pod *core.Pod) error {
 	url := apiconfig.Server_URL + apiconfig.POD_PATH
 	data, err := json.Marshal(pod)
@@ -134,7 +159,7 @@ func UpdatePod(pod *core.Pod) error {
 }
 
 func AddNode(node *core.Node) error {
-	url := "http://127.0.0.1:8080" + "/api/v1/nodes"
+	url := apiconfig.Server_URL + apiconfig.NODE_PATH
 	data, err := json.Marshal(node)
 	if err != nil {
 		return err
@@ -146,4 +171,25 @@ func AddNode(node *core.Node) error {
 	defer resp.Body.Close()
 	fmt.Println("Response Status:", resp.Status)
 	return nil
+}
+
+func GetJobFile(JobName string) core.JobUpload {
+	url := apiconfig.Server_URL + apiconfig.JOB_FILE_PATH
+	resp, err := http.Get(url)
+	if err != nil {
+		fmt.Println("Get Job error", err)
+		return core.JobUpload{}
+	}
+	defer resp.Body.Close()
+	reader := resp.Body
+	data, err := io.ReadAll(reader)
+	if err != nil {
+		return core.JobUpload{}
+	}
+	var job core.JobUpload
+	err = json.Unmarshal(data, &job)
+	if err != nil {
+		return core.JobUpload{}
+	}
+	return job
 }
