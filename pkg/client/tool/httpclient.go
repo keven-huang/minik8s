@@ -7,6 +7,7 @@ import (
 	"io"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/pkg/api/core"
+	"minik8s/pkg/service"
 	"minik8s/pkg/util/log"
 	"net/http"
 	"time"
@@ -154,6 +155,58 @@ func AddNode(node *core.Node) error {
 		return err
 	}
 	return nil
+}
+
+func UpdateService(service *service.Service) error {
+	url := apiconfig.Server_URL + apiconfig.SERVICE_PATH
+	data, err := json.Marshal(service)
+	if err != nil {
+		return err
+	}
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	fmt.Println("Response Status:", resp.Status)
+	return nil
+}
+
+// TODO 讨论确定一下api-sver的rest-api用法
+func DeleteService(service *service.Service) error {
+	url := apiconfig.Server_URL + apiconfig.SERVICE_PATH + "/" + service.ServiceSpec.Name
+	req, err := http.NewRequest("DELETE", url, nil)
+	if err != nil {
+		return err
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	fmt.Println("Response Status:", resp.Status)
+	return nil
+}
+
+// Get Pod
+// TODO 讨论确定一下具体写法, api路径等
+
+func GetPod(name string) (*core.Pod, error) {
+	url := apiconfig.Server_URL + apiconfig.POD_PATH + name
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	buf := make([]byte, 40960)
+	res := core.Pod{}
+	n, err := resp.Body.Read(buf)
+	if n != 0 || err != io.EOF {
+		err = json.Unmarshal([]byte(buf[:n]), &res)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &res, nil
 }
 
 func GetTypeName(event Event) string {
