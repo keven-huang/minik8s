@@ -1,6 +1,7 @@
 package kubelet
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
@@ -8,40 +9,89 @@ import (
 	"minik8s/pkg/client/informer"
 	"minik8s/pkg/client/tool"
 	"minik8s/pkg/kubelet/dockerClient"
+	"minik8s/pkg/util/web"
 )
 
-type Kublet struct {
+type Kubelet struct {
 	PodInformer informer.Informer
+	node        core.Node
 }
 
-func NewKublet() *Kublet {
-	return &Kublet{
-		PodInformer: informer.NewInformer(apiconfig.POD_PATH),
+func NewKubelet(name string) (*Kubelet, error) {
+	node := core.Node{}
+	node.Name = name
+	err := tool.AddNode(&node)
+	if err != nil {
+		return nil, err
 	}
+	return &Kubelet{
+		PodInformer: informer.NewInformer(apiconfig.POD_PATH),
+		node:        node,
+	}, nil
 }
 
-func (k *Kublet) Register() {
+func (k *Kubelet) Register() {
 	k.PodInformer.AddEventHandler(tool.Added, k.CreatePod)
+	k.PodInformer.AddEventHandler(tool.Modified, k.UpdatePod)
 	k.PodInformer.AddEventHandler(tool.Deleted, k.DeletePod)
 }
 
-func (k *Kublet) CreatePod(event tool.Event) {
+func (k *Kubelet) CreatePod(event tool.Event) {
+	prefix := "[kubelet] [CreatePod] "
 	// handle event
-	fmt.Println("In AddPod EventHandler:")
-	fmt.Println("event.Key: ", event.Key)
-	fmt.Println("event.Val: ", event.Val)
+	fmt.Println(prefix, "event.Type: ", tool.GetTypeName(event))
+	fmt.Println(prefix, "event.Key: ", event.Key)
+	fmt.Println(prefix, "event.Val: ", event.Val)
+	k.PodInformer.Set(event.Key, event.Val)
+
+}
+
+func (k *Kubelet) UpdatePod(event tool.Event) {
+	prefix := "[kubelet] [UpdatePod] "
+	// handle event
+	fmt.Println(prefix, "event.Type: ", tool.GetTypeName(event))
+	fmt.Println(prefix, "event.Key: ", event.Key)
+	fmt.Println(prefix, "event.Val: ", event.Val)
 	k.PodInformer.Set(event.Key, event.Val)
 
 	pod := &core.Pod{}
 	err := json.Unmarshal([]byte(event.Val), pod)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(prefix, err)
 		return
+	}
+
+	if pod.Spec.NodeName != k.node.Name {
+		fmt.Println(prefix, "Not mine. The node of the pod is :", pod.Spec.NodeName)
+		return
+	}
+
+	if pod.Status.Phase != "Pending" {
+		fmt.Println(prefix, "phase is not satisfied:", pod.Status.Phase)
+		return
+	}
+
+	for i, v := range pod.Spec.Containers {
+		pod.Spec.Containers[i].Name = pod.Name + "-" + v.Name
 	}
 
 	metaData, netSetting, err := dockerClient.CreatePod(*pod)
 	if err != nil {
 		fmt.Println(err)
+		return
+	}
+
+	// 创建成功 修改Status
+	pod.Status.Phase = "Running"
+
+	data, err := json.Marshal(pod)
+	if err != nil {
+		fmt.Println(prefix, "failed to marshal:", err)
+	}
+
+	err = web.SendHttpRequest("POST", apiconfig.Server_URL+apiconfig.POD_PATH,
+		web.WithPrefix(prefix), web.WithBody(bytes.NewBuffer(data)))
+	if err != nil {
 		return
 	}
 
@@ -54,11 +104,12 @@ func (k *Kublet) CreatePod(event tool.Event) {
 	fmt.Println("-----------")
 }
 
-func (k *Kublet) DeletePod(event tool.Event) {
+func (k *Kubelet) DeletePod(event tool.Event) {
 	// handle event
 	fmt.Println("In DeletePod EventHandler:")
 	fmt.Println("event.Key: ", event.Key)
 	fmt.Println("event.Val: ", k.PodInformer.Get(event.Key))
+	k.PodInformer.Delete(event.Key)
 
 	pod := &core.Pod{}
 	err := json.Unmarshal([]byte(k.PodInformer.Get(event.Key)), pod)
@@ -74,6 +125,6 @@ func (k *Kublet) DeletePod(event tool.Event) {
 	}
 }
 
-func (k *Kublet) Run() {
+func (k *Kubelet) Run() {
 	k.PodInformer.Run()
 }
