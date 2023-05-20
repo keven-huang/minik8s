@@ -51,6 +51,7 @@ func (jc *JobController) worker() {
 }
 
 func (jc *JobController) RunJob(job *core.Job) {
+	cmd := fmt.Sprintf("./gpuserver --jobname=%s", job.Name)
 	jobcontainer := core.Container{
 		Name:  "gpu-job",
 		Image: "gpu-job-image",
@@ -60,6 +61,7 @@ func (jc *JobController) RunJob(job *core.Job) {
 				MountPath: "/home/job",
 			},
 		},
+		Command: []string{cmd},
 	}
 
 	pod := &core.Pod{
