@@ -18,9 +18,9 @@ type Event struct {
 }
 
 type ListRes struct {
-	ResourceVersion int64
-	Key             string
-	Value           string
+	ResourceVersion int64  `json:"ResourceVersion" yaml:"ResourceVersion"`
+	Key             string `json:"key" yaml:"key"`
+	Value           string `json:"value" yaml:"value"`
 }
 
 // help function

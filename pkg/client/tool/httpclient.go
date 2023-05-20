@@ -7,6 +7,7 @@ import (
 	"io"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/pkg/api/core"
+	"minik8s/pkg/util/log"
 	"net/http"
 	"time"
 )
@@ -37,7 +38,7 @@ func List(resource string) []ListRes {
 	resp, err := http.Get(url)
 	if err != nil {
 		// handle error
-		fmt.Println("http get error:", err)
+		fmt.Println("[httpclient] [List] web get error:", err)
 	}
 	defer resp.Body.Close()
 	reader := resp.Body
@@ -50,7 +51,7 @@ func List(resource string) []ListRes {
 	if err != nil {
 		return nil
 	}
-	fmt.Println(resList)
+	fmt.Println("[httpclient] [List] ", resList)
 	return resList
 }
 
@@ -58,12 +59,12 @@ func Watch(resourses string) WatchInterface {
 	watcher := &watcher{}
 	watcher.resultChan = make(chan Event)
 	reader := func(wc chan<- Event) {
-		fmt.Println("start watch")
+		fmt.Println("[httpclient] [Watch] start watch")
 		url := "http://127.0.0.1:8080/watch" + resourses + "?prefix=true"
 		resp, err := http.Get(url)
 		if err != nil {
 			// handle error
-			fmt.Println("http get error:", err)
+			fmt.Println("[httpclient] [Watch] web get error:", err)
 		}
 		defer resp.Body.Close()
 		buf := make([]byte, 40960)
@@ -76,11 +77,11 @@ func Watch(resourses string) WatchInterface {
 				if err != nil {
 					continue
 				}
-				fmt.Println("unmarshal:", event.Key, event.Val, event.Type)
+				fmt.Println("[httpclient] [Watch] unmarshal:", event.Key, event.Val, event.Type)
 				// send event to watcher.resultChan
 				wc <- event
 			} else {
-				fmt.Println("break")
+				fmt.Println("[httpclient] [Watch] break")
 				break
 			}
 			time.Sleep(1 * time.Second)
@@ -90,9 +91,9 @@ func Watch(resourses string) WatchInterface {
 		// for {
 		// 	line, err := reader.ReadString('\n')
 		// 	if len(line) > 0 {
-		// 		fmt.Println("getline")
+		// 		fmt.Println("[httpclient] [Watch] getline")
 		// 		// handle Watch Response
-		// 		fmt.Println(line)
+		// 		fmt.Println("[httpclient] [Watch] ", line)
 		// 		event := Event{}
 		// 		// json.Unmarshal([]byte(line), &event)
 		// 		// TO DO: send event to watcher.resultChan
@@ -104,7 +105,7 @@ func Watch(resourses string) WatchInterface {
 		// 	if err != nil {
 		// 		// disconnect , cause watch is controlled by client,should try to reconnect
 		// 		// TO DO: reconnect
-		// 		fmt.Println("break")
+		// 		fmt.Println("[httpclient] [Watch] break")
 		// 		break
 		// 	}
 		// }
@@ -117,33 +118,85 @@ func UpdatePod(pod *core.Pod) error {
 	url := apiconfig.Server_URL + apiconfig.POD_PATH
 	data, err := json.Marshal(pod)
 	if err != nil {
-		fmt.Println("failed to marshal person:", err)
+		fmt.Println("[httpclient] [UpdatePod] failed to marshal person:", err)
 		return err
 	} else {
-		fmt.Println("update pod:", string(data))
+		fmt.Println("[httpclient] [UpdatePod] update pod:", string(data))
 	}
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
 	if err != nil {
-		fmt.Println("Error:", err)
+		fmt.Println("[httpclient] [UpdatePod] Error:", err)
 		return err
 	}
 	defer resp.Body.Close()
-	fmt.Println("Response Status:", resp.Status)
+	fmt.Println("[httpclient] [UpdatePod] Response Status:", resp.Status)
 
 	return nil
 }
 
 func AddNode(node *core.Node) error {
-	url := "http://127.0.0.1:8080" + "/api/v1/nodes"
+	url := apiconfig.Server_URL + apiconfig.NODE_PATH
 	data, err := json.Marshal(node)
 	if err != nil {
 		return err
 	}
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
+	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(data))
 	if err != nil {
 		return err
 	}
+
+	// 发送请求
+	client := &http.Client{}
+	resp, err := client.Do(req)
 	defer resp.Body.Close()
-	fmt.Println("Response Status:", resp.Status)
+	err = log.CheckHttpStatus("[httpclient] [AddNode] ", resp)
+	if err != nil {
+		return err
+	}
 	return nil
+}
+
+// Get Pod
+// TODO 讨论确定一下具体写法, api路径等
+
+func GetPod(name string) (*core.Pod, error) {
+	url := apiconfig.Server_URL + apiconfig.POD_PATH + name
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	buf := make([]byte, 40960)
+	res := core.Pod{}
+	n, err := resp.Body.Read(buf)
+	if n != 0 || err != io.EOF {
+		err = json.Unmarshal([]byte(buf[:n]), &res)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &res, nil
+}
+
+func GetTypeName(event Event) string {
+	var s string
+	switch event.Type {
+	case Added:
+		{
+			s = "Add"
+		}
+	case Modified:
+		{
+			s = "Modify"
+		}
+	case Deleted:
+		{
+			s = "Delete"
+		}
+	case Error:
+		{
+			s = "Error"
+		}
+	}
+	return s
 }

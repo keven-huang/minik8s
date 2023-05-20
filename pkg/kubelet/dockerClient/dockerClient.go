@@ -336,9 +336,8 @@ func CreatePod(pod core.Pod) ([]core.ContainerMeta, *types.NetworkSettings, erro
 	var res []core.ContainerMeta
 	images := []string{config.PAUSE_IMAGE_NAME}
 	names := []string{config.PAUSE_NAME}
-	curPauseName := config.PAUSE_NAME
+	curPauseName := pod.Name + "-" + config.PAUSE_NAME
 	for _, v := range containers {
-		curPauseName += "_" + v.Name
 		names = append(names, v.Name)
 		images = append(images, v.Image)
 		for _, port := range v.Ports {
@@ -413,9 +412,8 @@ func DeletePod(pod core.Pod) error {
 	containers := pod.Spec.Containers
 
 	names := []string{config.PAUSE_NAME}
-	curPauseName := config.PAUSE_NAME
+	curPauseName := pod.Name + "-" + config.PAUSE_NAME
 	for _, v := range containers {
-		curPauseName += "_" + v.Name
 		names = append(names, v.Name)
 	}
 	names = append(names, curPauseName)

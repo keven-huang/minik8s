@@ -1,9 +1,16 @@
 package main
 
-import "minik8s/pkg/kubelet"
+import (
+	"fmt"
+	"minik8s/pkg/kubelet"
+)
 
 func main() {
-	k := kubelet.NewKublet()
+	k, err := kubelet.NewKubelet("node1")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	k.Register()
 	k.Run()
 }
