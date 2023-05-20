@@ -13,12 +13,15 @@ type Handler struct {
 }
 
 var HandlerTable = []Handler{
+	// etcd
 	{Type: "GET", Path: apiconfig.PATH, Eventhandler: Get},
 	{Type: "PUT", Path: apiconfig.PATH, Eventhandler: Put},
 	{Type: "POST", Path: apiconfig.PATH, Eventhandler: Post},
 	{Type: "DELETE", Path: apiconfig.PATH, Eventhandler: Delete},
+	// node
 	{Type: "GET", Path: apiconfig.NODE_PATH, Eventhandler: GetNode},
 	{Type: "POST", Path: apiconfig.NODE_PATH, Eventhandler: AddNode},
+	// pod
 	{Type: "GET", Path: apiconfig.POD_PATH, Eventhandler: GetPod},
 	{Type: "PUT", Path: apiconfig.POD_PATH, Eventhandler: AddPod},
 	{Type: "DELETE", Path: apiconfig.POD_PATH, Eventhandler: DeletePod},

@@ -11,6 +11,10 @@ type Informer interface {
 	List() []tool.ListRes
 	Run()
 	Stop()
+	Get(key string) string
+	Set(key string, val string)
+	GetCache() *map[string]string
+	Delete(key string)
 }
 
 type informer struct {
@@ -18,6 +22,15 @@ type informer struct {
 	resource string
 	lw       tool.ListWatcher
 	handlers map[tool.EventType]EventHandler
+	Cache    map[string]string
+}
+
+func (i *informer) Delete(key string) {
+	delete(i.Cache, key)
+}
+
+func (i *informer) GetCache() *map[string]string {
+	return &i.Cache
 }
 
 func (i *informer) AddEventHandler(etype tool.EventType, handler EventHandler) {
@@ -49,11 +62,25 @@ func (i *informer) Stop() {
 	i.stop = true
 }
 
+func (i *informer) Get(key string) string {
+	return i.Cache[key]
+}
+
+func (i *informer) Set(key string, val string) {
+	i.Cache[key] = val
+}
+
 func NewInformer(resource string) Informer {
-	return &informer{
+	i := informer{
 		stop:     false,
 		resource: resource,
 		lw:       tool.NewListWatchFromClient(resource),
 		handlers: make(map[tool.EventType]EventHandler, 4),
+		Cache:    make(map[string]string),
 	}
+	res := i.List()
+	for _, v := range res {
+		i.Cache[v.Key] = v.Value
+	}
+	return &i
 }
