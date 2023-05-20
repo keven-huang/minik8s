@@ -11,6 +11,7 @@ import (
 )
 
 func UpdateService(c *gin.Context, s *Server) {
+	prefix := "[serviceHandler][UpdateService]:"
 	val, _ := io.ReadAll(c.Request.Body)
 	service := kubeservice.Service{}
 	err := json.Unmarshal([]byte(val), &service)
@@ -20,6 +21,8 @@ func UpdateService(c *gin.Context, s *Server) {
 	}
 	key := c.Request.URL.Path + "/" + service.ServiceMeta.Name
 	body, _ := json.Marshal(service)
+	fmt.Println(prefix + "key:" + key)
+	fmt.Println(prefix + "value:" + string(body))
 	err = s.Etcdstore.Put(key, string(body))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -34,7 +37,9 @@ func UpdateService(c *gin.Context, s *Server) {
 }
 
 func DeleteService(c *gin.Context, s *Server) {
+	prefix := "[serviceHandler][DeleteService]:"
 	key := c.Request.URL.Path
+	fmt.Println(prefix + "key:" + key)
 	err := s.Etcdstore.Del(key)
 	if err != nil {
 		log.Println(err)

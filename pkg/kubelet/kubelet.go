@@ -98,7 +98,6 @@ func (k *Kubelet) DeletePod(event tool.Event) {
 	fmt.Println("In DeletePod EventHandler:")
 	fmt.Println("event.Key: ", event.Key)
 	fmt.Println("event.Val: ", k.PodInformer.Get(event.Key))
-	k.PodInformer.Delete(event.Key)
 
 	pod := &core.Pod{}
 	err := json.Unmarshal([]byte(k.PodInformer.Get(event.Key)), pod)
@@ -112,6 +111,8 @@ func (k *Kubelet) DeletePod(event tool.Event) {
 		fmt.Println(err)
 		return
 	}
+
+	k.PodInformer.Delete(event.Key)
 }
 
 func (k *Kubelet) Run() {

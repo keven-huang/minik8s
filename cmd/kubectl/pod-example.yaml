@@ -3,6 +3,7 @@ kind: Pod
 metadata:
   name: test5
 spec:
+  nodeName: "node1"
   containers:
     - name: my-container
       image: nginx:latest

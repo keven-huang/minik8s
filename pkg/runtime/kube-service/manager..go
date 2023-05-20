@@ -23,10 +23,11 @@ func NewServiceManager() *ServiceManager {
 	res.ServiceInformer = informer.NewInformer(apiconfig.SERVICE_PATH)
 	// 设置watch add service event 的回调函数
 	res.ServiceInformer.AddEventHandler(tool.Added, func(event tool.Event) {
-		fmt.Println("[info]:" + "in addServiceHandler" + event.Key)
+		fmt.Println("[kube-service][manage][addServiceHandler]:" + event.Key)
 		newService := &service.Service{}
 		err := json.Unmarshal([]byte(event.Val), newService)
 		if err != nil {
+			fmt.Println(err.Error())
 			return
 		}
 		lastService, ok := res.ServiceMapping[newService.ServiceMeta.Name]

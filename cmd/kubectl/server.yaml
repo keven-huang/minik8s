@@ -2,12 +2,13 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: tinyserver
+spec:
   labels:
     app: tinyserver
-spec:
+  nodeName: "node1"
   containers:
     - name: server
-      image: chasingdreams/tinyweb:v2
+      image: chasingdreams/tinyweb:2
       ports:
         - name: http
           containerPort: 80

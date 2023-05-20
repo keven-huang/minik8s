@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/pkg/api/core"
+	"minik8s/pkg/service"
 	myJson "minik8s/pkg/util/json"
 	"minik8s/pkg/util/web"
 )
@@ -64,6 +65,10 @@ func (o *CreateOptions) RunCreate(cmd *cobra.Command, args []string) error {
 	case "replicaset":
 		{
 			return o.RunCreateReplicaSet(cmd, args)
+		}
+	case "service":
+		{
+			return o.RunCreateService(cmd, args)
 		}
 	default:
 		{
@@ -128,6 +133,31 @@ func (o *CreateOptions) RunCreateReplicaSet(cmd *cobra.Command, args []string) e
 	// 创建 PUT 请求
 	err = web.SendHttpRequest("PUT", apiconfig.Server_URL+apiconfig.REPLICASET_PATH,
 		web.WithPrefix("[kubectl] [create] [RunCreateReplicaSet] "),
+		web.WithBody(bytes.NewBuffer(data)),
+		web.WithLog(true))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (o *CreateOptions) RunCreateService(cmd *cobra.Command, args []string) error {
+	filename := o.Filename
+
+	r := &service.Service{}
+	err := myJson.GetFromYaml(filename, r)
+	if err != nil {
+		return err
+	}
+	data, err := json.Marshal(r)
+	if err != nil {
+		fmt.Println("[kubectl] [create] [RunCreateService] failed to marshal:", err)
+	} else {
+		//fmt.Println("[kubectl] [create] [RunCreateReplicaSet] ", string(data))
+	}
+	err = web.SendHttpRequest("PUT", apiconfig.Server_URL+apiconfig.SERVICE_PATH,
+		web.WithPrefix("[kubectl] [create] [RunCreatesService] "),
 		web.WithBody(bytes.NewBuffer(data)),
 		web.WithLog(true))
 	if err != nil {
