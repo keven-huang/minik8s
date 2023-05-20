@@ -10,9 +10,10 @@ cache:
 build:
   stage: build
   only:
-    - apiserver
+    - apiserver,gpu
   script:
     - sudo /usr/local/go/bin/go build -o /bin/apiserver ./cmd/kube-apiserver/kube-apiserver.go
+    - sudo /usr/local/go/bin/go build -o /bin/apiserver ./cmd/kube-controller/job-controller.go
   tags:
     - testing
 
@@ -20,10 +21,9 @@ build:
 test:
   stage: test
   only:
-    - apiserver
+    - apiserver,gpu
   script:
-    - sudo /usr/local/go/bin/go test ./cmd/kube-apiserver/test/etcd_test.go
-    # - go test ./...
+    - sudo /usr/local/go/bin/go test ./...
   tags:
     - testing
 

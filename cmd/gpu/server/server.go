@@ -59,6 +59,17 @@ func (s *Server) SubmitJob() (string, error) {
 	return jobID, nil
 }
 
+func (s *Server) GetJobStatus() bool {
+	cmd := "squeue -j " + s.jobID
+	fmt.Printf("cmd=[%v]\n", cmd)
+	backinfo, err := s.ssh_cli.Run(cmd)
+	if err != nil {
+		fmt.Printf("failed to run shell,err=[%v]\n", err)
+		return false
+	}
+	return backinfo != ""
+}
+
 func (s *Server) Run() {
 	err := s.JobUpload()
 	if err != nil {
