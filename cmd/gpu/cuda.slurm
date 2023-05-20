@@ -8,7 +8,7 @@
 #SBATCH --error=cuda.err
 #SBATCH --mail-type=end
 #SBATCH --mail-user=jmhuang_2020@sjtu.edu.cn
-#SBATCH --gres=1
+#SBATCH --gres=gpu:1
 ulimit -s unlimited
 ulimit -l unlimited
 module load gcc/8.3.0 cuda/10.1.243-gcc-8.3.0

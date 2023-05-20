@@ -82,7 +82,7 @@ func (jc *JobConfig) GenerateSlurm() []byte {
 	if jc.MailUser != "" {
 		slurm = append(slurm, fmt.Sprintf("#SBATCH --mail-user=%s", jc.MailUser))
 	}
-	slurm = append(slurm, fmt.Sprintf("#SBATCH --gres=%d", jc.Gpu))
+	slurm = append(slurm, fmt.Sprintf("#SBATCH --gres=gpu:%d", jc.Gpu))
 	slurm = append(slurm, "ulimit -s unlimited")
 	slurm = append(slurm, "ulimit -l unlimited")
 	slurm = append(slurm, "module load gcc/8.3.0 cuda/10.1.243-gcc-8.3.0")
