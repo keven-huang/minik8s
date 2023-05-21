@@ -74,10 +74,8 @@ func (jc *JobController) RunJob(job *core.Job) {
 		Spec: core.PodSpec{
 			Volumes: []core.Volume{
 				{
-					Name: "job-volume",
-					VolumeSource: core.VolumeSource{
-						HostPath: "/home/job",
-					},
+					Name:     "job-volume",
+					HostPath: "/home/job",
 				},
 			},
 			Containers: []core.Container{

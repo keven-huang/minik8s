@@ -2,7 +2,7 @@ package gpu_server
 
 import (
 	"fmt"
-	"minik8s/cmd/kube-apiserver/app/apiconfig"
+	"strings"
 	"time"
 )
 
@@ -33,7 +33,8 @@ const (
 
 func (s *Server) JobUpload() error {
 	//scp upload program
-	homePath := apiconfig.JOB_FILE_DIR_PATH + "/"
+	// homePath := apiconfig.JOB_FILE_DIR_PATH + "/"
+	homePath := "./"
 	cudafile := s.jobName + ".cu"
 	n, err := s.ssh_cli.UploadFile(homePath+cudafile, Path+cudafile)
 	if err != nil {
@@ -69,22 +70,36 @@ func (s *Server) SubmitJob() (string, error) {
 }
 
 func (s *Server) GetJobStatus() bool {
-	cmd := "squeue -j " + s.jobID
+	cmd := "sacct -j " + s.jobID + "| tail -n +3 | awk '{print $6}'"
 	fmt.Printf("cmd=[%v]\n", cmd)
 	backinfo, err := s.ssh_cli.Run(cmd)
 	if err != nil {
 		fmt.Printf("failed to run shell,err=[%v]\n", err)
 		return false
 	}
-	return backinfo != ""
+	fmt.Println("back info: \n", backinfo)
+	rows := strings.Split(backinfo, "\n")
+	if len(rows) > 0 {
+		row := rows[0]
+		cols := strings.Split(row, " ")
+		if len(cols) > 0 {
+			status := cols[0]
+			if status == "COMPLETED" {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func (s *Server) JobDownload() error {
-	n, err := s.ssh_cli.DownloadFile(Path+s.OutFile+".out", apiconfig.JOB_FILE_DIR_PATH+"/"+s.OutFile+".out")
+	// homePath := apiconfig.JOB_FILE_DIR_PATH + "/"
+	homePath := "./"
+	n, err := s.ssh_cli.DownloadFile(Path+s.OutFile+".out", homePath+s.OutFile+".out")
 	if err != nil {
 		return err
 	}
-	n, err = s.ssh_cli.DownloadFile(Path+s.ErrFile+".err", apiconfig.JOB_FILE_DIR_PATH+"/"+s.ErrFile+".err")
+	n, err = s.ssh_cli.DownloadFile(Path+s.ErrFile+".err", homePath+s.ErrFile+".err")
 	if err != nil {
 		return err
 	}
