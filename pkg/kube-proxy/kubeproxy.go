@@ -17,13 +17,17 @@ func NewKubeProxy() *KubeProxy {
 	return res
 }
 
-func (proxy *KubeProxy) addRuntimeServiceHandler(event tool.Event) {
+func (proxy *KubeProxy) updateRuntimeServiceHandler(event tool.Event) {
 	prefix := "[kubeproxy][addService]"
 	fmt.Println(prefix + "key:" + event.Key)
 	runtimeService := &kubeservice.Service{}
 	err := json.Unmarshal([]byte(event.Val), runtimeService)
 	if err != nil {
 		fmt.Println(err.Error())
+		return
+	}
+	if len(runtimeService.PodNameAndIps) == 0 {
+		fmt.Println(prefix + "waiting for select pods..")
 		return
 	}
 	svcChain, ok := proxy.ServiceName2SvcChain[event.Key]
@@ -83,6 +87,7 @@ func (proxy *KubeProxy) deleteRuntimeServiceHandler(event tool.Event) {
 	}
 	SvcChain, ok := proxy.ServiceName2SvcChain[event.Key]
 	if !ok {
+		fmt.Println(prefix + "no such service")
 		return
 	} else {
 		for _, v := range SvcChain {
@@ -97,7 +102,8 @@ func (proxy *KubeProxy) deleteRuntimeServiceHandler(event tool.Event) {
 }
 
 func (proxy *KubeProxy) Register() {
-	proxy.ServiceInformer.AddEventHandler(tool.Added, proxy.addRuntimeServiceHandler)
+	proxy.ServiceInformer.AddEventHandler(tool.Added, proxy.updateRuntimeServiceHandler)
+	proxy.ServiceInformer.AddEventHandler(tool.Modified, proxy.updateRuntimeServiceHandler)
 	proxy.ServiceInformer.AddEventHandler(tool.Deleted, proxy.deleteRuntimeServiceHandler)
 }
 

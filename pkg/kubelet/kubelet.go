@@ -71,8 +71,12 @@ func (k *Kubelet) CreatePod(event tool.Event) {
 		return
 	}
 
-	pod.Status.Phase = "Running"
 	// 创建成功 修改Status
+	pod.Status.Phase = core.PodRunning
+
+	// 更新podIp
+	pod.Status.PodIP = netSetting.IPAddress
+
 	data, err := json.Marshal(pod)
 	if err != nil {
 		fmt.Println(prefix, "failed to marshal:", err)
