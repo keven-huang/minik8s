@@ -125,6 +125,7 @@ func AddPod(pod *core.Pod) error {
 	if err != nil {
 		return err
 	}
+	fmt.Println("[http][AddPod]", string(data))
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -182,21 +183,26 @@ func AddNode(node *core.Node) error {
 }
 
 func GetJobFile(JobName string) core.JobUpload {
-	url := apiconfig.Server_URL + apiconfig.JOB_FILE_PATH
+	url := apiconfig.Server_URL + apiconfig.JOB_FILE_PATH + "?JobName=" + JobName
 	resp, err := http.Get(url)
 	if err != nil {
-		fmt.Println("Get Job error", err)
+		fmt.Println("[httpclient] [GetJobFile] ", "Get Job error", err)
 		return core.JobUpload{}
 	}
 	defer resp.Body.Close()
 	reader := resp.Body
 	data, err := io.ReadAll(reader)
 	if err != nil {
+		fmt.Println("[httpclient] [GetJobFile] ", err)
 		return core.JobUpload{}
 	}
-	var job core.JobUpload
-	err = json.Unmarshal(data, &job)
+	var json_data string
+	err = json.Unmarshal([]byte(data), &json_data)
+	fmt.Println("[httpclient][GetJobFile]", json_data)
+	job := core.JobUpload{}
+	err = json.Unmarshal([]byte(json_data), &job)
 	if err != nil {
+		fmt.Println("[httpclient] [GetJobFile] ", err)
 		return core.JobUpload{}
 	}
 	return job

@@ -79,7 +79,12 @@ func (k *Kubelet) UpdatePod(event tool.Event) {
 	// 判断创建pod是否是gpu类型
 	if pod.Spec.GPUJob == true {
 		// 获取gpu运行文件至job目录
-		getGpuJobFile(pod.Spec.GPUJobName)
+		fmt.Println(prefix, "get gpufiles")
+		err = GetGpuJobFile(pod.Spec.GPUJobName)
+		if err != nil {
+			fmt.Println(prefix, "[ERROR]", err)
+			return
+		}
 	}
 
 	metaData, netSetting, err := dockerClient.CreatePod(*pod)
@@ -132,15 +137,26 @@ func (k *Kubelet) DeletePod(event tool.Event) {
 	}
 }
 
-func getGpuJobFile(jobname string) {
+func GetGpuJobFile(jobname string) error {
 	// 获取gpu运行文件至job目录
 	jobFile := tool.GetJobFile(jobname)
+	fmt.Println("[kubelet] [UpdatePod]", "get gpufiles", string(jobFile.Program))
+	if len(jobFile.Program) == 0 || len(jobFile.Slurm) == 0 {
+		return fmt.Errorf("[kubelet] [UpdatePod]", "get gpufiles empty")
+	}
 	// get program
 	program_name := jobFile.JobName + ".cu"
-	file.MakeFile(jobFile.Program, program_name, apiconfig.JOB_FILE_DIR_PATH)
+	err := file.MakeFile(jobFile.Program, program_name, apiconfig.JOB_FILE_DIR_PATH)
+	if err != nil {
+		return err
+	}
 	// get slurm
 	slurm_name := jobFile.JobName + ".slurm"
-	file.MakeFile(jobFile.Slurm, slurm_name, apiconfig.JOB_FILE_DIR_PATH)
+	err = file.MakeFile(jobFile.Slurm, slurm_name, apiconfig.JOB_FILE_DIR_PATH)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (k *Kubelet) Run() {

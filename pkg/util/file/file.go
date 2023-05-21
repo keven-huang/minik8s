@@ -15,8 +15,15 @@ func MakeFile(val []byte, name string, path string) error {
 	if err != nil {
 		return err
 	}
-	defer file.Close()
 	_, err = file.Write(val)
+	if err != nil {
+		return err
+	}
+	err = file.Sync()
+	if err != nil {
+		return err
+	}
+	err = file.Close()
 	if err != nil {
 		return err
 	}

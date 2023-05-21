@@ -1,3 +1,3 @@
-FROM alpine:latest
+FROM ubuntu
 
-COPY gpu-server ./gpu-server
+COPY gpuserver ./gpuserver

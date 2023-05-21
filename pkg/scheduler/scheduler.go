@@ -27,10 +27,17 @@ func NewScheduler() *Scheduler {
 
 func (s *Scheduler) Register() {
 	s.PodInformer.AddEventHandler(tool.Added, s.AddPod)
+	s.NodeInformer.AddEventHandler(tool.Added, s.AddNode)
+}
+
+func (s *Scheduler) AddNode(event tool.Event) {
+	fmt.Println("[scheduler] [AddNode]")
+	s.NodeInformer.Set(event.Key, event.Val)
 }
 
 func (s *Scheduler) AddPod(event tool.Event) {
-	fmt.Println("add pod")
+	fmt.Println("[scheduler] [AddPod] add pod")
+	s.PodInformer.Set(event.Key, event.Val)
 	pod := &core.Pod{}
 	err := json.Unmarshal([]byte(event.Val), &pod)
 	if err != nil {
@@ -59,17 +66,17 @@ func (s *Scheduler) Schedule(pod *core.Pod) {
 	var nodeName string
 	nodeName = roundrobin_strategy(node)
 	pod.Spec.NodeName = nodeName
-	fmt.Println("schedule to node:", nodeName)
+	fmt.Println("[scheduler] [Schedule] schedule to node:", nodeName)
 	tool.UpdatePod(pod)
 }
 
 func (s *Scheduler) GetNode() []core.Node {
 	// TODO : can optimize by cache
-	res := s.NodeInformer.List()
-	nodes := []core.Node{}
-	for _, v := range res {
+	res := s.NodeInformer.GetCache()
+	var nodes []core.Node
+	for _, val := range *res {
 		node := core.Node{}
-		err := json.Unmarshal([]byte(v.Value), &node)
+		err := json.Unmarshal([]byte(val), &node)
 		if err != nil {
 			continue
 		}
@@ -80,6 +87,7 @@ func (s *Scheduler) GetNode() []core.Node {
 
 func (s *Scheduler) Run() {
 	go s.PodInformer.Run()
+	go s.NodeInformer.Run()
 	go s.worker()
 	select {}
 }
