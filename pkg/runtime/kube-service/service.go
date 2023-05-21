@@ -16,6 +16,8 @@ import (
 // findPods
 // runtimeService根据seletors的信息找到
 func (rs *RuntimeService) findPods(isCreate bool) error {
+	prefix := "[service][findPods]:"
+	fmt.Println(prefix + "in")
 	// 使用informer的list方法获取所有的pods，放到str中
 	// inspired by add-node.go
 	str := rs.Informer.List()
@@ -39,6 +41,7 @@ func (rs *RuntimeService) findPods(isCreate bool) error {
 		if rs.ServiceConfig.ServiceSpec.Selector != nil {
 			for k, v := range rs.ServiceConfig.ServiceSpec.Selector {
 				value, ok := pod.Labels[k]
+				fmt.Println(prefix + "expect k=" + k + " v=" + v + "av=" + value)
 				if !ok || v != value {
 					isChosed = false
 					break
@@ -46,6 +49,7 @@ func (rs *RuntimeService) findPods(isCreate bool) error {
 			}
 		}
 		if isChosed {
+			fmt.Println(prefix + "chosen Pod:" + pod.Name)
 			filtedPods = append(filtedPods, pod)
 		}
 	}
@@ -58,16 +62,17 @@ func (rs *RuntimeService) findPods(isCreate bool) error {
 	if len(filtedPods) == 0 { // no pod, error
 		if isCreate {
 			rs.ServiceConfig.ServiceSpec.Status.Phase = service.ServiceErrorPhase
-			rs.ServiceConfig.ServiceSpec.Status.Err = errors.New("NoOKPodsWhenInit")
+			rs.ServiceConfig.ServiceSpec.Status.Err = "NoOKPodsWhenInit"
 		} else {
 			rs.ServiceConfig.ServiceSpec.Status.Phase = service.ServiceErrorPhase
-			rs.ServiceConfig.ServiceSpec.Status.Err = errors.New("NoOKPodsNow")
+			rs.ServiceConfig.ServiceSpec.Status.Err = "NoOKPodsNow"
 		}
 		//ifUpdate = true
 	} else {
 		rs.ServiceConfig.ServiceSpec.Status.Phase = service.ServiceRunningPhase
-		rs.ServiceConfig.ServiceSpec.Status.Err = nil
+		rs.ServiceConfig.ServiceSpec.Status.Err = ""
 		for _, val := range rs.Pods {
+			fmt.Println("[service][findPods]: name=" + val.Name + " ip=" + val.Status.PodIP)
 			newNameIp = append(newNameIp, service.PodNameAndIp{Name: val.Name, Ip: val.Status.PodIP})
 		}
 		rs.ServiceConfig.PodNameAndIps = newNameIp
@@ -88,7 +93,12 @@ func CreateService(sc *service.Service) *RuntimeService {
 	res.lock = lock
 	res.ifSend = false
 	go res.Run(res.eventChan)
-	res.ServiceConfig.ServiceSpec.Status.Err = res.findPods(true)
+	err := res.findPods(true)
+	if err != nil {
+		res.ServiceConfig.ServiceSpec.Status.Err = err.Error()
+	} else {
+		res.ServiceConfig.ServiceSpec.Status.Err = ""
+	}
 	res.ifSend = true
 	// 每10秒更新一下状态
 	res.timer = time.NewTicker(10 * time.Second)
@@ -109,10 +119,10 @@ func (rs *RuntimeService) Run(event <-chan string) {
 			switch cmd {
 			case TICK_EVENT:
 				// flag表示之前的状态有无改变
+				fmt.Println("[service][run]: got ticker")
 				flag := false
 				for _, pod := range rs.Pods {
 					// 应该调用restClient，根据pod的名字查询当前pod的状态
-					// TODO
 					curPod, err := tool.GetPod(pod.Name)
 					if err != nil {
 						continue
@@ -123,6 +133,7 @@ func (rs *RuntimeService) Run(event <-chan string) {
 					}
 				}
 				if flag { //
+					fmt.Println("[service][run]: refind pods")
 					err := rs.findPods(false)
 					if err != nil { // 这里直接终止
 						panic(err.Error())

@@ -18,6 +18,8 @@ func NewKubeProxy() *KubeProxy {
 }
 
 func (proxy *KubeProxy) addRuntimeServiceHandler(event tool.Event) {
+	prefix := "[kubeproxy][addService]"
+	fmt.Println(prefix + "key:" + event.Key)
 	runtimeService := &kubeservice.Service{}
 	err := json.Unmarshal([]byte(event.Val), runtimeService)
 	if err != nil {
@@ -71,6 +73,8 @@ func (proxy *KubeProxy) addRuntimeServiceHandler(event tool.Event) {
 // key-> serviceName
 // val-> runtimeService
 func (proxy *KubeProxy) deleteRuntimeServiceHandler(event tool.Event) {
+	prefix := "[kubeproxy][deleteService]"
+	fmt.Println(prefix + "key:" + event.Key)
 	runtimeService := &kubeservice.Service{}
 	err := json.Unmarshal([]byte(event.Val), runtimeService)
 	if err != nil {

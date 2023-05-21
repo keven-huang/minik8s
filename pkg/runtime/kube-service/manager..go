@@ -42,7 +42,7 @@ func NewServiceManager() *ServiceManager {
 	// 设置watch delete event的回调
 	res.ServiceInformer.AddEventHandler(tool.Deleted, func(event tool.Event) {
 		// delete by name
-		fmt.Println("[info]:" + "in deleteServiceHandler" + event.Key)
+		fmt.Println("[kube-service][manager][deleteServiceHandler]" + event.Key)
 		var name string
 		err := json.Unmarshal([]byte(event.Val), &name)
 		if err != nil {
@@ -64,5 +64,4 @@ func NewServiceManager() *ServiceManager {
 func (sm *ServiceManager) Run() {
 	// 启动ServiceInformer, it can add service
 	go sm.ServiceInformer.Run()
-
 }
