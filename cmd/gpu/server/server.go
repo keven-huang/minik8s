@@ -1,6 +1,9 @@
 package gpu_server
 
-import "fmt"
+import (
+	"fmt"
+	"minik8s/cmd/kube-apiserver/app/apiconfig"
+)
 
 type Server struct {
 	ssh_cli *Cli
@@ -25,15 +28,16 @@ const (
 
 func (s *Server) JobUpload() error {
 	//scp upload program
+	homePath := apiconfig.JOB_FILE_DIR_PATH + "/"
 	cudafile := s.jobName + ".cu"
-	n, err := s.ssh_cli.UploadFile(cudafile, Path+cudafile)
+	n, err := s.ssh_cli.UploadFile(homePath+cudafile, Path+cudafile)
 	if err != nil {
 		fmt.Printf("upload failed: %v\n", err)
 		return err
 	}
 	// scp upload slurm
 	slurmfile := s.jobName + ".slurm"
-	n, err = s.ssh_cli.UploadFile(slurmfile, Path+slurmfile)
+	n, err = s.ssh_cli.UploadFile(homePath+slurmfile, Path+slurmfile)
 	if err != nil {
 		fmt.Printf("upload failed: %v\n", err)
 		return err

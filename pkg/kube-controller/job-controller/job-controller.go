@@ -29,7 +29,9 @@ func (jc *JobController) Register() {
 }
 
 func (jc *JobController) AddJob(event tool.Event) {
+	fmt.Println("[jobcontroller][AddJob] add job")
 	var job *core.Job
+	jc.JobInformer.Set(event.Key, event.Val)
 	err := json.Unmarshal([]byte(event.Val), &job)
 	if err != nil {
 		fmt.Println("[jobcontroller] add job error")
@@ -52,6 +54,7 @@ func (jc *JobController) worker() {
 
 func (jc *JobController) RunJob(job *core.Job) {
 	cmd := fmt.Sprintf("./gpuserver --jobname=%s", job.Name)
+	fmt.Println("[jobcontroller]", "cmd:", cmd)
 	jobcontainer := core.Container{
 		Name:  "gpu",
 		Image: "gpu-job-image",
@@ -84,12 +87,11 @@ func (jc *JobController) RunJob(job *core.Job) {
 			GPUJobName: job.Name,
 		},
 	}
-
 	tool.AddPod(pod)
 }
 
 func (jc *JobController) Run() {
-	go jc.Register()
+	go jc.JobInformer.Run()
 	go jc.worker()
 	select {}
 }

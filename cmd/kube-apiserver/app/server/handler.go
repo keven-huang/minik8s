@@ -28,5 +28,6 @@ var HandlerTable = []Handler{
 	{Type: "POST", Path: apiconfig.POD_PATH, Eventhandler: UpdatePod},
 	{Type: "GET", Path: "/watch/*resource", Eventhandler: Watch},
 	{Type: "POST", Path: apiconfig.JOB_PATH, Eventhandler: AddJob},
+	{Type: "GET", Path: apiconfig.JOB_PATH, Eventhandler: GetJob},
 	{Type: "POST", Path: apiconfig.JOB_FILE_PATH, Eventhandler: AddJobFile},
 	{Type: "GET", Path: apiconfig.JOB_FILE_PATH, Eventhandler: GetJobFile}}

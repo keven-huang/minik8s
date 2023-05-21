@@ -1,0 +1,7 @@
+[httpclient] [List]  []
+[httpclient] [Watch] start watch
+[httpclient] [Watch] unmarshal: /api/v1/jobs/cuda {"metadata":{"name":"cuda","creationTimestamp":null},"spec":{"task":{"name":"cuda","partition":"dgx2","nodes":1,"ntasks":0,"ntasks-per-node":1,"cpus-per-task":1,"gpu":1,"error":"cuda.err","output":"cuda.out","mail-type":"end","mail-user":"jmhuang_2020@sjtu.edu.cn","program":"gpu-yaml/cuda.cu"}}} ADDED
+[jobcontroller][AddJob] add job
+[jobcontroller] cmd: ./gpuserver --jobname=cuda
+[http][AddPod] {"metadata":{"name":"cuda","creationTimestamp":null},"spec":{"volumes":[{"name":"job-volume","hostPath":"/home/job"}],"containers":[{"name":"gpu","image":"gpu-job-image","command":["./gpuserver --jobname=cuda"],"entryPoint":null,"ports":null,"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"job-volume","mountPath":"/home/job"}]}],"gpu":true,"gpuJobName":"cuda"},"status":{}}
+add pod success

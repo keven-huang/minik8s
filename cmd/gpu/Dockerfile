@@ -1,3 +1,3 @@
-FROM golang:1.20.3-alpine
+FROM ubuntu
 
 COPY gpuserver ./gpuserver
