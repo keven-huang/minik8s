@@ -15,7 +15,7 @@ import (
 func GetNode(c *gin.Context, s *Server) {
 	if c.Query("all") == "true" {
 		// delete the keys
-		res, err := s.Etcdstore.GetAll(apiconfig.NODE_PATH)
+		res, err := s.Etcdstore.GetWithPrefix(apiconfig.NODE_PATH)
 		if err != nil {
 			log.Println(err)
 			return

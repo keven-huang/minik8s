@@ -53,7 +53,7 @@ func (jc *JobController) worker() {
 func (jc *JobController) RunJob(job *core.Job) {
 	cmd := fmt.Sprintf("./gpuserver --jobname=%s", job.Name)
 	jobcontainer := core.Container{
-		Name:  "gpu-job",
+		Name:  "gpu",
 		Image: "gpu-job-image",
 		VolumeMounts: []core.VolumeMount{
 			{
@@ -71,8 +71,10 @@ func (jc *JobController) RunJob(job *core.Job) {
 		Spec: core.PodSpec{
 			Volumes: []core.Volume{
 				{
-					Name:         "job-volume",
-					VolumeSource: core.VolumeSource{},
+					Name: "job-volume",
+					VolumeSource: core.VolumeSource{
+						HostPath: "/home/job",
+					},
 				},
 			},
 			Containers: []core.Container{

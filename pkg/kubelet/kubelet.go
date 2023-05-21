@@ -9,6 +9,7 @@ import (
 	"minik8s/pkg/client/informer"
 	"minik8s/pkg/client/tool"
 	"minik8s/pkg/kubelet/dockerClient"
+	"minik8s/pkg/util/file"
 	"minik8s/pkg/util/web"
 )
 
@@ -75,6 +76,12 @@ func (k *Kubelet) UpdatePod(event tool.Event) {
 		pod.Spec.Containers[i].Name = pod.Name + "-" + v.Name
 	}
 
+	// 判断创建pod是否是gpu类型
+	if pod.Spec.GPUJob == true {
+		// 获取gpu运行文件至job目录
+		getGpuJobFile(pod.Spec.GPUJobName)
+	}
+
 	metaData, netSetting, err := dockerClient.CreatePod(*pod)
 	if err != nil {
 		fmt.Println(err)
@@ -123,6 +130,17 @@ func (k *Kubelet) DeletePod(event tool.Event) {
 		fmt.Println(err)
 		return
 	}
+}
+
+func getGpuJobFile(jobname string) {
+	// 获取gpu运行文件至job目录
+	jobFile := tool.GetJobFile(jobname)
+	// get program
+	program_name := jobFile.JobName + ".cu"
+	file.MakeFile(jobFile.Program, program_name, apiconfig.JOB_FILE_DIR_PATH)
+	// get slurm
+	slurm_name := jobFile.JobName + ".slurm"
+	file.MakeFile(jobFile.Slurm, slurm_name, apiconfig.JOB_FILE_DIR_PATH)
 }
 
 func (k *Kubelet) Run() {

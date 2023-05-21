@@ -56,7 +56,7 @@ func GetPod(c *gin.Context, s *Server) {
 	fmt.Println("In GetPod")
 	if c.Query("all") == "true" {
 		// delete the keys
-		res, err := s.Etcdstore.GetAll(apiconfig.POD_PATH)
+		res, err := s.Etcdstore.GetWithPrefix(apiconfig.POD_PATH)
 		if err != nil {
 			log.Println(err)
 			return
@@ -134,7 +134,6 @@ func UpdatePod(c *gin.Context, s *Server) {
 		return
 	}
 	key := c.Request.URL.Path + "/" + pod.Name
-	pod.Status.Phase = "Pended" // TODO
 	body, _ := json.Marshal(pod)
 	err = s.Etcdstore.Put(key, string(body))
 	if err != nil {

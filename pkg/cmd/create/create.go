@@ -101,6 +101,7 @@ func createPod(yamlfile []byte) error {
 	// 解析文件
 	pod := &core.Pod{}
 	err := yaml.Unmarshal(yamlfile, pod)
+
 	if err != nil {
 		return fmt.Errorf("unmarshal yaml error")
 	}

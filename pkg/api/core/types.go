@@ -41,7 +41,7 @@ type Container struct {
 type VolumeMount struct {
 	// volumeName
 	Name string `yaml:"name" json:"name"`
-	// mountpath
+	// mountpath, it spec the inner path of a container, not the host
 	MountPath string `yaml:"mountPath" json:"mountPath"`
 }
 
@@ -235,12 +235,12 @@ type Pod struct {
 	// Standard object's metadata.
 	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
 	// +optional
-	metav1.ObjectMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
+	metav1.ObjectMeta `json:"metadata" yaml:"metadata"`
 
 	// Specification of the desired behavior of the pod.
 	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
 	// +optional
-	Spec PodSpec `json:"spec,omitempty" protobuf:"bytes,2,opt,name=spec"`
+	Spec PodSpec `json:"spec,omitempty" yaml:"spec,omitempty"`
 
 	// Most recently observed status of the pod.
 	// This data may not be up to date.
@@ -317,6 +317,7 @@ type Volume struct {
 }
 
 type VolumeSource struct {
+	HostPath string `yaml:"hostPath" json:"hostPath"`
 }
 
 // Node is a worker node in Kubernetes.
