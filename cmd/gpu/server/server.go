@@ -3,15 +3,18 @@ package gpu_server
 import (
 	"fmt"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
+	"time"
 )
 
 type Server struct {
 	ssh_cli *Cli
 	jobName string
 	jobID   string
+	OutFile string
+	ErrFile string
 }
 
-func NewServer(jobName string) *Server {
+func NewServer(jobName string, outfile string, errfile string) *Server {
 	return &Server{
 		ssh_cli: NewSSHClient(User, Pwd, Host, Port),
 		jobName: jobName,
@@ -74,6 +77,19 @@ func (s *Server) GetJobStatus() bool {
 	return backinfo != ""
 }
 
+func (s *Server) JobDownload() error {
+	n, err := s.ssh_cli.DownloadFile(Path+s.OutFile+".out", apiconfig.JOB_FILE_DIR_PATH+"/"+s.OutFile+".out")
+	if err != nil {
+		return err
+	}
+	n, err = s.ssh_cli.DownloadFile(Path+s.ErrFile+".err", apiconfig.JOB_FILE_DIR_PATH+"/"+s.ErrFile+".err")
+	if err != nil {
+		return err
+	}
+	fmt.Printf("download file[%v] ok, status=[%d]\n", s.jobName, n)
+	return nil
+}
+
 func (s *Server) Run() {
 	err := s.JobUpload()
 	if err != nil {
@@ -86,4 +102,16 @@ func (s *Server) Run() {
 		return
 	}
 	fmt.Printf("job[%v] submitted, jobID=[%v]\n", s.jobName, s.jobID)
+	for {
+		if s.GetJobStatus() {
+			fmt.Printf("job[%v] is completed\n", s.jobName)
+			break
+		}
+		time.Sleep(5 * time.Second)
+	}
+	err = s.JobDownload()
+	if err != nil {
+		fmt.Printf("failed to download job,err=[%v]\n", err)
+		return
+	}
 }
