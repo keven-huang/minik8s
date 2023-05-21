@@ -1,3 +1,3 @@
-FROM alpine:latest
+FROM golang:1.20.3-alpine
 
-COPY gpu-server ./gpu-server
+COPY gpuserver ./gpuserver

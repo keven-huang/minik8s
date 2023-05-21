@@ -86,7 +86,7 @@ func (c Cli) UploadFile(localFile, remoteFileName string) (int, error) {
 	}
 	defer file.Close()
 
-	ftpFile, err := c.sftpClient.Create(remoteFileName)
+	ftpFile, err := c.sftpClient.OpenFile(remoteFileName, os.O_WRONLY|os.O_CREATE|os.O_TRUNC)
 	if nil != err {
 		return -1, fmt.Errorf("Create remote path failed: %w", err)
 	}
