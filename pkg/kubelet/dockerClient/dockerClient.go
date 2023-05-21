@@ -373,7 +373,7 @@ func CreatePod(pod core.Pod) ([]core.ContainerMeta, *types.NetworkSettings, erro
 
 	// 创建Volumes并mount hostpath
 	for _, vo := range pod.Spec.Volumes {
-		if vo.VolumeSource.HostPath != "" { // mountHost
+		if vo.HostPath != "" { // mountHost
 			_, err := CreateVolume(vo.Name, &vo.HostPath)
 			if err != nil {
 				fmt.Println(err.Error())

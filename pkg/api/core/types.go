@@ -309,7 +309,8 @@ type Volume struct {
 	// volumeSource represents the location and type of the mounted volume.
 	// If not specified, the Volume is implied to be an EmptyDir.
 	// This implied behavior is deprecated and will be removed in a future version.
-	VolumeSource `json:",inline" protobuf:"bytes,2,opt,name=volumeSource"`
+	//VolumeSource `json:",inline" protobuf:"bytes,2,opt,name=volumeSource"`
+	HostPath string `yaml:"hostPath" json:"hostPath"`
 }
 
 type VolumeSource struct {
