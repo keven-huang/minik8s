@@ -18,6 +18,8 @@ func NewServer(jobName string, outfile string, errfile string) *Server {
 	return &Server{
 		ssh_cli: NewSSHClient(User, Pwd, Host, Port),
 		jobName: jobName,
+		OutFile: outfile,
+		ErrFile: errfile,
 	}
 }
 
