@@ -215,12 +215,17 @@ func GetContainerInfo(id string) (types.ContainerJSON, error) {
 	return info, nil
 }
 
-func CreateVolume(name string) (volume.Volume, error) {
+func CreateVolume(name string, hostpath *string) (volume.Volume, error) {
 	cli, err := GetNewClient()
 	if err != nil {
 		return volume.Volume{}, err
 	}
 	mapOptions := map[string]string{}
+	if hostpath != nil {
+		mapOptions["type"] = "local"
+		mapOptions["o"] = "bind"
+		mapOptions["device"] = *hostpath
+	}
 	resp, err := cli.VolumeCreate(context.Background(), volume.CreateOptions{
 		Name:       name,
 		Driver:     config.DEFAULT_DRIVER,
@@ -360,6 +365,24 @@ func CreatePod(pod core.Pod) ([]core.ContainerMeta, *types.NetworkSettings, erro
 	}
 	curPauseID := pauseContainer.ID
 	res = append(res, core.ContainerMeta{Name: curPauseName, Id: curPauseID})
+
+	// 创建Volumes并mount hostpath
+	for _, vo := range pod.Spec.Volumes {
+		if vo.VolumeSource.HostPath != "" { // mountHost
+			_, err := CreateVolume(vo.Name, &vo.HostPath)
+			if err != nil {
+				fmt.Println(err.Error())
+				return nil, nil, err
+			}
+		} else { // not mountHost
+			_, err := CreateVolume(vo.Name, nil)
+			if err != nil {
+				fmt.Println(err.Error())
+				return nil, nil, err
+			}
+		}
+	}
+
 	for _, v := range containers {
 		// 配置容器的挂载
 		var mountsInfo []mount.Mount
@@ -389,6 +412,7 @@ func CreatePod(pod core.Pod) ([]core.ContainerMeta, *types.NetworkSettings, erro
 		}
 		res = append(res, core.ContainerMeta{Name: v.Name, Id: resp.ID})
 	}
+
 	// 启动
 	for _, v := range res {
 		err := cli.ContainerStart(context.Background(), v.Id, types.ContainerStartOptions{})

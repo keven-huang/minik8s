@@ -144,9 +144,11 @@ func (store *EtcdStore) Watch(key string, isPrefix bool) <-chan Event {
 		}
 		for w := range wat {
 			for _, event := range w.Events {
-				fmt.Println("[etcd] etcd have watched")
-				fmt.Print(string(event.Kv.Key), " ", event.Type, "\n")
+				fmt.Println("[etcd] etcd have watched ", string(event.Kv.Key), " ", event.Type)
+				//fmt.Println("[etcd] etcd have watched")
+				//fmt.Print(string(event.Kv.Key), " ", event.Type, "\n")
 				fmt.Print(event.Kv.Version, " ", event.Kv.CreateRevision, " ", event.Kv.ModRevision, "\n")
+				fmt.Println("----------")
 				var watchedEvent Event
 				watchedEvent.Type = getType(event)
 				watchedEvent.Key = string(event.Kv.Key)

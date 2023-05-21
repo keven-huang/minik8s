@@ -156,7 +156,6 @@ func AddNode(node *core.Node) error {
 	}
 	return nil
 }
-
 func UpdateService(service *service.Service) error {
 	url := apiconfig.Server_URL + apiconfig.SERVICE_PATH
 	fmt.Println("[tool][updateservice]: url=" + url)

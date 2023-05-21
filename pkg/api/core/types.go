@@ -41,7 +41,7 @@ type Container struct {
 type VolumeMount struct {
 	// volumeName
 	Name string `yaml:"name" json:"name"`
-	// mountpath
+	// mountpath, it spec the inner path of a container, not the host
 	MountPath string `yaml:"mountPath" json:"mountPath"`
 }
 
@@ -315,6 +315,7 @@ type Volume struct {
 }
 
 type VolumeSource struct {
+	HostPath string `yaml:"hostPath" json:"hostPath"`
 }
 
 // Node is a worker node in Kubernetes.
