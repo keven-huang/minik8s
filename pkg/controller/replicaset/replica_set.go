@@ -182,30 +182,13 @@ func (rsc *ReplicaSetController) DeleteReplicaset(event tool.Event) {
 		return
 	}
 
-	pod_cache := rsc.PodInformer.GetCache()
+	number := rsc.DeletePodWithNumber(replica, int(replica.Status.Replicas), prefix)
 
-	for _, value := range *pod_cache {
-		pod := &core.Pod{}
-		err := json.Unmarshal([]byte(value), pod)
-		if err != nil {
-			log.Println("[ERROR] ", prefix, err)
-			return
-		}
-		for _, owner := range pod.OwnerReferences {
-			if owner.UID == replica.UID {
-				fmt.Println(prefix, "find pod: ", pod.Name)
-				values := url.Values{}
-				values.Add("PodName", pod.Name)
-				err := web.SendHttpRequest("DELETE", apiconfig.Server_URL+apiconfig.POD_PATH+"?"+values.Encode(),
-					web.WithPrefix(prefix),
-					web.WithLog(true))
-				if err != nil {
-					fmt.Println("[ERROR] ", prefix, err)
-					return
-				}
-				time.Sleep(time.Second * 4)
-			}
-		}
+	if number != int(replica.Status.Replicas) {
+		fmt.Println("[ERROR] ", prefix, "only delete ", number, " pods. remain ",
+			int(replica.Status.Replicas)-number, " pods.")
+	} else {
+		fmt.Println(prefix, "Successfully delete ", number, " pods in replicaset: ", replica.Name)
 	}
 }
 
@@ -233,6 +216,68 @@ func (rsc *ReplicaSetController) DeletePod(event tool.Event) {
 	rsc.PodInformer.Delete(event.Key)
 }
 
+func (rsc *ReplicaSetController) CreatePodWithNumber(replica *core.ReplicaSet, number int, prefix string) int {
+	err_num := 0
+	for i := 0; i < number; i++ {
+		pod := &core.Pod{
+			ObjectMeta: replica.Spec.Template.ObjectMeta,
+			Spec:       replica.Spec.Template.Spec,
+			Status: core.PodStatus{
+				Phase: "Pending",
+			},
+		}
+		pod.Name = replica.Name + "-" + random.GenerateRandomString(5)
+		pod.OwnerReferences = append(pod.OwnerReferences,
+			v1.OwnerReference{
+				Name: replica.Name,
+				UID:  replica.UID,
+			})
+
+		fmt.Println(prefix, "crate pod: ", pod.Name)
+		err := create.CreatePod(pod)
+		if err != nil {
+			fmt.Println("[ERROR] ", prefix, "create pod error: ", err)
+			err_num++
+		}
+		time.Sleep(time.Second * 4)
+	}
+	return number - err_num
+}
+
+func (rsc *ReplicaSetController) DeletePodWithNumber(replica *core.ReplicaSet, number int, prefix string) int {
+	pod_cache := rsc.PodInformer.GetCache()
+	success := 0
+
+	for _, value := range *pod_cache {
+		pod := &core.Pod{}
+		err := json.Unmarshal([]byte(value), pod)
+		if err != nil {
+			log.Println("[ERROR] ", prefix, err)
+			continue
+		}
+		for _, owner := range pod.OwnerReferences {
+			if owner.UID == replica.UID {
+				fmt.Println(prefix, "find pod: ", pod.Name)
+				values := url.Values{}
+				values.Add("PodName", pod.Name)
+				err := web.SendHttpRequest("DELETE", apiconfig.Server_URL+apiconfig.POD_PATH+"?"+values.Encode(),
+					web.WithPrefix(prefix),
+					web.WithLog(true))
+				if err != nil {
+					fmt.Println("[ERROR] ", prefix, err)
+					continue
+				}
+				success++
+				if success == number {
+					return success
+				}
+				time.Sleep(time.Second * 4)
+			}
+		}
+	}
+	return success
+}
+
 func (rsc *ReplicaSetController) worker() {
 	prefix := "[ReplicaSet] [worker] "
 	for {
@@ -252,39 +297,22 @@ func (rsc *ReplicaSetController) worker() {
 			}
 
 			diff := *replica.Spec.Replicas - replica.Status.Replicas
+			var num int
 
 			if diff > 0 {
 				// create new
 				fmt.Println(prefix, "start to create %d pod(s).", diff)
-				for i := 0; i < int(diff); i++ {
-					pod := &core.Pod{
-						ObjectMeta: replica.Spec.Template.ObjectMeta,
-						Spec:       replica.Spec.Template.Spec,
-						Status: core.PodStatus{
-							Phase: "Pending",
-						},
-					}
-					pod.Name = replica.Name + "-" + random.GenerateRandomString(5)
-					pod.OwnerReferences = append(pod.OwnerReferences,
-						v1.OwnerReference{
-							Name: replica.Name,
-							UID:  replica.UID,
-						})
-
-					fmt.Println(prefix, "crate pod: ", pod.Name)
-					err = create.CreatePod(pod)
-					if err != nil {
-						fmt.Println("[ERROR] ", prefix, "create pod error: ", err)
-						i--
-					}
-
-					time.Sleep(time.Second * 4)
-				}
+				num = rsc.CreatePodWithNumber(replica, int(diff), prefix)
 			} else if diff < 0 {
-
+				// delete old
+				fmt.Println(prefix, "start to delete %d pod(s).", -diff)
+				num = rsc.DeletePodWithNumber(replica, int(-diff), prefix)
+			} else {
+				// do nothing
+				fmt.Println(prefix, "do nothing.")
 			}
 
-			replica.Status.Replicas += diff
+			replica.Status.Replicas += int32(num)
 
 			// 更新replicaset
 			data, err := json.Marshal(replica)
