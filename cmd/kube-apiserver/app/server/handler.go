@@ -27,6 +27,7 @@ var HandlerTable = []Handler{
 	{Type: "DELETE", Path: apiconfig.POD_PATH, Eventhandler: DeletePod},
 	{Type: "POST", Path: apiconfig.POD_PATH, Eventhandler: UpdatePod},
 	// service
+	{Type: "GET", Path: apiconfig.SERVICE_PATH, Eventhandler: GetService},
 	{Type: "PUT", Path: apiconfig.SERVICE_PATH, Eventhandler: UpdateService},
 	{Type: "POST", Path: apiconfig.SERVICE_PATH, Eventhandler: UpdateService},
 	{Type: "DELETE", Path: apiconfig.SERVICE_PATH, Eventhandler: DeleteService},

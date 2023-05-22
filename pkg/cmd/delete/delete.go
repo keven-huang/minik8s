@@ -41,9 +41,35 @@ func NewCmdDelete() *cobra.Command {
 	return cmd
 }
 
-// RunDelete performs the creation
+// RunDelete
 func (o *DeleteOptions) RunDelete(cmd *cobra.Command, args []string) error {
-	// Send a POST request to kube-apiserver to delete the pod
+	if len(args) < 1 {
+		fmt.Println("[kubectl] [Delete] [RunDelete] must have TYPE.")
+		return nil
+	}
+
+	switch args[0] {
+	case "pod":
+		{
+			return o.RunDeletePod(cmd, args)
+		}
+	//case "replicaset":
+	//	{
+	//		return o.RunDeleteReplicaSet(cmd, args)
+	//	}
+	case "service":
+		{
+			return o.RunDeleteService(cmd, args)
+		}
+	default:
+		{
+			fmt.Printf("[kubectl] [Delete] [RunDelete] %s is not supported.\n", args[0])
+			return nil
+		}
+	}
+}
+
+func (o *DeleteOptions) RunDeletePod(cmd *cobra.Command, args []string) error {
 	// 创建 PUT 请求
 	if len(args) < 1 || args[0] != "pod" {
 		fmt.Println("only support pod.")
@@ -60,7 +86,7 @@ func (o *DeleteOptions) RunDelete(cmd *cobra.Command, args []string) error {
 	}
 
 	err := web.SendHttpRequest("DELETE", apiconfig.Server_URL+apiconfig.POD_PATH+"?"+values.Encode(),
-		web.WithPrefix("[kubectl] [delete] [RunDelete] "),
+		web.WithPrefix("[kubectl] [delete] [DeletePod] "),
 		web.WithLog(true))
 	if err != nil {
 		return err
@@ -68,5 +94,62 @@ func (o *DeleteOptions) RunDelete(cmd *cobra.Command, args []string) error {
 
 	fmt.Println("pod Delete successfully")
 	return nil
-
 }
+
+func (o *DeleteOptions) RunDeleteService(cmd *cobra.Command, args []string) error {
+	// 创建 PUT 请求
+	if len(args) < 1 || args[0] != "service" {
+		fmt.Println("only support service.")
+		return nil
+	}
+
+	values := url.Values{}
+	if o.DeleteAll {
+		values.Add("all", "true")
+	}
+	if len(args) > 1 {
+		values.Add("ServiceName", args[1])
+		//body = bytes.NewBuffer([]byte(args[1]))
+	}
+
+	err := web.SendHttpRequest("DELETE", apiconfig.Server_URL+apiconfig.SERVICE_PATH+"?"+values.Encode(),
+		web.WithPrefix("[kubectl] [delete] [DeleteService] "),
+		web.WithLog(true))
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("service Delete successfully")
+	return nil
+}
+
+//
+//// RunDelete performs the creation
+//func (o *DeleteOptions) RunDelete(cmd *cobra.Command, args []string) error {
+//	// Send a POST request to kube-apiserver to delete the pod
+//	// 创建 PUT 请求
+//	if len(args) < 1 || args[0] != "pod" {
+//		fmt.Println("only support pod.")
+//		return nil
+//	}
+//
+//	values := url.Values{}
+//	if o.DeleteAll {
+//		values.Add("all", "true")
+//	}
+//	if len(args) > 1 {
+//		values.Add("PodName", args[1])
+//		//body = bytes.NewBuffer([]byte(args[1]))
+//	}
+//
+//	err := web.SendHttpRequest("DELETE", apiconfig.Server_URL+apiconfig.POD_PATH+"?"+values.Encode(),
+//		web.WithPrefix("[kubectl] [delete] [RunDelete] "),
+//		web.WithLog(true))
+//	if err != nil {
+//		return err
+//	}
+//
+//	fmt.Println("pod Delete successfully")
+//	return nil
+//
+//}

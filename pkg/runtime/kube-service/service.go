@@ -92,6 +92,7 @@ func CreateService(sc *service.Service) *RuntimeService {
 	var lock sync.RWMutex
 	res.lock = lock
 	res.ifSend = false
+	res.isDead = false
 	go res.Run(res.eventChan)
 	err := res.findPods(true)
 	if err != nil {
@@ -118,6 +119,10 @@ func (rs *RuntimeService) Run(event <-chan string) {
 			rs.lock.Lock()
 			switch cmd {
 			case TICK_EVENT:
+				if rs.isDead {
+					fmt.Println("[service][run]: stop")
+					return
+				}
 				// flag表示之前的状态有无改变
 				fmt.Println("[service][run]: got ticker")
 				flag := false
@@ -156,6 +161,10 @@ func (rs *RuntimeService) startTicker() {
 	for {
 		select {
 		case <-rs.timer.C:
+			if rs.isDead {
+				fmt.Println("[service][ticker]: stop")
+				return
+			}
 			rs.lock.Lock()
 			if rs.ifSend {
 				rs.eventChan <- TICK_EVENT
@@ -164,6 +173,7 @@ func (rs *RuntimeService) startTicker() {
 			}
 			rs.lock.Unlock()
 		case <-rs.stopChan:
+			fmt.Println("[service][ticker]: got stop signal")
 			return // stop and return
 		}
 	}
@@ -173,10 +183,11 @@ func (rs *RuntimeService) startTicker() {
 func (rs *RuntimeService) Delete() {
 	rs.lock.Lock()
 	defer rs.lock.Unlock()
+	rs.isDead = true
 	rs.stopChan <- true // close the ticker
-	close(rs.eventChan)
-	err := tool.DeleteService(rs.ServiceConfig)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
+	defer close(rs.eventChan)
+	//err := tool.DeleteService(rs.ServiceConfig) // delete etcd
+	//if err != nil {
+	//	fmt.Println(err.Error())
+	//}
 }

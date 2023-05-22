@@ -6,6 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"io"
 	"log"
+	"minik8s/cmd/kube-apiserver/app/apiconfig"
+	"minik8s/pkg/kube-apiserver/etcd"
 	kubeservice "minik8s/pkg/service"
 	"net/http"
 )
@@ -38,7 +40,21 @@ func UpdateService(c *gin.Context, s *Server) {
 
 func DeleteService(c *gin.Context, s *Server) {
 	prefix := "[serviceHandler][DeleteService]:"
-	key := c.Request.URL.Path
+	if c.Query("all") == "true" { // delete all services
+		num, err := s.Etcdstore.DelAll(apiconfig.SERVICE_PATH)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"message":   "delete all services successfully.",
+			"deleteNum": num,
+		})
+		return
+	}
+	ServiceName := c.Query("ServiceName")
+	//fmt.Println("ServiceName:", ServiceName)
+	key := c.Request.URL.Path + "/" + ServiceName
 	fmt.Println(prefix + "key:" + key)
 	err := s.Etcdstore.Del(key)
 	if err != nil {
@@ -50,6 +66,47 @@ func DeleteService(c *gin.Context, s *Server) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"message": "delete service success",
+		"message":           "delete service success",
+		"deleteServiceName": ServiceName,
+	})
+}
+
+// GetService Body传入Service.Name
+func GetService(c *gin.Context, s *Server) {
+	fmt.Println("[api-server] [ServiceHandler] [GetService]")
+	if c.Query("all") == "true" {
+		res, err := s.Etcdstore.GetWithPrefix(apiconfig.SERVICE_PATH)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		c.JSON(http.StatusOK, res)
+		return
+	}
+
+	ServiceName := c.Query("Name")
+	key := c.Request.URL.Path + "/" + string(ServiceName)
+
+	var res []etcd.ListRes
+	var err error
+
+	if c.Query("prefix") == "true" {
+		res, err = s.Etcdstore.GetWithPrefix(key)
+		fmt.Println(res)
+	} else {
+		res, err = s.Etcdstore.GetExact(key)
+	}
+
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "etcd get Service failed",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "get Service successfully.",
+		"Results": res,
 	})
 }

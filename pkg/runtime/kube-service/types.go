@@ -29,6 +29,7 @@ type RuntimeService struct {
 	stopChan chan bool
 	// 是否可以发送信号，如果为1表示可以
 	ifSend bool
+	isDead bool
 }
 
 const TICK_EVENT = "tick"

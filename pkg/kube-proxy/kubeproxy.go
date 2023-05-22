@@ -79,12 +79,6 @@ func (proxy *KubeProxy) updateRuntimeServiceHandler(event tool.Event) {
 func (proxy *KubeProxy) deleteRuntimeServiceHandler(event tool.Event) {
 	prefix := "[kubeproxy][deleteService]"
 	fmt.Println(prefix + "key:" + event.Key)
-	runtimeService := &kubeservice.Service{}
-	err := json.Unmarshal([]byte(event.Val), runtimeService)
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
 	SvcChain, ok := proxy.ServiceName2SvcChain[event.Key]
 	if !ok {
 		fmt.Println(prefix + "no such service")

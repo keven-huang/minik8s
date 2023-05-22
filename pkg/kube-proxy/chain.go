@@ -138,6 +138,26 @@ func AddReturnToNAT(father string, table string) {
 	}
 }
 
+func DeleteReturnToNAT(father string, table string) {
+	fmt.Println("[chain][deleteReturn]: father=" + father)
+	ipt, err := iptables.New()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	if table == "" {
+		table = "nat"
+	}
+	spec := []string{}
+	spec = append(spec, "-p", "all")
+	spec = append(spec, "-j", "RETURN")
+	err = ipt.Delete(table, father, spec...)
+	//err = ipt.Append(table, father, spec...)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
 func NewSvcChain(name string, table string, father string, ip string, port string,
 	protocol string, pods []*PodInfo) *SvcChain {
 	fmt.Println("[chain][NewSvcChain]: sName=" + name + " sIP:port=" + ip + ":" + port + "podNum=" + strconv.Itoa(len(pods)))
@@ -256,6 +276,8 @@ func (chain *SvcChain) DeleteChain() error {
 			return err
 		}
 	}
+	// 删除该链中的return链
+	DeleteReturnToNAT(chain.Name, "nat")
 	//删除该链
 	err = ipt.DeleteChain(chain.Table, chain.Name)
 	return err

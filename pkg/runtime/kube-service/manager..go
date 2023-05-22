@@ -7,6 +7,7 @@ import (
 	"minik8s/pkg/client/informer"
 	"minik8s/pkg/client/tool"
 	"minik8s/pkg/service"
+	"strings"
 )
 
 type ServiceManager struct {
@@ -42,15 +43,15 @@ func NewServiceManager() *ServiceManager {
 	// 设置watch delete event的回调
 	res.ServiceInformer.AddEventHandler(tool.Deleted, func(event tool.Event) {
 		// delete by name
-		fmt.Println("[kube-service][manager][deleteServiceHandler]" + event.Key)
+		prefix := "[kube-service][manager][deleteServiceHandler]"
+		fmt.Println(prefix + event.Key)
+		strs := strings.Split(event.Key, "/")
 		var name string
-		err := json.Unmarshal([]byte(event.Val), &name)
-		if err != nil {
-			return
-		}
+		name = strs[4]
+		fmt.Println(prefix + name)
 		lastService, ok := res.ServiceMapping[name]
 		if !ok {
-			fmt.Println("[warn]:" + "fail to delete service " + name)
+			fmt.Println(prefix + "fail to find service " + name)
 			return
 		} else {
 			lastService.Delete()             // delete service
