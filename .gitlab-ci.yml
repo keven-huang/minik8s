@@ -9,21 +9,27 @@ cache:
 
 build:
   stage: build
-  only:
-    - apiserver,gpu
   script:
     - sudo /usr/local/go/bin/go build -o /bin/apiserver ./cmd/kube-apiserver/kube-apiserver.go
-    - sudo /usr/local/go/bin/go build -o /bin/apiserver ./cmd/kube-controller/job-controller.go
+    - sudo /usr/local/go/bin/go build -o /bin/scheduler ./cmd/kube-scheduler/kube-scheduler.go
+    - sudo /usr/local/go/bin/go build -o /bin/kubelet ./cmd/kubelet/kublet.go
+    - if [ "$CI_COMMIT_REF_NAME" == "master" ]; then
+      elif [ "$CI_COMMIT_REF_NAME" == "gpu" ]; then
+      sudo /usr/local/go/bin/go build -o /bin/apiserver ./cmd/kube-controller/job-controller.go;
+      else
+      echo "Unsupported branch!";
+      fi
   tags:
     - testing
 
 
 test:
   stage: test
-  only:
-    - apiserver,gpu
   script:
+    - make run
     - sudo /usr/local/go/bin/go test ./...
+    - make stop
+    - make clean
   tags:
     - testing
 

@@ -144,7 +144,7 @@ func GetGpuJobFile(jobname string) error {
 	// 获取gpu运行文件至job目录
 	jobFile := tool.GetJobFile(jobname)
 	if len(jobFile.Program) == 0 || len(jobFile.Slurm) == 0 {
-		return fmt.Errorf("[kubelet] [UpdatePod]", "get gpufiles empty")
+		return fmt.Errorf("[kubelet] [UpdatePod] get gpufiles empty")
 	}
 	// get program
 	program_name := jobFile.JobName + ".cu"

@@ -48,46 +48,47 @@ func example() {
 		return
 	}
 }
-func main() {
-	example()
-	//resp, err := VolumeExp()
-	//if err != nil {
-	//	panic(err.Error())
-	//}
-	//
-	//mt := core.VolumeMount{
-	//	Name:      resp.Name,
-	//	MountPath: "/tmp/mnt1/",
-	//}
-	//mt2 := core.VolumeMount{
-	//	Name:      resp.Name,
-	//	MountPath: "/tmp/mnt2",
-	//}
-	//c2 := core.Container{
-	//	Image:        "chasingdreams/minor_ubuntu:v1",
-	//	Name:         "ubuntu_mnt_02",
-	//	Command:      []string{"/bin/sh"},
-	//	Tty:          true,
-	//	VolumeMounts: []core.VolumeMount{mt2},
-	//}
-	//c1 := core.Container{
-	//	Image:        "chasingdreams/minor_ubuntu:v1",
-	//	Name:         "ubuntu_mnt_01",
-	//	Command:      []string{"/bin/sh"},
-	//	Tty:          true,
-	//	VolumeMounts: []core.VolumeMount{mt},
-	//}
-	//resp2, err := dockerClient.CreateContainer(c1)
-	//if err != nil {
-	//	panic(err.Error())
-	//} else {
-	//	print(resp2.ID)
-	//}
-	//resp3, err2 := dockerClient.CreateContainer(c2)
-	//if err2 != nil {
-	//	panic(err2.Error())
-	//} else {
-	//	print(resp3.ID)
-	//}
 
-}
+// func main() {
+// example()
+//resp, err := VolumeExp()
+//if err != nil {
+//	panic(err.Error())
+//}
+//
+//mt := core.VolumeMount{
+//	Name:      resp.Name,
+//	MountPath: "/tmp/mnt1/",
+//}
+//mt2 := core.VolumeMount{
+//	Name:      resp.Name,
+//	MountPath: "/tmp/mnt2",
+//}
+//c2 := core.Container{
+//	Image:        "chasingdreams/minor_ubuntu:v1",
+//	Name:         "ubuntu_mnt_02",
+//	Command:      []string{"/bin/sh"},
+//	Tty:          true,
+//	VolumeMounts: []core.VolumeMount{mt2},
+//}
+//c1 := core.Container{
+//	Image:        "chasingdreams/minor_ubuntu:v1",
+//	Name:         "ubuntu_mnt_01",
+//	Command:      []string{"/bin/sh"},
+//	Tty:          true,
+//	VolumeMounts: []core.VolumeMount{mt},
+//}
+//resp2, err := dockerClient.CreateContainer(c1)
+//if err != nil {
+//	panic(err.Error())
+//} else {
+//	print(resp2.ID)
+//}
+//resp3, err2 := dockerClient.CreateContainer(c2)
+//if err2 != nil {
+//	panic(err2.Error())
+//} else {
+//	print(resp3.ID)
+//}
+
+// }
