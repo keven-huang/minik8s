@@ -55,6 +55,7 @@ func (o *GetOptions) RunGet(cmd *cobra.Command, args []string) error {
 	// 创建 PUT 请求
 	if len(args) < 1 || args[0] != "pod" {
 		fmt.Println("only support pod.")
+		fmt.Println("only support pod.")
 		return nil
 	}
 
