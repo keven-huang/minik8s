@@ -2,6 +2,7 @@ package gpu_server
 
 import (
 	"fmt"
+	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"strings"
 	"time"
 )
@@ -33,8 +34,8 @@ const (
 
 func (s *Server) JobUpload() error {
 	//scp upload program
-	// homePath := apiconfig.JOB_FILE_DIR_PATH + "/"
-	homePath := "./"
+	homePath := apiconfig.JOB_FILE_DIR_PATH + "/"
+	// homePath := "./"
 	cudafile := s.jobName + ".cu"
 	n, err := s.ssh_cli.UploadFile(homePath+cudafile, Path+cudafile)
 	if err != nil {
@@ -93,8 +94,8 @@ func (s *Server) GetJobStatus() bool {
 }
 
 func (s *Server) JobDownload() error {
-	// homePath := apiconfig.JOB_FILE_DIR_PATH + "/"
-	homePath := "./"
+	homePath := apiconfig.JOB_FILE_DIR_PATH + "/"
+	// homePath := "./"
 	n, err := s.ssh_cli.DownloadFile(Path+s.OutFile+".out", homePath+s.OutFile+".out")
 	if err != nil {
 		return err

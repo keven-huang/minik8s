@@ -89,7 +89,7 @@ func (k *Kubelet) UpdatePod(event tool.Event) {
 
 	metaData, netSetting, err := dockerClient.CreatePod(*pod)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(prefix, err)
 		return
 	}
 
@@ -143,7 +143,6 @@ func (k *Kubelet) DeletePod(event tool.Event) {
 func GetGpuJobFile(jobname string) error {
 	// 获取gpu运行文件至job目录
 	jobFile := tool.GetJobFile(jobname)
-	fmt.Println("[kubelet] [UpdatePod]", "get gpufiles", string(jobFile.Program))
 	if len(jobFile.Program) == 0 || len(jobFile.Slurm) == 0 {
 		return fmt.Errorf("[kubelet] [UpdatePod]", "get gpufiles empty")
 	}

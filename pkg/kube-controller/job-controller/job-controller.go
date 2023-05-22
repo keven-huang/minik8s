@@ -53,18 +53,20 @@ func (jc *JobController) worker() {
 }
 
 func (jc *JobController) RunJob(job *core.Job) {
-	cmd := fmt.Sprintf("./gpuserver --jobname=%s", job.Name)
-	fmt.Println("[jobcontroller]", "cmd:", cmd)
+	cmd_job := fmt.Sprintf("--jobname=%s", job.Name)
+	cmd_out := fmt.Sprintf("--outfile=%s", job.Name)
+	cmd_err := fmt.Sprintf("--errfile=%s", job.Name)
 	jobcontainer := core.Container{
 		Name:  "gpu",
-		Image: "gpu-job-image",
+		Image: "gpu-jobs-image",
 		VolumeMounts: []core.VolumeMount{
 			{
 				Name:      "job-volume",
 				MountPath: "/home/job",
 			},
 		},
-		Command: []string{cmd},
+		EntryPoint: []string{"./gpuserver"},
+		Command:    []string{cmd_job, cmd_out, cmd_err},
 	}
 
 	pod := &core.Pod{
