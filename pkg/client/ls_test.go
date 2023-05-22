@@ -15,7 +15,7 @@ func TestWatch_resource(t *testing.T) {
 		// handle event
 		fmt.Println(event.Type)
 	})
-	informer.Run()
+	go informer.Run()
 	time.Sleep(1 * time.Second)
 	informer.Stop()
 }
