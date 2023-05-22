@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/docker/docker/api/types/volume"
 	"minik8s/pkg/api/core"
 	metav1 "minik8s/pkg/apis/meta/v1"
@@ -17,12 +18,12 @@ func VolumeExp() (volume.Volume, error) {
 func example() {
 	mt := core.VolumeMount{
 		Name:      "volume03",
-		MountPath: "/tmp/docker_path",
+		MountPath: "/tmp/host_path",
 	}
 	con := core.Container{
-		Image:        "chasingdreams/minor_ubuntu:v1",
+		Image:        "chasingdreams/minor_ubuntu:v2",
 		Name:         "test_mnt",
-		Command:      []string{"/bin/sh"},
+		EntryPoint:   []string{"/tmp/host_path/host_file"},
 		Tty:          true,
 		VolumeMounts: []core.VolumeMount{mt},
 	}
@@ -42,6 +43,7 @@ func example() {
 	}
 	_, _, err := dockerClient.CreatePod(*pod)
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
 }
