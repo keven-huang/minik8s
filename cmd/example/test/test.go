@@ -34,7 +34,7 @@ func send() {
 		if err != nil {
 			return
 		}
-		time.Sleep(3 * time.Second)
+		// time.Sleep(3 * time.Second)
 	}
 
 }

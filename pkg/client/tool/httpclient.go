@@ -8,6 +8,7 @@ import (
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/pkg/api/core"
 	"minik8s/pkg/service"
+	myJson "minik8s/pkg/util/json"
 	"minik8s/pkg/util/log"
 	"net/http"
 	"time"
@@ -74,13 +75,19 @@ func Watch(resourses string) WatchInterface {
 			n, err := resp.Body.Read(buf)
 			if n != 0 || err != io.EOF {
 				event := Event{}
-				err = json.Unmarshal([]byte(buf[:n]), &event)
-				if err != nil {
-					continue
+				strings := myJson.ExtractNestedContent(string(buf[:n]))
+				for _, s := range strings {
+					if len(s) > 0 {
+						err = json.Unmarshal([]byte(s), &event)
+						if err != nil {
+							fmt.Println("[httpclient] [Watch] unmarshal:", err)
+							continue
+						}
+						fmt.Println("[httpclient] [Watch] unmarshal:", event.Key, event.Val, event.Type)
+						// send event to watcher.resultChan
+						wc <- event
+					}
 				}
-				fmt.Println("[httpclient] [Watch] unmarshal:", event.Key, event.Val, event.Type)
-				// send event to watcher.resultChan
-				wc <- event
 			} else {
 				fmt.Println("[httpclient] [Watch] break")
 				break

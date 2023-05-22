@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"os"
+	"reflect"
+
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/yaml"
-	"os"
-	"reflect"
 )
 
 func GetFromYaml(filename string, a interface{}) error {
@@ -67,4 +68,30 @@ func CheckDeepEqual(a, b interface{}) {
 	} else {
 		fmt.Println("The two structs are equal.")
 	}
+}
+
+func ExtractNestedContent(data string) []string {
+	var result []string
+	stack := make([]int, 0)
+	startIndex := -1
+
+	for i, char := range data {
+		if char == '{' {
+			stack = append(stack, i)
+			if startIndex == -1 {
+				startIndex = i
+			}
+		} else if char == '}' {
+			if len(stack) == 0 {
+				continue
+			}
+			stack = stack[:len(stack)-1]
+			if len(stack) == 0 {
+				result = append(result, data[startIndex:i+1])
+				startIndex = -1
+			}
+		}
+	}
+
+	return result
 }
