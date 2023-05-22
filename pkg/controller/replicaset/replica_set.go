@@ -14,6 +14,7 @@ import (
 	q "minik8s/pkg/util/concurrentqueue"
 	"minik8s/pkg/util/random"
 	"minik8s/pkg/util/web"
+	"net/url"
 	"time"
 )
 
@@ -169,8 +170,43 @@ func (rsc *ReplicaSetController) DeleteReplicaset(event tool.Event) {
 	fmt.Println(prefix, "event.type: ", tool.GetTypeName(event))
 	fmt.Println(prefix, "event.Key: ", event.Key)
 	fmt.Println(prefix, "event.Val: ", event.Val)
+
+	val := rsc.ReplicasetInformer.Get(event.Key)
 	rsc.ReplicasetInformer.Delete(event.Key)
 
+	fmt.Println(prefix, "val: ", val)
+	replica := &core.ReplicaSet{}
+	err := json.Unmarshal([]byte(val), replica)
+	if err != nil {
+		fmt.Println("[ERROR] ", prefix, err)
+		return
+	}
+
+	pod_cache := rsc.PodInformer.GetCache()
+
+	for _, value := range *pod_cache {
+		pod := &core.Pod{}
+		err := json.Unmarshal([]byte(value), pod)
+		if err != nil {
+			log.Println("[ERROR] ", prefix, err)
+			return
+		}
+		for _, owner := range pod.OwnerReferences {
+			if owner.UID == replica.UID {
+				fmt.Println(prefix, "find pod: ", pod.Name)
+				values := url.Values{}
+				values.Add("PodName", pod.Name)
+				err := web.SendHttpRequest("DELETE", apiconfig.Server_URL+apiconfig.POD_PATH+"?"+values.Encode(),
+					web.WithPrefix(prefix),
+					web.WithLog(true))
+				if err != nil {
+					fmt.Println("[ERROR] ", prefix, err)
+					return
+				}
+				time.Sleep(time.Second * 4)
+			}
+		}
+	}
 }
 
 func (rsc *ReplicaSetController) AddPod(event tool.Event) {
@@ -229,6 +265,11 @@ func (rsc *ReplicaSetController) worker() {
 						},
 					}
 					pod.Name = replica.Name + "-" + random.GenerateRandomString(5)
+					pod.OwnerReferences = append(pod.OwnerReferences,
+						v1.OwnerReference{
+							Name: replica.Name,
+							UID:  replica.UID,
+						})
 
 					fmt.Println(prefix, "crate pod: ", pod.Name)
 					err = create.CreatePod(pod)

@@ -30,7 +30,9 @@ var HandlerTable = []Handler{
 	{Type: "POST", Path: apiconfig.SERVICE_PATH, Eventhandler: UpdateService},
 	{Type: "DELETE", Path: apiconfig.SERVICE_PATH, Eventhandler: DeleteService},
 	// ReplicaSet
+	{Type: "GET", Path: apiconfig.REPLICASET_PATH, Eventhandler: GetReplicaSet},
 	{Type: "PUT", Path: apiconfig.REPLICASET_PATH, Eventhandler: AddReplicaSet},
 	{Type: "POST", Path: apiconfig.REPLICASET_PATH, Eventhandler: UpdateReplicaSet},
+	{Type: "DELETE", Path: apiconfig.REPLICASET_PATH, Eventhandler: DeleteReplicaSet},
 	// watch
 	{Type: "GET", Path: "/watch/*resource", Eventhandler: Watch}}

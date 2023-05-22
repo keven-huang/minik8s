@@ -3,11 +3,17 @@ package get
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/fatih/color"
+	"github.com/gosuri/uitable"
 	"github.com/spf13/cobra"
+	"log"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
+	"minik8s/pkg/api/core"
 	"minik8s/pkg/kube-apiserver/etcd"
 	"minik8s/pkg/util/web"
 	"net/url"
+	"strconv"
+	"time"
 )
 
 // GetOptions is the commandline options for 'get' sub command
@@ -27,7 +33,7 @@ func NewCmdGet() *cobra.Command {
 	o := NewGetOptions()
 
 	cmd := &cobra.Command{
-		Use:   "get (TYPE [NAME | -all])",
+		Use:   "get TYPE [NAME | -all]",
 		Short: "Get a resource from stdin",
 		Run: func(cmd *cobra.Command, args []string) {
 			err := o.RunGet(cmd, args)
@@ -50,13 +56,33 @@ type GetRespond struct {
 
 // RunGet performs the creation
 func (o *GetOptions) RunGet(cmd *cobra.Command, args []string) error {
-	// Send a POST request to kube-apiserver to get the pod
-	// 创建 PUT 请求
-	if len(args) < 1 || args[0] != "pod" {
-		fmt.Println("only support pod.")
+	prefix := "[kubectl] [get] [RunGet] "
+
+	if len(args) < 1 {
+		fmt.Println(prefix, "must have TYPE.")
 		return nil
 	}
 
+	switch args[0] {
+	case "pod":
+		{
+			return o.RunGetPod(cmd, args)
+		}
+	case "replicaset":
+		{
+			return o.RunGetReplicaSet(cmd, args)
+		}
+	default:
+		{
+			fmt.Printf(prefix, "%s is not supported.\n", args[0])
+			return nil
+		}
+	}
+
+}
+
+func (o *GetOptions) RunGetPod(cmd *cobra.Command, args []string) error {
+	prefix := "[kubectl] [get] [RunGetPod] "
 	values := url.Values{}
 	if o.GetAll {
 		values.Add("all", "true")
@@ -72,8 +98,8 @@ func (o *GetOptions) RunGet(cmd *cobra.Command, args []string) error {
 	bodyBytes := make([]byte, 0)
 
 	err := web.SendHttpRequest("GET", apiconfig.Server_URL+apiconfig.POD_PATH+"?"+values.Encode(),
-		web.WithPrefix("[kubectl] [get] [RunGet] "),
-		web.WithLog(true),
+		web.WithPrefix(prefix),
+		web.WithLog(false),
 		web.WithBodyBytes(&bodyBytes))
 	if err != nil {
 		return err
@@ -82,9 +108,87 @@ func (o *GetOptions) RunGet(cmd *cobra.Command, args []string) error {
 	// 将字节数组转换为字符串并打印
 	var s GetRespond
 	json.Unmarshal(bodyBytes, &s)
-	fmt.Println("[kubectl] [get] [RunGet] Results:", s.Results)
+	fmt.Println(prefix, "Pod Get successfully. Here are the results:")
 
-	fmt.Println("[kubectl] [get] [RunGet] pod Get successfully")
+	fmt.Println("total number:", len(s.Results))
+
+	table := uitable.New()
+	table.MaxColWidth = 100
+	table.RightAlign(10)
+	table.AddRow("NAME", "STATUS", "Owner", "CreationTimestamp")
+	for _, val := range s.Results {
+		pod := core.Pod{}
+		err := json.Unmarshal([]byte(val.Value), &pod)
+		if err != nil {
+			log.Println(prefix, err)
+			return err
+		}
+		var owner string
+		if len(pod.OwnerReferences) > 0 {
+			owner = pod.OwnerReferences[0].Name
+		} else {
+			owner = ""
+		}
+
+		table.AddRow(color.RedString(pod.Name),
+			color.BlueString(string(pod.Status.Phase)),
+			color.GreenString(owner),
+			color.YellowString(pod.CreationTimestamp.Format(time.UnixDate)))
+	}
+	fmt.Println(table)
+
+	return nil
+}
+
+func (o *GetOptions) RunGetReplicaSet(cmd *cobra.Command, args []string) error {
+	prefix := "[kubectl] [get] [RunGetPod] "
+	values := url.Values{}
+	if o.GetAll {
+		values.Add("all", "true")
+	}
+
+	values.Add("prefix", "true")
+
+	if len(args) > 1 {
+		values.Add("Name", args[1])
+		//body = bytes.NewBuffer([]byte(args[1]))
+	}
+
+	bodyBytes := make([]byte, 0)
+
+	err := web.SendHttpRequest("GET", apiconfig.Server_URL+apiconfig.REPLICASET_PATH+"?"+values.Encode(),
+		web.WithPrefix(prefix),
+		web.WithLog(false),
+		web.WithBodyBytes(&bodyBytes))
+	if err != nil {
+		return err
+	}
+
+	// 将字节数组转换为字符串并打印
+	var s GetRespond
+	json.Unmarshal(bodyBytes, &s)
+	fmt.Println(prefix, "ReplicaSet Get successfully. Here are the results:")
+
+	fmt.Println("total number:", len(s.Results))
+
+	table := uitable.New()
+	table.MaxColWidth = 100
+	table.RightAlign(10)
+	table.AddRow("NAME", "Desired", "Current", "CreationTimestamp")
+	for _, val := range s.Results {
+		r := core.ReplicaSet{}
+		err := json.Unmarshal([]byte(val.Value), &r)
+		if err != nil {
+			log.Println(prefix, err)
+			return err
+		}
+		fmt.Println(r.Name, *r.Spec.Replicas, r.Status.Replicas, r.CreationTimestamp.Format(time.UnixDate))
+		table.AddRow(color.RedString(r.Name),
+			color.BlueString(strconv.Itoa(int(*r.Spec.Replicas))),
+			color.BlueString(strconv.Itoa(int(r.Status.Replicas))),
+			color.YellowString(r.CreationTimestamp.Format(time.UnixDate)))
+	}
+	fmt.Println(table)
 
 	return nil
 }
