@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: testMount
+spec:
+  containers:
+    - name: c1
+      image: "chasingdreams/minor_ubuntu:v1"
+      command: ["bin/sh"]
+      tty: true
+      volumeMounts:
+        - name: volume03
+          mountPath: /tmp/docker_path
+  volumes:
+    - name: volume03
+      hostPath: /tmp/host_path
