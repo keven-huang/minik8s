@@ -95,6 +95,21 @@ func Match(rs *core.ReplicaSet, pod *core.Pod) bool {
 	return true
 }
 
+func updateReplicaSet(rsc *ReplicaSetController, replica *core.ReplicaSet, key string, prefix string) {
+	data, err := json.Marshal(replica)
+	if err != nil {
+		fmt.Println(prefix, "failed to marshal:", err)
+	}
+
+	err = web.SendHttpRequest("POST", apiconfig.Server_URL+apiconfig.REPLICASET_PATH,
+		web.WithPrefix(prefix), web.WithBody(bytes.NewBuffer(data)))
+	if err != nil {
+		return
+	}
+
+	rsc.ReplicasetInformer.Set(key, string(data))
+}
+
 func (rsc *ReplicaSetController) AddReplicaset(event tool.Event) {
 	prefix := "[ReplicaSet] [AddReplicaset] "
 	fmt.Println(prefix, "event.type: ", tool.GetTypeName(event))
@@ -124,7 +139,7 @@ func (rsc *ReplicaSetController) AddReplicaset(event tool.Event) {
 			log.Println("[ERROR] ", prefix, err)
 			return
 		}
-		if Match(replica, pod) {
+		if (pod.Status.Phase == "Running") && Match(replica, pod) {
 			pod.OwnerReferences = append(pod.OwnerReferences,
 				v1.OwnerReference{
 					Name: replica.Name,
@@ -137,18 +152,7 @@ func (rsc *ReplicaSetController) AddReplicaset(event tool.Event) {
 	}
 
 	if flag {
-		data, err := json.Marshal(replica)
-		if err != nil {
-			fmt.Println(prefix, "failed to marshal:", err)
-		}
-
-		err = web.SendHttpRequest("POST", apiconfig.Server_URL+apiconfig.REPLICASET_PATH,
-			web.WithPrefix(prefix), web.WithBody(bytes.NewBuffer(data)))
-		if err != nil {
-			return
-		}
-
-		rsc.ReplicasetInformer.Set(event.Key, string(data))
+		updateReplicaSet(rsc, replica, event.Key, prefix)
 	}
 
 	if *replica.Spec.Replicas != replica.Status.Replicas {
@@ -198,6 +202,8 @@ func (rsc *ReplicaSetController) AddPod(event tool.Event) {
 	fmt.Println(prefix, "event.Key: ", event.Key)
 	fmt.Println(prefix, "event.Val: ", event.Val)
 	rsc.PodInformer.Set(event.Key, event.Val)
+
+	// add pod后首先等scheduler调度,因此不进行操作，操作在UpdatePod中进行
 }
 
 func (rsc *ReplicaSetController) UpdatePod(event tool.Event) {
@@ -206,6 +212,40 @@ func (rsc *ReplicaSetController) UpdatePod(event tool.Event) {
 	fmt.Println(prefix, "event.Key: ", event.Key)
 	fmt.Println(prefix, "event.Val: ", event.Val)
 	rsc.PodInformer.Set(event.Key, event.Val)
+
+	pod := &core.Pod{}
+	err := json.Unmarshal([]byte(event.Val), pod)
+	if err != nil {
+		fmt.Println("[ERROR] ", prefix, "pod Unmarshal", err)
+		return
+	}
+
+	if pod.Status.Phase != "Running" {
+		fmt.Println(prefix, "phase is not satisfied(only need Running):", pod.Status.Phase)
+		return
+	}
+
+	replica_cache := rsc.ReplicasetInformer.GetCache()
+	for _, value := range *replica_cache {
+		replica := &core.ReplicaSet{}
+		err := json.Unmarshal([]byte(value), replica)
+		if err != nil {
+			log.Println("[ERROR] ", prefix, "replicaset Unmarshal", err)
+			return
+		}
+		if Match(replica, pod) {
+			fmt.Println(prefix, "find replicaset match pod: ", replica.Name)
+			pod.OwnerReferences = append(pod.OwnerReferences,
+				v1.OwnerReference{
+					Name: replica.Name,
+					UID:  replica.UID,
+				})
+			replica.Status.Replicas++
+			updateReplicaSet(rsc, replica, event.Key, prefix)
+			return
+		}
+	}
+	fmt.Println(prefix, "not find replicaset match pod: ", pod.Name)
 }
 
 func (rsc *ReplicaSetController) DeletePod(event tool.Event) {

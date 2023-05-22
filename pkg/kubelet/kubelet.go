@@ -67,7 +67,7 @@ func (k *Kubelet) UpdatePod(event tool.Event) {
 	}
 
 	if pod.Status.Phase != "Pending" {
-		fmt.Println(prefix, "phase is not satisfied:", pod.Status.Phase)
+		fmt.Println(prefix, "phase is not satisfied(only need pending to start):", pod.Status.Phase)
 		return
 	}
 
