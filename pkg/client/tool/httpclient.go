@@ -62,6 +62,7 @@ func Watch(resourses string) WatchInterface {
 		fmt.Println("[httpclient] [Watch] start watch")
 		url := "http://127.0.0.1:8080/watch" + resourses + "?prefix=true"
 		resp, err := http.Get(url)
+		fmt.Println("[httpclient] [Watch] send request")
 		if err != nil {
 			// handle error
 			fmt.Println("[httpclient] [Watch] web get error:", err)
