@@ -3,6 +3,7 @@ package create
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
@@ -30,16 +31,17 @@ func NewCmdCreate() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create TYPE [-f FILENAME]",
 		Short: "Create a resource from a file or from stdin",
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			if o.Filename == "" {
-				fmt.Print("Error: must specify one -f\n\n")
-				return
+				fmt.Print("Error: must specify one -f\n")
+				return errors.New("must specify one -f")
 			}
 			//fmt.Println(o.Filename, args)
 			err := o.RunCreate(cmd, args)
 			if err != nil {
-				return
+				return err
 			}
+			return nil
 		},
 	}
 

@@ -27,11 +27,12 @@ func NewCmdDelete() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "delete TYPE [NAME | -all]",
 		Short: "Delete a resource from stdin",
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			err := o.RunDelete(cmd, args)
 			if err != nil {
-				return
+				return err
 			}
+			return nil
 		},
 	}
 

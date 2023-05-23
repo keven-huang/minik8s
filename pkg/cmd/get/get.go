@@ -35,11 +35,12 @@ func NewCmdGet() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "get TYPE [NAME | -all]",
 		Short: "Get a resource from stdin",
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			err := o.RunGet(cmd, args)
 			if err != nil {
-				return
+				return err
 			}
+			return nil
 		},
 	}
 
