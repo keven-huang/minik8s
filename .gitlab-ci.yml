@@ -16,7 +16,7 @@ build:
     - if [ "$CI_COMMIT_REF_NAME" == "gpu" ]; then
       sudo /usr/local/go/bin/go build -o /bin/apiserver ./cmd/kube-controller/kube-controller.go;
       elif [ "$CI_COMMIT_REF_NAME" == "feature_replicaset" ]; then
-      sudo /usr/local/go/bin/go build -o /bin/kube-controller-manager ./cmd/kube-controller-manager/kube-controller-manager.go
+      sudo /usr/local/go/bin/go build -o /bin/kube-controller-manager ./cmd/kube-controller-manager/kube-controller-manager.go;
       else
       echo "unsupported branch";
       fi
