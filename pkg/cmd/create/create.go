@@ -70,6 +70,10 @@ func (o *CreateOptions) RunCreate(cmd *cobra.Command, args []string) error {
 		{
 			return o.RunCreateService(cmd, args)
 		}
+	case "dns":
+		{
+			return o.RunCreateDNS(cmd, args)
+		}
 	default:
 		{
 			fmt.Printf("[kubectl] [create] [RunCreate] %s is not supported.\n", args[0])
@@ -158,6 +162,31 @@ func (o *CreateOptions) RunCreateService(cmd *cobra.Command, args []string) erro
 	}
 	err = web.SendHttpRequest("PUT", apiconfig.Server_URL+apiconfig.SERVICE_PATH,
 		web.WithPrefix("[kubectl] [create] [RunCreatesService] "),
+		web.WithBody(bytes.NewBuffer(data)),
+		web.WithLog(true))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (o *CreateOptions) RunCreateDNS(cmd *cobra.Command, args []string) error {
+	filename := o.Filename
+
+	r := &core.DNS{}
+	err := myJson.GetFromYaml(filename, r)
+	if err != nil {
+		return err
+	}
+	data, err := json.Marshal(r)
+	if err != nil {
+		fmt.Println("[kubectl] [create] [RunCreateDNS] failed to marshal:", err)
+	} else {
+		//fmt.Println("[kubectl] [create] [RunCreateReplicaSet] ", string(data))
+	}
+	err = web.SendHttpRequest("PUT", apiconfig.Server_URL+apiconfig.DNS_PATH,
+		web.WithPrefix("[kubectl] [create] [RunCreatesDNS] "),
 		web.WithBody(bytes.NewBuffer(data)),
 		web.WithLog(true))
 	if err != nil {

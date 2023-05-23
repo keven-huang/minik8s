@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: DNS
+metadata:
+  name: testDns
+spec:
+  host: example.com
+  gatewayIp: 10.0.12.1
+  paths:
+    - name: /path1
+      service: service1
+      port: "80"
+    - name: /path2
+      service: service2
+      port: "80"
+      

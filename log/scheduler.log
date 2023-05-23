@@ -1,0 +1,3 @@
+[httpclient] [List]  []
+[httpclient] [List]  [{29 /api/v1/nodes/node1 {"metadata":{"name":"node1","uid":"fc53f70d-6dde-4cdf-8802-6f3204a6d80d","creationTimestamp":null},"spec":{},"status":{}}}]
+[httpclient] [Watch] start watch

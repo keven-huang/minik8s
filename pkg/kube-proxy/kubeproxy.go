@@ -14,6 +14,7 @@ func NewKubeProxy() *KubeProxy {
 	res := &KubeProxy{}
 	res.ServiceInformer = informer.NewInformer(apiconfig.SERVICE_PATH)
 	res.ServiceName2SvcChain = make(map[string]map[string]*SvcChain)
+	res.DNSManager = NewDnsManager()
 	return res
 }
 
@@ -102,6 +103,7 @@ func (proxy *KubeProxy) Register() {
 }
 
 func (proxy *KubeProxy) Run() {
-	Init()                      // init chains....
-	proxy.ServiceInformer.Run() // start the watch
+	Init()                                // init chains....
+	go proxy.ServiceInformer.Run()        // start the service watch
+	go proxy.DNSManager.DNSInformer.Run() // start the dns watch
 }

@@ -543,3 +543,27 @@ type ReplicaSetCondition struct {
 	// +optional
 	Message string `json:"message,omitempty" protobuf:"bytes,5,opt,name=message"`
 }
+
+type DNS struct {
+	Metadata metav1.ObjectMeta `json:"metadata" yaml:"metadata"`
+	Spec     DNSSpec           `json:"spec" yaml:"spec"`
+	Status   string            `yaml:"status" json:"status"`
+}
+
+const (
+	FileCreatedStatus    string = "FileCreatedStatus"
+	ServiceCreatedStatus string = "ServiceCreatedStatus"
+)
+
+type DNSSpec struct {
+	Host      string `yaml:"host" json:"host"`           // host name
+	GatewayIp string `yaml:"gatewayIp" json:"gatewayIp"` // gatway ip
+	Paths     []Path `json:"paths" yaml:"paths"`
+}
+
+type Path struct {
+	Name    string `json:"name" yaml:"name"`       // path
+	Service string `yaml:"service" json:"service"` // service Name
+	Ip      string `json:"ip" yaml:"ip"`           // actual serviceIp
+	Port    string `yaml:"port" json:"port"`       // service's port
+}

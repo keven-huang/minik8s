@@ -1,0 +1,48 @@
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+connect to etcd success...
+[GIN-debug] GET    /api/v1                   --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func1 (3 handlers)
+[GIN-debug] PUT    /api/v1                   --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func2 (3 handlers)
+[GIN-debug] POST   /api/v1                   --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func3 (3 handlers)
+[GIN-debug] DELETE /api/v1                   --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func4 (3 handlers)
+[GIN-debug] GET    /api/v1/nodes             --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func1 (3 handlers)
+[GIN-debug] PUT    /api/v1/nodes             --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func2 (3 handlers)
+[GIN-debug] GET    /api/v1/pods              --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func1 (3 handlers)
+[GIN-debug] PUT    /api/v1/pods              --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func2 (3 handlers)
+[GIN-debug] DELETE /api/v1/pods              --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func4 (3 handlers)
+[GIN-debug] POST   /api/v1/pods              --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func3 (3 handlers)
+[GIN-debug] GET    /api/v1/services          --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func1 (3 handlers)
+[GIN-debug] PUT    /api/v1/services          --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func2 (3 handlers)
+[GIN-debug] POST   /api/v1/services          --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func3 (3 handlers)
+[GIN-debug] DELETE /api/v1/services          --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func4 (3 handlers)
+[GIN-debug] PUT    /api/v1/replicasets       --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func2 (3 handlers)
+[GIN-debug] GET    /watch/*resource          --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func1 (3 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :8080
+[api-server] [podHandler] [GetPod]
+[GIN] 2023/05/23 - 09:34:40 | 200 |    3.452664ms |       127.0.0.1 | GET      "/api/v1/pods?all=true"
+[GIN] 2023/05/23 - 09:34:40 | 200 |    4.216865ms |       127.0.0.1 | GET      "/api/v1/nodes?all=true"
+path: /watch/api/v1/pods
+key: /api/v1/pods
+in sender
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/23 - 09:34:40 | 200 |     671.479µs |       127.0.0.1 | GET      "/api/v1/services?all=true"
+path: /watch/api/v1/services
+key: /api/v1/services
+in sender
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/23 - 09:34:40 | 200 |     882.685µs |       127.0.0.1 | GET      "/api/v1/services?all=true"
+path: /watch/api/v1/services
+key: /api/v1/services
+in sender
+[GIN] 2023/05/23 - 09:34:41 | 200 |   16.125771ms |       127.0.0.1 | PUT      "/api/v1/nodes"
+[api-server] [podHandler] [GetPod]
+[GIN] 2023/05/23 - 09:34:41 | 200 |     901.278µs |       127.0.0.1 | GET      "/api/v1/pods?all=true"
+path: /watch/api/v1/pods
+key: /api/v1/pods
+in sender
