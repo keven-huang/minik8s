@@ -10,6 +10,8 @@ import (
 	"minik8s/pkg/client/tool"
 	"minik8s/pkg/kubelet/dockerClient"
 	"minik8s/pkg/util/web"
+	"regexp"
+	"time"
 )
 
 type Kubelet struct {
@@ -67,7 +69,7 @@ func (k *Kubelet) UpdatePod(event tool.Event) {
 	}
 
 	if pod.Status.Phase != "Pending" {
-		fmt.Println(prefix, "phase is not satisfied(only need pending to start):", pod.Status.Phase)
+		fmt.Println(prefix, "phase is not satisfied:", pod.Status.Phase)
 		return
 	}
 
@@ -82,7 +84,10 @@ func (k *Kubelet) UpdatePod(event tool.Event) {
 	}
 
 	// 创建成功 修改Status
-	pod.Status.Phase = "Running"
+	pod.Status.Phase = core.PodRunning
+
+	// 更新podIp
+	pod.Status.PodIP = netSetting.IPAddress
 
 	data, err := json.Marshal(pod)
 	if err != nil {
@@ -108,12 +113,11 @@ func (k *Kubelet) DeletePod(event tool.Event) {
 	// handle event
 	fmt.Println("In DeletePod EventHandler:")
 	fmt.Println("event.Key: ", event.Key)
-	val := k.PodInformer.Get(event.Key)
-	fmt.Println("event.Val: ", val)
+	fmt.Println("event.Val: ", k.PodInformer.Get(event.Key))
 	k.PodInformer.Delete(event.Key)
 
 	pod := &core.Pod{}
-	err := json.Unmarshal([]byte(val), pod)
+	err := json.Unmarshal([]byte(k.PodInformer.Get(event.Key)), pod)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -126,6 +130,79 @@ func (k *Kubelet) DeletePod(event tool.Event) {
 	}
 }
 
+func (k *Kubelet) Listener(needLog bool) {
+	re := regexp.MustCompile(`^Exited \((\d+)\)`)
+
+	// docker ps every 15 seconds
+	for {
+		containers, err := dockerClient.GetAllContainers()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		for _, con := range containers {
+			match := re.FindStringSubmatch(con.Status)
+			Exited := false
+			ExitedValue := ""
+			if len(match) > 1 {
+				if needLog {
+					fmt.Printf("%v Exited:%s\n", con.Names[0][1:], match[1])
+				}
+				Exited = true
+				ExitedValue = match[1]
+			} else {
+				if needLog {
+					fmt.Printf("%v not found.\n", con.Names[0][1:])
+				}
+			}
+			if Exited {
+				pod_cache := k.PodInformer.GetCache()
+				for _, v := range *pod_cache {
+					pod := &core.Pod{}
+					err := json.Unmarshal([]byte(v), pod)
+					if err != nil {
+						fmt.Println(err)
+						return
+					}
+					for _, c := range pod.Spec.Containers {
+						if c.Name == con.Names[0][1:] && pod.Status.Phase == "Running" {
+							fmt.Println("pod:", pod.Name, " container:", c.Name, " Exited With", ExitedValue)
+							if ExitedValue == "0" {
+								pod.Status.Phase = "Succeeded"
+							} else {
+								pod.Status.Phase = "Failed"
+							}
+
+							data, err := json.Marshal(pod)
+							if err != nil {
+								fmt.Println(err)
+								return
+							}
+							err = web.SendHttpRequest("POST", apiconfig.Server_URL+apiconfig.POD_PATH,
+								web.WithPrefix("[kubelet] [Listener]"), web.WithBody(bytes.NewBuffer(data)))
+							if err != nil {
+								fmt.Println(err)
+								return
+							}
+							if needLog {
+								fmt.Printf("%v update status to %s.\n", con.Names[0][1:], pod.Status.Phase)
+							}
+							break
+						}
+					}
+
+				}
+			}
+		}
+		if needLog {
+			fmt.Println("-----------")
+		}
+		time.Sleep(15 * time.Second)
+	}
+}
+
 func (k *Kubelet) Run() {
-	k.PodInformer.Run()
+	go k.PodInformer.Run()
+	go k.Listener(true)
+	select {}
 }
