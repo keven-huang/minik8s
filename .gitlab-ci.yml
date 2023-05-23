@@ -5,16 +5,32 @@ stages:
 cache:
   key: ${CI_BUILD_REF_NAME}
   paths:
-    - bin/
+    - /bin/
 
-default:
-  image: $DEFAULT_CI_IMAGE
+build:
+  stage: build
+  script:
+    - sudo /usr/local/go/bin/go build -o /bin/apiserver ./cmd/kube-apiserver/kube-apiserver.go
+    - sudo /usr/local/go/bin/go build -o /bin/scheduler ./cmd/kube-scheduler/kube-scheduler.go
+    - sudo /usr/local/go/bin/go build -o /bin/kubelet ./cmd/kubelet/kubelet.go
+    - if [ "$CI_COMMIT_REF_NAME" == "gpu" ]; then
+      sudo /usr/local/go/bin/go build -o /bin/apiserver ./cmd/kube-controller/kube-controller.go;
+      elif [ "$CI_COMMIT_REF_NAME" == "feature_replicaset" ]; then
+      sudo /usr/local/go/bin/go build -o /bin/kube-controller-manager ./cmd/kubelet/kube-controller-manager.go
+      else
+      echo "unsupported branch";
+      fi
   tags:
-    - test
-  # All jobs are interruptible by default
-  interruptible: true
-  # Default job timeout set to 90m https://gitlab.com/gitlab-com/gl-infra/infrastructure/-/issues/10520
-  timeout: 90m
+    - testing
 
-include:
-  - local: .workflow/*.gitlab-ci.yml
+
+test:
+  stage: test
+  script:
+    - make run
+    - sudo /usr/local/go/bin/go test ./...
+    - make stop
+    - make clean
+  tags:
+    - testing
+
