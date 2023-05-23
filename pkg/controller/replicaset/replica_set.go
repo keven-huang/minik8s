@@ -54,7 +54,7 @@ func NewReplicaSetController() (*ReplicaSetController, error) {
 		fmt.Println(replica.Name)
 
 		var Replicas = 0
-		for _, pod := range *pod_cache {
+		for pod_key, pod := range *pod_cache {
 			p := &core.Pod{}
 			err := json.Unmarshal([]byte(pod), p)
 			if err != nil {
@@ -72,13 +72,7 @@ func NewReplicaSetController() (*ReplicaSetController, error) {
 				}
 				if !flag {
 					p.OwnerReferences = append(p.OwnerReferences, MakeOwnerReference(replica))
-					pod_json, err := json.Marshal(p)
-					if err != nil {
-						log.Println("[ERROR] ", prefix, "pod Marshal", err)
-						continue
-					}
-					err = web.SendHttpRequest("POST", apiconfig.Server_URL+apiconfig.POD_PATH,
-						web.WithPrefix(prefix), web.WithBody(bytes.NewBuffer(pod_json)))
+					err = updatePodToServer(rsc, p, pod_key, prefix)
 					if err != nil {
 						log.Println("[ERROR] ", prefix, "pod update owner", err)
 						continue
@@ -160,19 +154,38 @@ func Match(rs *core.ReplicaSet, pod *core.Pod) bool {
 	return true
 }
 
-func updateReplicaSetToServer(rsc *ReplicaSetController, replica *core.ReplicaSet, key string, prefix string) {
+func updateReplicaSetToServer(rsc *ReplicaSetController, replica *core.ReplicaSet, key string, prefix string) error {
 	data, err := json.Marshal(replica)
 	if err != nil {
 		fmt.Println(prefix, "failed to marshal:", err)
+		return err
 	}
 
 	err = web.SendHttpRequest("POST", apiconfig.Server_URL+apiconfig.REPLICASET_PATH,
 		web.WithPrefix(prefix), web.WithBody(bytes.NewBuffer(data)))
 	if err != nil {
-		return
+		return err
 	}
 
 	rsc.ReplicasetInformer.Set(key, string(data))
+	return nil
+}
+
+func updatePodToServer(rsc *ReplicaSetController, pod *core.Pod, key string, prefix string) error {
+	data, err := json.Marshal(pod)
+	if err != nil {
+		fmt.Println(prefix, "failed to marshal:", err)
+		return err
+	}
+
+	err = web.SendHttpRequest("POST", apiconfig.Server_URL+apiconfig.POD_PATH,
+		web.WithPrefix(prefix), web.WithBody(bytes.NewBuffer(data)))
+	if err != nil {
+		return err
+	}
+
+	rsc.PodInformer.Set(key, string(data))
+	return nil
 }
 
 func (rsc *ReplicaSetController) AddReplicaset(event tool.Event) {
@@ -229,6 +242,17 @@ func (rsc *ReplicaSetController) UpdateReplicaset(event tool.Event) {
 	fmt.Println(prefix, "event.Key: ", event.Key)
 	fmt.Println(prefix, "event.Val: ", event.Val)
 	rsc.ReplicasetInformer.Set(event.Key, event.Val)
+
+	replica := &core.ReplicaSet{}
+	err := json.Unmarshal([]byte(event.Val), replica)
+	if err != nil {
+		fmt.Println("[ERROR] ", prefix, err)
+		return
+	}
+
+	if replica.Status.Replicas != *replica.Spec.Replicas {
+		rsc.queue.Push(event.Key)
+	}
 }
 
 func (rsc *ReplicaSetController) DeleteReplicaset(event tool.Event) {
@@ -304,7 +328,7 @@ func (rsc *ReplicaSetController) UpdatePod(event tool.Event) {
 
 	// 默认只对应一个replicaset
 	replica_cache := rsc.ReplicasetInformer.GetCache()
-	for key, value := range *replica_cache {
+	for replicaset_key, value := range *replica_cache {
 		replica := &core.ReplicaSet{}
 		err := json.Unmarshal([]byte(value), replica)
 		if err != nil {
@@ -314,21 +338,82 @@ func (rsc *ReplicaSetController) UpdatePod(event tool.Event) {
 		if Match(replica, pod) {
 			fmt.Println(prefix, "find replicaset match pod: ", replica.Name)
 			pod.OwnerReferences = append(pod.OwnerReferences, MakeOwnerReference(replica))
+			err := updatePodToServer(rsc, pod, event.Key, prefix)
+			if err != nil {
+				fmt.Println("[ERROR] ", prefix, "updatePodToServer failed ", err)
+				return
+			}
+
 			replica.Status.Replicas++
-			updateReplicaSetToServer(rsc, replica, event.Key, prefix)
-			rsc.queue.Push(key)
+			err = updateReplicaSetToServer(rsc, replica, replicaset_key, prefix)
+			if err != nil {
+				fmt.Println("[ERROR] ", prefix, "updateReplicaSetToServer failed ", err)
+				return
+			}
+			rsc.queue.Push(replicaset_key)
 			return
 		}
 	}
 	fmt.Println(prefix, "not find replicaset match pod: ", pod.Name)
 }
 
+// 主要看被删除的Pod是否有ReplicaSet的owner，如果是则更新ReplicaSet
 func (rsc *ReplicaSetController) DeletePod(event tool.Event) {
 	prefix := "[ReplicaSet] [DeletePod] "
 	fmt.Println(prefix, "event.type: ", tool.GetTypeName(event))
 	fmt.Println(prefix, "event.Key: ", event.Key)
-	fmt.Println(prefix, "event.Val: ", event.Val)
+	key := rsc.PodInformer.Get(event.Key)
 	rsc.PodInformer.Delete(event.Key)
+
+	pod := &core.Pod{}
+	err := json.Unmarshal([]byte(key), pod)
+	if err != nil {
+		fmt.Println("[ERROR] ", prefix, "pod Unmarshal failed ", err)
+		return
+	}
+
+	// 判断是否有owner
+	if len(pod.OwnerReferences) == 0 {
+		fmt.Println(prefix, "pod has no owner.")
+		return
+	}
+
+	// 判断是否有ReplicaSet的owner
+	flag := false
+	Name := ""
+	for _, owner := range pod.OwnerReferences {
+		if owner.Kind == "ReplicaSet" {
+			fmt.Println(prefix, "pod has ReplicaSet owner, ", owner.Name)
+			flag = true
+			Name = owner.Name
+			break
+		}
+	}
+	if !flag {
+		fmt.Println(prefix, "pod has no ReplicaSet owner.")
+		return
+	}
+
+	for replicasetKey, val := range *rsc.ReplicasetInformer.GetCache() {
+		replica := &core.ReplicaSet{}
+		err := json.Unmarshal([]byte(val), replica)
+		if err != nil {
+			fmt.Println("[ERROR] ", prefix, "replica Unmarshal failed ", err)
+			return
+		}
+		if replica.Name == Name {
+			fmt.Println(prefix, "find replica match pod: ", replica.Name)
+			replica.Status.Replicas--
+			err := updateReplicaSetToServer(rsc, replica, replicasetKey, prefix)
+			if err != nil {
+				fmt.Println("[ERROR] ", prefix, "update replica failed ", err)
+				return
+			}
+			rsc.queue.Push(replicasetKey)
+			return
+		}
+	}
+
 }
 
 func (rsc *ReplicaSetController) CreatePodWithNumber(replica *core.ReplicaSet, number int, prefix string) int {
@@ -350,11 +435,12 @@ func (rsc *ReplicaSetController) CreatePodWithNumber(replica *core.ReplicaSet, n
 			fmt.Println("[ERROR] ", prefix, "create pod error: ", err)
 			err_num++
 		}
-		time.Sleep(time.Second * 3)
+		//time.Sleep(time.Second * 3)
 	}
 	return number - err_num
 }
 
+// DeletePodWithNumber return the number of pods deleted
 func (rsc *ReplicaSetController) DeletePodWithNumber(replica *core.ReplicaSet, number int, prefix string) int {
 	pod_cache := rsc.PodInformer.GetCache()
 	success := 0
@@ -380,13 +466,13 @@ func (rsc *ReplicaSetController) DeletePodWithNumber(replica *core.ReplicaSet, n
 				}
 				success++
 				if success == number {
-					return -success
+					return success
 				}
-				time.Sleep(time.Second * 3)
+				//time.Sleep(time.Second * 3)
 			}
 		}
 	}
-	return -success
+	return success
 }
 
 func (rsc *ReplicaSetController) worker() {
@@ -413,16 +499,18 @@ func (rsc *ReplicaSetController) worker() {
 
 				if diff > 0 {
 					// create new
-					fmt.Println(prefix, "start to create %d pod(s).", diff)
+					fmt.Print(prefix, "start to create %d pod(s).\n", diff)
 					num = rsc.CreatePodWithNumber(replica, 1, prefix)
 				} else if diff < 0 {
 					// delete old
-					fmt.Println(prefix, "start to delete %d pod(s).", -diff)
-					num = rsc.DeletePodWithNumber(replica, 1, prefix)
+					fmt.Print(prefix, "start to delete %d pod(s).\n", -diff)
+					num = -rsc.DeletePodWithNumber(replica, 1, prefix)
 				} else {
 					// do nothing
 					fmt.Println(prefix, "do nothing.")
 				}
+
+				fmt.Print(prefix, "finish to create/delete %d pod(s).\n", num)
 
 				if num != 0 {
 					replica.Status.Replicas += int32(num)
