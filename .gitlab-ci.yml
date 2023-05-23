@@ -26,7 +26,7 @@ test:
   stage: test
   script:
     - make clean
-    - make run
+    - sudo make run
     - sudo /usr/local/go/bin/go test ./...
     - make stop
     - make clean
