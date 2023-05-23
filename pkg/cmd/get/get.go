@@ -106,17 +106,19 @@ func (o *GetOptions) RunGetPod(cmd *cobra.Command, args []string) error {
 	}
 
 	// 将字节数组转换为字符串并打印
-	var s GetRespond
-	json.Unmarshal(bodyBytes, &s)
+	//var s GetRespond
+	//json.Unmarshal(bodyBytes, &s)
+	var res []etcd.ListRes
+	json.Unmarshal(bodyBytes, &res)
 	fmt.Println(prefix, "Pod Get successfully. Here are the results:")
 
-	fmt.Println("total number:", len(s.Results))
+	fmt.Println("total number:", len(res))
 
 	table := uitable.New()
 	table.MaxColWidth = 100
 	table.RightAlign(10)
 	table.AddRow("NAME", "STATUS", "Owner", "CreationTimestamp")
-	for _, val := range s.Results {
+	for _, val := range res {
 		pod := core.Pod{}
 		err := json.Unmarshal([]byte(val.Value), &pod)
 		if err != nil {
@@ -165,17 +167,19 @@ func (o *GetOptions) RunGetReplicaSet(cmd *cobra.Command, args []string) error {
 	}
 
 	// 将字节数组转换为字符串并打印
-	var s GetRespond
-	json.Unmarshal(bodyBytes, &s)
+	//var s GetRespond
+	//json.Unmarshal(bodyBytes, &s)
+	var res []etcd.ListRes
+	json.Unmarshal(bodyBytes, &res)
 	fmt.Println(prefix, "ReplicaSet Get successfully. Here are the results:")
 
-	fmt.Println("total number:", len(s.Results))
+	fmt.Println("total number:", len(res))
 
 	table := uitable.New()
 	table.MaxColWidth = 100
 	table.RightAlign(10)
 	table.AddRow("NAME", "Desired", "Current", "CreationTimestamp")
-	for _, val := range s.Results {
+	for _, val := range res {
 		r := core.ReplicaSet{}
 		err := json.Unmarshal([]byte(val.Value), &r)
 		if err != nil {

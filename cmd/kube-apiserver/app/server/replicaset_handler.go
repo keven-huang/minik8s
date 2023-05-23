@@ -75,10 +75,7 @@ func GetReplicaSet(c *gin.Context, s *Server) {
 			log.Println(err)
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{
-			"message": "get ReplicaSet successfully.",
-			"Results": res,
-		})
+		c.JSON(http.StatusOK, res)
 		return
 	}
 
