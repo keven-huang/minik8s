@@ -24,12 +24,77 @@ type ReplicaSetController struct {
 	queue              *q.ConcurrentQueue
 }
 
+func MakeOwnerReference(replica *core.ReplicaSet) v1.OwnerReference {
+	return v1.OwnerReference{
+		APIVersion: "apps/v1",
+		Kind:       "ReplicaSet",
+		Name:       replica.Name,
+		UID:        replica.UID,
+	}
+}
+
 func NewReplicaSetController() (*ReplicaSetController, error) {
-	return &ReplicaSetController{
+	rsc := &ReplicaSetController{
 		PodInformer:        informer.NewInformer(apiconfig.POD_PATH),
 		ReplicasetInformer: informer.NewInformer(apiconfig.REPLICASET_PATH),
 		queue:              q.NewConcurrentQueue(),
-	}, nil
+	}
+
+	prefix := "[ReplicaSetController] [NewReplicaSetController] "
+	replica_cache := rsc.ReplicasetInformer.GetCache()
+	pod_cache := rsc.PodInformer.GetCache()
+
+	for key, value := range *replica_cache {
+		replica := &core.ReplicaSet{}
+		err := json.Unmarshal([]byte(value), replica)
+		if err != nil {
+			log.Println("[ERROR] ", "replicaset Unmarshal", err)
+			continue
+		}
+		fmt.Println(replica.Name)
+
+		var Replicas = 0
+		for _, pod := range *pod_cache {
+			p := &core.Pod{}
+			err := json.Unmarshal([]byte(pod), p)
+			if err != nil {
+				log.Println("[ERROR] ", "pod Unmarshal", err)
+				continue
+			}
+			if Match(replica, p) {
+				Replicas++
+				flag := false
+				for _, own := range p.OwnerReferences {
+					if own.Name == replica.Name {
+						flag = true
+						break
+					}
+				}
+				if !flag {
+					p.OwnerReferences = append(p.OwnerReferences, MakeOwnerReference(replica))
+					pod_json, err := json.Marshal(p)
+					if err != nil {
+						log.Println("[ERROR] ", prefix, "pod Marshal", err)
+						continue
+					}
+					err = web.SendHttpRequest("POST", apiconfig.Server_URL+apiconfig.POD_PATH,
+						web.WithPrefix(prefix), web.WithBody(bytes.NewBuffer(pod_json)))
+					if err != nil {
+						log.Println("[ERROR] ", prefix, "pod update owner", err)
+						continue
+					}
+				}
+			}
+		}
+
+		if int32(Replicas) != replica.Status.Replicas {
+			replica.Status.Replicas = int32(Replicas)
+			updateReplicaSetToServer(rsc, replica, key, prefix)
+			rsc.queue.Push(key)
+		}
+	}
+
+	return rsc, nil
 }
 
 func (rsc *ReplicaSetController) Register() {
@@ -45,7 +110,7 @@ func (rsc *ReplicaSetController) Register() {
 func Match(rs *core.ReplicaSet, pod *core.Pod) bool {
 	// A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
 	for key, value := range rs.Spec.Selector.MatchLabels {
-		v, exists := pod.Labels[key]
+		v, exists := pod.ObjectMeta.Labels[key]
 		if !exists || v != value {
 			return false
 		}
@@ -53,7 +118,7 @@ func Match(rs *core.ReplicaSet, pod *core.Pod) bool {
 	for _, expression := range rs.Spec.Selector.MatchExpressions {
 		// Valid operators are In, NotIn, Exists and DoesNotExist.
 		key := expression.Key
-		val, exists := pod.Labels[key]
+		val, exists := pod.ObjectMeta.Labels[key]
 		flag := false
 		for _, v := range expression.Values {
 			if v == val {
@@ -95,7 +160,7 @@ func Match(rs *core.ReplicaSet, pod *core.Pod) bool {
 	return true
 }
 
-func updateReplicaSet(rsc *ReplicaSetController, replica *core.ReplicaSet, key string, prefix string) {
+func updateReplicaSetToServer(rsc *ReplicaSetController, replica *core.ReplicaSet, key string, prefix string) {
 	data, err := json.Marshal(replica)
 	if err != nil {
 		fmt.Println(prefix, "failed to marshal:", err)
@@ -140,11 +205,7 @@ func (rsc *ReplicaSetController) AddReplicaset(event tool.Event) {
 			return
 		}
 		if (pod.Status.Phase == "Running") && Match(replica, pod) {
-			pod.OwnerReferences = append(pod.OwnerReferences,
-				v1.OwnerReference{
-					Name: replica.Name,
-					UID:  replica.UID,
-				})
+			pod.OwnerReferences = append(pod.OwnerReferences, MakeOwnerReference(replica))
 			replica.Status.Replicas++
 			flag = true
 			fmt.Println(prefix, "find pod: ", pod.Name)
@@ -152,7 +213,7 @@ func (rsc *ReplicaSetController) AddReplicaset(event tool.Event) {
 	}
 
 	if flag {
-		updateReplicaSet(rsc, replica, event.Key, prefix)
+		updateReplicaSetToServer(rsc, replica, event.Key, prefix)
 	}
 
 	if *replica.Spec.Replicas != replica.Status.Replicas {
@@ -206,6 +267,9 @@ func (rsc *ReplicaSetController) AddPod(event tool.Event) {
 	// add pod后首先等scheduler调度,因此不进行操作，操作在UpdatePod中进行
 }
 
+// 可能调用的情况：
+// 1. scheduler调度成功，更新pod中的NodeName
+// 2. ketelet创建成功，pod的phase变为Running，此时需要判断是否匹配replicaset并加入
 func (rsc *ReplicaSetController) UpdatePod(event tool.Event) {
 	prefix := "[ReplicaSet] [UpdatePod] "
 	fmt.Println(prefix, "event.type: ", tool.GetTypeName(event))
@@ -225,8 +289,11 @@ func (rsc *ReplicaSetController) UpdatePod(event tool.Event) {
 		return
 	}
 
+	// TODO:判断已经是owner的情况
+
+	// 默认只对应一个replicaset
 	replica_cache := rsc.ReplicasetInformer.GetCache()
-	for _, value := range *replica_cache {
+	for key, value := range *replica_cache {
 		replica := &core.ReplicaSet{}
 		err := json.Unmarshal([]byte(value), replica)
 		if err != nil {
@@ -235,13 +302,10 @@ func (rsc *ReplicaSetController) UpdatePod(event tool.Event) {
 		}
 		if Match(replica, pod) {
 			fmt.Println(prefix, "find replicaset match pod: ", replica.Name)
-			pod.OwnerReferences = append(pod.OwnerReferences,
-				v1.OwnerReference{
-					Name: replica.Name,
-					UID:  replica.UID,
-				})
+			pod.OwnerReferences = append(pod.OwnerReferences, MakeOwnerReference(replica))
 			replica.Status.Replicas++
-			updateReplicaSet(rsc, replica, event.Key, prefix)
+			updateReplicaSetToServer(rsc, replica, event.Key, prefix)
+			rsc.queue.Push(key)
 			return
 		}
 	}
@@ -267,11 +331,7 @@ func (rsc *ReplicaSetController) CreatePodWithNumber(replica *core.ReplicaSet, n
 			},
 		}
 		pod.Name = replica.Name + "-" + random.GenerateRandomString(5)
-		pod.OwnerReferences = append(pod.OwnerReferences,
-			v1.OwnerReference{
-				Name: replica.Name,
-				UID:  replica.UID,
-			})
+		pod.OwnerReferences = append(pod.OwnerReferences, MakeOwnerReference(replica))
 
 		fmt.Println(prefix, "crate pod: ", pod.Name)
 		err := create.CreatePod(pod)
@@ -279,7 +339,7 @@ func (rsc *ReplicaSetController) CreatePodWithNumber(replica *core.ReplicaSet, n
 			fmt.Println("[ERROR] ", prefix, "create pod error: ", err)
 			err_num++
 		}
-		time.Sleep(time.Second * 4)
+		time.Sleep(time.Second * 3)
 	}
 	return number - err_num
 }
@@ -297,7 +357,7 @@ func (rsc *ReplicaSetController) DeletePodWithNumber(replica *core.ReplicaSet, n
 		}
 		for _, owner := range pod.OwnerReferences {
 			if owner.UID == replica.UID {
-				fmt.Println(prefix, "find pod: ", pod.Name)
+				fmt.Println(prefix, "delete pod: ", pod.Name)
 				values := url.Values{}
 				values.Add("PodName", pod.Name)
 				err := web.SendHttpRequest("DELETE", apiconfig.Server_URL+apiconfig.POD_PATH+"?"+values.Encode(),
@@ -311,7 +371,7 @@ func (rsc *ReplicaSetController) DeletePodWithNumber(replica *core.ReplicaSet, n
 				if success == number {
 					return success
 				}
-				time.Sleep(time.Second * 4)
+				time.Sleep(time.Second * 3)
 			}
 		}
 	}
@@ -342,11 +402,11 @@ func (rsc *ReplicaSetController) worker() {
 			if diff > 0 {
 				// create new
 				fmt.Println(prefix, "start to create %d pod(s).", diff)
-				num = rsc.CreatePodWithNumber(replica, int(diff), prefix)
+				num = rsc.CreatePodWithNumber(replica, 1, prefix)
 			} else if diff < 0 {
 				// delete old
 				fmt.Println(prefix, "start to delete %d pod(s).", -diff)
-				num = rsc.DeletePodWithNumber(replica, int(-diff), prefix)
+				num = rsc.DeletePodWithNumber(replica, 1, prefix)
 			} else {
 				// do nothing
 				fmt.Println(prefix, "do nothing.")
