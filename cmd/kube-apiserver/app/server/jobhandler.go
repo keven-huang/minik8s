@@ -131,11 +131,11 @@ func Job2JobStatus(s *Server, job *core.Job) core.JobStatus {
 	jobStatus := core.JobStatus{}
 	jobStatus.JobName = job.Name
 	jobStatus.Status = string(core.PodPending)
-	res, err := s.Etcdstore.GetExact(apiconfig.POD_PATH + "/" + job.Name)
-	if err != nil {
-		fmt.Println(err)
-		return jobStatus
-	}
-	var pod core.Pod
-
+	// res, err := s.Etcdstore.GetExact(apiconfig.POD_PATH + "/" + job.Name)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return jobStatus
+	// }
+	// var pod core.Pod
+	return jobStatus
 }
