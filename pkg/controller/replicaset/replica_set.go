@@ -289,7 +289,15 @@ func (rsc *ReplicaSetController) UpdatePod(event tool.Event) {
 		return
 	}
 
-	// TODO:判断已经是owner的情况
+	// 判断已经有owner的情况，也就是说本来就是replicaSet自己create的
+	if len(pod.OwnerReferences) != 0 {
+		for _, owner := range pod.OwnerReferences {
+			if owner.Kind == "ReplicaSet" {
+				fmt.Println(prefix, "already has ReplicaSet owner, ", owner.Name)
+				return
+			}
+		}
+	}
 
 	// 默认只对应一个replicaset
 	replica_cache := rsc.ReplicasetInformer.GetCache()
@@ -369,13 +377,13 @@ func (rsc *ReplicaSetController) DeletePodWithNumber(replica *core.ReplicaSet, n
 				}
 				success++
 				if success == number {
-					return success
+					return -success
 				}
 				time.Sleep(time.Second * 3)
 			}
 		}
 	}
-	return success
+	return -success
 }
 
 func (rsc *ReplicaSetController) worker() {
@@ -396,33 +404,37 @@ func (rsc *ReplicaSetController) worker() {
 				return
 			}
 
-			diff := *replica.Spec.Replicas - replica.Status.Replicas
-			var num int
+			for *replica.Spec.Replicas-replica.Status.Replicas != 0 {
+				diff := *replica.Spec.Replicas - replica.Status.Replicas
+				var num int
 
-			if diff > 0 {
-				// create new
-				fmt.Println(prefix, "start to create %d pod(s).", diff)
-				num = rsc.CreatePodWithNumber(replica, 1, prefix)
-			} else if diff < 0 {
-				// delete old
-				fmt.Println(prefix, "start to delete %d pod(s).", -diff)
-				num = rsc.DeletePodWithNumber(replica, 1, prefix)
-			} else {
-				// do nothing
-				fmt.Println(prefix, "do nothing.")
+				if diff > 0 {
+					// create new
+					fmt.Println(prefix, "start to create %d pod(s).", diff)
+					num = rsc.CreatePodWithNumber(replica, 1, prefix)
+				} else if diff < 0 {
+					// delete old
+					fmt.Println(prefix, "start to delete %d pod(s).", -diff)
+					num = rsc.DeletePodWithNumber(replica, 1, prefix)
+				} else {
+					// do nothing
+					fmt.Println(prefix, "do nothing.")
+				}
+
+				if num != 0 {
+					replica.Status.Replicas += int32(num)
+				}
 			}
-
-			replica.Status.Replicas += int32(num)
 
 			// 更新replicaset
 			data, err := json.Marshal(replica)
 			if err != nil {
-				fmt.Println("[kubectl] [create] [RunCreateReplicaSet] failed to marshal:", err)
+				fmt.Println(prefix, "failed to marshal:", err)
 			}
 
 			// 创建 PUT 请求
 			err = web.SendHttpRequest("POST", apiconfig.Server_URL+apiconfig.REPLICASET_PATH,
-				web.WithPrefix("[kubectl] [create] [RunCreateReplicaSet] "),
+				web.WithPrefix(prefix),
 				web.WithBody(bytes.NewBuffer(data)),
 				web.WithLog(true))
 			if err != nil {
