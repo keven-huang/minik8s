@@ -7,6 +7,7 @@ import (
 	"log"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/pkg/api/core"
+	"minik8s/pkg/kube-apiserver/etcd"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -14,7 +15,6 @@ import (
 
 func AddJob(c *gin.Context, s *Server) {
 	// TO DO: Add Job
-	fmt.Println("in add job")
 	val, _ := io.ReadAll(c.Request.Body)
 	job := core.Job{}
 	err := json.Unmarshal([]byte(val), &job)
@@ -43,6 +43,14 @@ func GetJob(c *gin.Context, s *Server) {
 	if c.Query("all") == "true" {
 		// delete the keys
 		res, err := s.Etcdstore.GetWithPrefix(apiconfig.JOB_PATH)
+		for _, val := range res {
+			var job core.Job
+			err = json.Unmarshal([]byte(val.Value), &job)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+		}
 		if err != nil {
 			log.Println(err)
 			return
@@ -50,9 +58,19 @@ func GetJob(c *gin.Context, s *Server) {
 		c.JSON(http.StatusOK, res)
 		return
 	}
-	JobName := c.Query("Job")
+	JobName := c.Query("Name")
 	key := c.Request.URL.Path + "/" + string(JobName)
-	res, err := s.Etcdstore.Get(key)
+
+	var res []etcd.ListRes
+	var err error
+
+	if c.Query("prefix") == "true" {
+		res, err = s.Etcdstore.GetWithPrefix(key)
+		fmt.Println(res)
+	} else {
+		res, err = s.Etcdstore.GetExact(key)
+	}
+
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -60,7 +78,7 @@ func GetJob(c *gin.Context, s *Server) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, res[0])
+	c.JSON(http.StatusOK, res)
 }
 
 func AddJobFile(c *gin.Context, s *Server) {
