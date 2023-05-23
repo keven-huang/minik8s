@@ -109,27 +109,6 @@ func (store *EtcdStore) GetWithPrefix(prefix string) ([]ListRes, error) {
 	}
 }
 
-// operations : get
-func (store *EtcdStore) GetWithPrefix(prefix string) ([]ListRes, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
-	defer cancel()
-	kv := clientv3.NewKV(store.client)
-	resp, err := kv.Get(ctx, prefix, clientv3.WithPrefix(), clientv3.WithSort(clientv3.SortByKey, clientv3.SortAscend))
-	if err != nil {
-		fmt.Printf("get to etcd failed, err:%v\n", err)
-		log.Fatal(err)
-	}
-	if len(resp.Kvs) == 0 {
-		return []ListRes{}, err
-	} else {
-		res := []ListRes{}
-		for _, ev := range resp.Kvs {
-			res = append(res, ListRes{ResourceVersion: ev.Version, Key: string(ev.Key), Value: string(ev.Value)})
-		}
-		return res, err
-	}
-}
-
 // operation : del
 func (store *EtcdStore) Del(key string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)

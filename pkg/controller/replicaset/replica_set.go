@@ -222,6 +222,7 @@ func (rsc *ReplicaSetController) AddReplicaset(event tool.Event) {
 
 }
 
+// 主要是更新Status.Replicas,不进行操作，由worker进行操作
 func (rsc *ReplicaSetController) UpdateReplicaset(event tool.Event) {
 	prefix := "[ReplicaSet] [UpdateReplicaset] "
 	fmt.Println(prefix, "event.type: ", tool.GetTypeName(event))
@@ -257,6 +258,7 @@ func (rsc *ReplicaSetController) DeleteReplicaset(event tool.Event) {
 	}
 }
 
+// add pod后首先等scheduler调度,因此不进行操作，操作在UpdatePod中进行
 func (rsc *ReplicaSetController) AddPod(event tool.Event) {
 	prefix := "[ReplicaSet] [AddPod] "
 	fmt.Println(prefix, "event.type: ", tool.GetTypeName(event))
@@ -264,12 +266,13 @@ func (rsc *ReplicaSetController) AddPod(event tool.Event) {
 	fmt.Println(prefix, "event.Val: ", event.Val)
 	rsc.PodInformer.Set(event.Key, event.Val)
 
-	// add pod后首先等scheduler调度,因此不进行操作，操作在UpdatePod中进行
 }
 
 // 可能调用的情况：
 // 1. scheduler调度成功，更新pod中的NodeName
-// 2. ketelet创建成功，pod的phase变为Running，此时需要判断是否匹配replicaset并加入
+// 2. kebelet创建成功，pod的phase变为Running，此时需要判断是否匹配replicaset并加入
+// 3. kubelet发现container失败或者成功，更新pod的状态
+// 综上,只关注phase为Running和owner中没有ReplicaSet的pod
 func (rsc *ReplicaSetController) UpdatePod(event tool.Event) {
 	prefix := "[ReplicaSet] [UpdatePod] "
 	fmt.Println(prefix, "event.type: ", tool.GetTypeName(event))
