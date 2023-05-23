@@ -320,6 +320,10 @@ func (rsc *ReplicaSetController) UpdatePod(event tool.Event) {
 	if len(pod.OwnerReferences) != 0 {
 		for _, owner := range pod.OwnerReferences {
 			if owner.Kind == "ReplicaSet" {
+				if owner.Name == "" {
+					fmt.Println(prefix, "owner ReplicaSet name is empty, it's a mark, ignore it.")
+					return
+				}
 				fmt.Println(prefix, "already has ReplicaSet owner, ", owner.Name)
 				return
 			}
@@ -383,6 +387,10 @@ func (rsc *ReplicaSetController) DeletePod(event tool.Event) {
 	Name := ""
 	for _, owner := range pod.OwnerReferences {
 		if owner.Kind == "ReplicaSet" {
+			if owner.Name == "" {
+				fmt.Println(prefix, "owner ReplicaSet name is empty, it's a mark, ignore it.")
+				return
+			}
 			fmt.Println(prefix, "pod has ReplicaSet owner, ", owner.Name)
 			flag = true
 			Name = owner.Name
@@ -455,6 +463,18 @@ func (rsc *ReplicaSetController) DeletePodWithNumber(replica *core.ReplicaSet, n
 		for _, owner := range pod.OwnerReferences {
 			if owner.UID == replica.UID {
 				fmt.Println(prefix, "delete pod: ", pod.Name)
+
+				// 先修改pod的owner, 避免删除时触发DeletePod在里面再给replicaset减1
+				// 为了防止在修改owner时触发UpdatePod中的加入Replicaset，加一个特殊标记
+				pod.OwnerReferences = []v1.OwnerReference{
+					v1.OwnerReference{
+						APIVersion: "apps/v1",
+						Kind:       "ReplicaSet",
+						Name:       "",
+						UID:        "",
+					}}
+				updatePodToServer(rsc, pod, pod.Name, prefix)
+
 				values := url.Values{}
 				values.Add("PodName", pod.Name)
 				err := web.SendHttpRequest("DELETE", apiconfig.Server_URL+apiconfig.POD_PATH+"?"+values.Encode(),
@@ -499,38 +519,30 @@ func (rsc *ReplicaSetController) worker() {
 
 				if diff > 0 {
 					// create new
-					fmt.Print(prefix, "start to create %d pod(s).\n", diff)
+					fmt.Println(prefix, "start to create ", diff, " pod(s).")
 					num = rsc.CreatePodWithNumber(replica, 1, prefix)
 				} else if diff < 0 {
 					// delete old
-					fmt.Print(prefix, "start to delete %d pod(s).\n", -diff)
+					fmt.Println(prefix, "start to delete ", -diff, " pod(s).")
 					num = -rsc.DeletePodWithNumber(replica, 1, prefix)
 				} else {
 					// do nothing
 					fmt.Println(prefix, "do nothing.")
 				}
 
-				fmt.Print(prefix, "finish to create/delete %d pod(s).\n", num)
+				fmt.Printf("%sfinish to create/delete %d pod(s).\n", prefix, num)
 
 				if num != 0 {
 					replica.Status.Replicas += int32(num)
 				}
 			}
 
-			// 更新replicaset
-			data, err := json.Marshal(replica)
+			err = updateReplicaSetToServer(rsc, replica, key, prefix)
 			if err != nil {
-				fmt.Println(prefix, "failed to marshal:", err)
-			}
-
-			// 创建 PUT 请求
-			err = web.SendHttpRequest("POST", apiconfig.Server_URL+apiconfig.REPLICASET_PATH,
-				web.WithPrefix(prefix),
-				web.WithBody(bytes.NewBuffer(data)),
-				web.WithLog(true))
-			if err != nil {
+				fmt.Println("[ERROR] ", prefix, "update replica failed ", err)
 				return
 			}
+			fmt.Println(prefix, "succeed to update replica: ", replica.Name)
 
 		} else {
 			time.Sleep(time.Second * 3)
