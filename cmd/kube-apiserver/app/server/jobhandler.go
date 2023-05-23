@@ -137,5 +137,6 @@ func Job2JobStatus(s *Server, job *core.Job) core.JobStatus {
 	// 	return jobStatus
 	// }
 	// var pod core.Pod
+
 	return jobStatus
 }
