@@ -322,7 +322,7 @@ func CreatePauseContainer(name string, ports []core.Port) (container.CreateRespo
 		ExposedPorts: portSet,
 	}, &container.HostConfig{
 		IpcMode: container.IPCModeShareable,
-		DNS:     []string{config.DnsAddress},
+		//DNS:     []string{config.DnsAddress},
 	}, nil, nil, name)
 	if err != nil {
 		panic(err.Error())
@@ -373,7 +373,7 @@ func CreatePod(pod core.Pod) ([]core.ContainerMeta, *types.NetworkSettings, erro
 
 	// 创建Volumes并mount hostpath
 	for _, vo := range pod.Spec.Volumes {
-		if vo.VolumeSource.HostPath != "" { // mountHost
+		if vo.HostPath != "" { // mountHost
 			_, err := CreateVolume(vo.Name, &vo.HostPath)
 			if err != nil {
 				fmt.Println(err.Error())
@@ -406,6 +406,7 @@ func CreatePod(pod core.Pod) ([]core.ContainerMeta, *types.NetworkSettings, erro
 			Entrypoint: v.EntryPoint,
 			Cmd:        v.Command,
 			Tty:        v.Tty,
+			//Env:        []string{"PATH=$PATH:/bin:/tmp/host_path"},
 		}, &container.HostConfig{
 			NetworkMode: container.NetworkMode("container:" + curPauseID),
 			IpcMode:     container.IpcMode("container:" + curPauseID),

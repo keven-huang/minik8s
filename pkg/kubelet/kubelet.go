@@ -84,7 +84,10 @@ func (k *Kubelet) UpdatePod(event tool.Event) {
 	}
 
 	// 创建成功 修改Status
-	pod.Status.Phase = "Running"
+	pod.Status.Phase = core.PodRunning
+
+	// 更新podIp
+	pod.Status.PodIP = netSetting.IPAddress
 
 	data, err := json.Marshal(pod)
 	if err != nil {
