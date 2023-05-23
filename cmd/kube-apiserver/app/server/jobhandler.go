@@ -126,3 +126,16 @@ func GetJobFile(c *gin.Context, s *Server) {
 	fmt.Println("[apiserver][getjobfile] res", string(job.Program))
 	c.JSON(http.StatusOK, res[0])
 }
+
+func Job2JobStatus(s *Server, job *core.Job) core.JobStatus {
+	jobStatus := core.JobStatus{}
+	jobStatus.JobName = job.Name
+	jobStatus.Status = string(core.PodPending)
+	res, err := s.Etcdstore.GetExact(apiconfig.POD_PATH + "/" + job.Name)
+	if err != nil {
+		fmt.Println(err)
+		return jobStatus
+	}
+	var pod core.Pod
+
+}

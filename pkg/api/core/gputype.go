@@ -48,6 +48,17 @@ type JobStatus struct {
 	Status  string
 }
 
+// job Status
+const (
+	PodPending PodPhase = "Pending"
+	// PodSucceeded means that all containers in the pod have voluntarily terminated
+	// with a container exit code of 0, and the system is not going to restart any of these containers.
+	PodSucceeded PodPhase = "Succeeded"
+	// PodFailed means that all containers in the pod have terminated, and at least one container has
+	// terminated in a failure (exited with a non-zero exit code or was stopped by the system).
+	PodFailed PodPhase = "Failed"
+)
+
 func (jc *JobConfig) GenerateSlurm() []byte {
 	var slurm []string
 	slurm = append(slurm, "#!/bin/bash")
