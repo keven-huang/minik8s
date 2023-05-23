@@ -11,6 +11,8 @@ import (
 	"minik8s/pkg/kubelet/dockerClient"
 	"minik8s/pkg/util/file"
 	"minik8s/pkg/util/web"
+	"regexp"
+	"time"
 )
 
 type Kubelet struct {
@@ -161,6 +163,79 @@ func GetGpuJobFile(jobname string) error {
 	return nil
 }
 
+func (k *Kubelet) Listener(needLog bool) {
+	re := regexp.MustCompile(`^Exited \((\d+)\)`)
+
+	// docker ps every 15 seconds
+	for {
+		containers, err := dockerClient.GetAllContainers()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		for _, con := range containers {
+			match := re.FindStringSubmatch(con.Status)
+			Exited := false
+			ExitedValue := ""
+			if len(match) > 1 {
+				if needLog {
+					fmt.Printf("%v Exited:%s\n", con.Names[0][1:], match[1])
+				}
+				Exited = true
+				ExitedValue = match[1]
+			} else {
+				if needLog {
+					fmt.Printf("%v not found.\n", con.Names[0][1:])
+				}
+			}
+			if Exited {
+				pod_cache := k.PodInformer.GetCache()
+				for _, v := range *pod_cache {
+					pod := &core.Pod{}
+					err := json.Unmarshal([]byte(v), pod)
+					if err != nil {
+						fmt.Println(err)
+						return
+					}
+					for _, c := range pod.Spec.Containers {
+						if c.Name == con.Names[0][1:] && pod.Status.Phase == "Running" {
+							fmt.Println("pod:", pod.Name, " container:", c.Name, " Exited With", ExitedValue)
+							if ExitedValue == "0" {
+								pod.Status.Phase = "Succeeded"
+							} else {
+								pod.Status.Phase = "Failed"
+							}
+
+							data, err := json.Marshal(pod)
+							if err != nil {
+								fmt.Println(err)
+								return
+							}
+							err = web.SendHttpRequest("POST", apiconfig.Server_URL+apiconfig.POD_PATH,
+								web.WithPrefix("[kubelet] [Listener]"), web.WithBody(bytes.NewBuffer(data)))
+							if err != nil {
+								fmt.Println(err)
+								return
+							}
+							if needLog {
+								fmt.Printf("%v update status to %s.\n", con.Names[0][1:], pod.Status.Phase)
+							}
+							break
+						}
+					}
+
+				}
+			}
+		}
+		if needLog {
+			fmt.Println("-----------")
+		}
+		time.Sleep(15 * time.Second)
+	}
+}
+
 func (k *Kubelet) Run() {
-	k.PodInformer.Run()
+	go k.PodInformer.Run()
+	go k.Listener(true)
+	select {}
 }
