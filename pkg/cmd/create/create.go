@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/pkg/api/core"
+	"minik8s/pkg/service"
 	"minik8s/pkg/util/web"
 	"net/http"
 	"os"
@@ -93,7 +94,10 @@ func (o *CreateOptions) RunCreate(cmd *cobra.Command, args []string) error {
 		err = o.RunCreateReplicaSet(cmd, args, yamlFile)
 	case "Job":
 		err = o.RunCreateJob(cmd, args, yamlFile)
+	case "Service":
+		err = o.RunCreateService(cmd, args, yamlFile)
 	}
+
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -137,6 +141,37 @@ func (o *CreateOptions) RunCreateJob(cmd *cobra.Command, args []string, yamlFile
 	}
 
 	err = CreateJob(job)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *CreateOptions) RunCreateService(cmd *cobra.Command, args []string, yamlFile []byte) error {
+	s := &service.Service{}
+	err := yaml.Unmarshal(yamlFile, s)
+	if err != nil {
+		return err
+	}
+
+	err = CreateService(s)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func CreateService(s *service.Service) error{
+	data, err := json.Marshal(s)
+	if err != nil {
+		fmt.Println("[kubectl] [create] [RunCreateService] failed to marshal:", err)
+	} else {
+		//fmt.Println("[kubectl] [create] [RunCreateReplicaSet] ", string(data))
+	}
+	err = web.SendHttpRequest("PUT", apiconfig.Server_URL+apiconfig.SERVICE_PATH,
+		web.WithPrefix("[kubectl] [create] [RunCreatesService] "),
+		web.WithBody(bytes.NewBuffer(data)),
+		web.WithLog(true))
 	if err != nil {
 		return err
 	}

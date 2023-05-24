@@ -115,7 +115,6 @@ func PullOneImage(target string) error {
 	}
 	out, err := cli.ImagePull(context.Background(), target, types.ImagePullOptions{})
 	if err != nil {
-		panic(err.Error())
 		return err
 	}
 	// 延迟返回，在这个pullOneImage函数完全结束之后延迟返回
@@ -233,7 +232,6 @@ func CreateVolume(name string, hostpath *string) (volume.Volume, error) {
 		DriverOpts: mapOptions,
 	})
 	if err != nil {
-		panic(err.Error())
 		return volume.Volume{}, err
 	}
 	return resp, nil
@@ -315,7 +313,7 @@ func CreatePauseContainer(name string, ports []core.Port) (container.CreateRespo
 			portSet[res] = struct{}{}
 			continue
 		}
-		panic("unsupported network protocol")
+		fmt.Println("[dockerClient]:" + "unsupported network protocol")
 	}
 	response, err := cli.ContainerCreate(context.Background(), &container.Config{
 		Image:        config.PAUSE_IMAGE_NAME,
@@ -324,9 +322,6 @@ func CreatePauseContainer(name string, ports []core.Port) (container.CreateRespo
 		IpcMode: container.IPCModeShareable,
 		//DNS:     []string{config.DnsAddress},
 	}, nil, nil, name)
-	if err != nil {
-		panic(err.Error())
-	}
 	return response, err
 }
 

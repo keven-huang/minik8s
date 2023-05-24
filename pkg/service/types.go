@@ -32,7 +32,7 @@ type Spec struct {
 }
 
 type ServiceStatus struct {
-	Err   error  `yaml:"err" json:"err"`
+	Err   string `yaml:"err" json:"err"`
 	Phase string `yaml:"phase" json:"phase"` // creating, running, error
 }
 

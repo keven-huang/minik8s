@@ -192,6 +192,7 @@ func AddNode(node *core.Node) error {
 
 func UpdateService(service *service.Service) error {
 	url := apiconfig.Server_URL + apiconfig.SERVICE_PATH
+	fmt.Println("[tool][updateservice]: url=" + url)
 	data, err := json.Marshal(service)
 	if err != nil {
 		return err
@@ -208,6 +209,7 @@ func UpdateService(service *service.Service) error {
 // TODO 讨论确定一下api-sver的rest-api用法
 func DeleteService(service *service.Service) error {
 	url := apiconfig.Server_URL + apiconfig.SERVICE_PATH + "/" + service.ServiceSpec.Name
+	fmt.Println("[tool][deleteService]: url=" + url)
 	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		return err
@@ -250,6 +252,8 @@ func GetJobFile(JobName string) core.JobUpload {
 // TODO 讨论确定一下具体写法, api路径等
 
 func GetPod(name string) (*core.Pod, error) {
+	prefix := "[tool][GetPod]"
+	fmt.Println(prefix + "key:" + name)
 	url := apiconfig.Server_URL + apiconfig.POD_PATH + name
 	resp, err := http.Get(url)
 	if err != nil {

@@ -5,6 +5,7 @@ metadata:
   labels:
     app: my-app
 spec:
+  nodeName: "node1"
   containers:
     - name: my-container
       image: nginx:latest
