@@ -6,5 +6,3 @@ for pid in $pids; do
   sudo kill "$pid"
 done
 
-docker ps -aq --filter "name=^my-replicaset|^test" | xargs -r docker stop
-docker ps -aq --filter "name=^my-replicaset|^test" | xargs -r docker rm
