@@ -2,6 +2,7 @@ package informer
 
 import (
 	"minik8s/pkg/client/tool"
+	"sync"
 )
 
 type EventHandler func(event tool.Event)
@@ -23,9 +24,22 @@ type informer struct {
 	lw       tool.ListWatcher
 	handlers map[tool.EventType]EventHandler
 	Cache    map[string]string
+	mutex    sync.Mutex
+}
+
+func (i *informer) Get(key string) string {
+	return i.Cache[key]
+}
+
+func (i *informer) Set(key string, val string) {
+	i.mutex.Lock()
+	defer i.mutex.Unlock()
+	i.Cache[key] = val
 }
 
 func (i *informer) Delete(key string) {
+	i.mutex.Lock()
+	defer i.mutex.Unlock()
 	delete(i.Cache, key)
 }
 
@@ -60,14 +74,6 @@ func (i *informer) Run() {
 
 func (i *informer) Stop() {
 	i.stop = true
-}
-
-func (i *informer) Get(key string) string {
-	return i.Cache[key]
-}
-
-func (i *informer) Set(key string, val string) {
-	i.Cache[key] = val
 }
 
 func NewInformer(resource string) Informer {

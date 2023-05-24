@@ -13,13 +13,13 @@ import (
 
 func main() {
 	// 创建Docker客户端
-	cli, err := client.NewClientWithOpts(client.FromEnv)
+	cli, err := client.NewClientWithOpts(client.WithVersion("1.41"))
 	if err != nil {
 		panic(err)
 	}
 
 	// 获取容器的实时统计信息
-	stats, err := cli.ContainerStats(context.Background(), "home_Etcd_1", true)
+	stats, err := cli.ContainerStats(context.Background(), "5c8d4d99", false)
 	if err != nil {
 		panic(err)
 	}
