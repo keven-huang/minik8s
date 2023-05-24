@@ -38,7 +38,7 @@ func Count(t *testing.T, regex *regexp.Regexp, number int, prefix string) {
 func TestReplicaSetController(t *testing.T) {
 	c := cmd.NewKubectlCommand()
 	//创建replicaset
-	c.SetArgs([]string{"create", "replicaset", "-f", "../../../cmd/kubectl/replicaset-example.yaml"})
+	c.SetArgs([]string{"create", "-f", "./test_file/replicaset-example.yaml"})
 	err := c.Execute()
 	if err != nil {
 		t.Fatal(err)
@@ -49,7 +49,7 @@ func TestReplicaSetController(t *testing.T) {
 	Count(t, regex, 6, "创建replicaset ^/my-replicaset- ")
 
 	// 创建pod, 会自动加入到replicaset中,删除一个之前的pod
-	c.SetArgs([]string{"create", "pod", "-f", "../../../cmd/kubectl/pod-example.yaml"})
+	c.SetArgs([]string{"create", "-f", "./test_file/pod-example.yaml"})
 	err = c.Execute()
 	if err != nil {
 		t.Fatal(err)

@@ -10,16 +10,10 @@ cache:
 build:
   stage: build
   script:
-    - sudo /usr/local/go/bin/go build -o /bin/apiserver ./cmd/kube-apiserver/kube-apiserver.go
-    - sudo /usr/local/go/bin/go build -o /bin/scheduler ./cmd/kube-scheduler/kube-scheduler.go
+    - sudo /usr/local/go/bin/go build -o /bin/kube-apiserver ./cmd/kube-apiserver/kube-apiserver.go
+    - sudo /usr/local/go/bin/go build -o /bin/kube-scheduler ./cmd/kube-scheduler/kube-scheduler.go
     - sudo /usr/local/go/bin/go build -o /bin/kubelet ./cmd/kubelet/kubelet.go
-    - if [ "$CI_COMMIT_REF_NAME" == "gpu" ]; then
-      sudo /usr/local/go/bin/go build -o /bin/apiserver ./cmd/kube-controller/kube-controller.go;
-      elif [ "$CI_COMMIT_REF_NAME" == "feature_replicaset" ]; then
-      sudo /usr/local/go/bin/go build -o /bin/kube-controller-manager ./cmd/kube-controller-manager/kube-controller-manager.go;
-      else
-      echo "Unsupported branch!";
-      fi
+    - sudo /usr/local/go/bin/go build -o /bin/controller-manager ./cmd/kube-controller-manager/controller-manager.go
   tags:
     - testing
 
