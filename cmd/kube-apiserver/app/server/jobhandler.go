@@ -40,19 +40,28 @@ func AddJob(c *gin.Context, s *Server) {
 }
 
 func GetJob(c *gin.Context, s *Server) {
+	INFO_HEAD := "[apiserver][getjob]"
 	if c.Query("all") == "true" {
 		// delete the keys
 		res, err := s.Etcdstore.GetWithPrefix(apiconfig.JOB_PATH)
-		for _, val := range res {
+		for i, val := range res {
 			var job core.Job
 			err = json.Unmarshal([]byte(val.Value), &job)
 			if err != nil {
-				fmt.Println(err)
+				fmt.Println(INFO_HEAD, err)
 				return
 			}
+			jobStatus := Job2JobStatus(s, &job)
+			var data []byte
+			data, err = json.Marshal(jobStatus)
+			if err != nil {
+				fmt.Println(INFO_HEAD, err)
+				return
+			}
+			res[i].Value = string(data)
 		}
 		if err != nil {
-			log.Println(err)
+			log.Println(INFO_HEAD, err)
 			return
 		}
 		c.JSON(http.StatusOK, res)
@@ -66,18 +75,29 @@ func GetJob(c *gin.Context, s *Server) {
 
 	if c.Query("prefix") == "true" {
 		res, err = s.Etcdstore.GetWithPrefix(key)
-		fmt.Println(res)
 	} else {
 		res, err = s.Etcdstore.GetExact(key)
 	}
-
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "etcd get job failed",
-		})
-		return
+	// transform job to jobstatus
+	if len(res) > 0 {
+		var job core.Job
+		err = json.Unmarshal([]byte(res[0].Value), &job)
+		if err != nil {
+			fmt.Println(INFO_HEAD, err)
+			return
+		}
+		fmt.Println(INFO_HEAD, job.Name)
+		jobStatus := Job2JobStatus(s, &job)
+		var data []byte
+		data, err = json.Marshal(jobStatus)
+		if err != nil {
+			fmt.Println(INFO_HEAD, err)
+			return
+		}
+		res[0].Value = string(data)
+		fmt.Println(INFO_HEAD, res[0].Value)
 	}
+	fmt.Println(INFO_HEAD, res)
 	c.JSON(http.StatusOK, res)
 }
 
@@ -130,13 +150,18 @@ func GetJobFile(c *gin.Context, s *Server) {
 func Job2JobStatus(s *Server, job *core.Job) core.JobStatus {
 	jobStatus := core.JobStatus{}
 	jobStatus.JobName = job.Name
-	jobStatus.Status = string(core.PodPending)
-	// res, err := s.Etcdstore.GetExact(apiconfig.POD_PATH + "/" + job.Name)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return jobStatus
-	// }
-	// var pod core.Pod
-
+	jobStatus.Status = string(core.JobPending)
+	res, err := s.Etcdstore.GetExact(apiconfig.POD_PATH + "/" + job.Name)
+	if err != nil || len(res) == 0 {
+		fmt.Println("[apiserver][getjob] get pod failed")
+		return jobStatus
+	}
+	var pod core.Pod
+	err = json.Unmarshal([]byte(res[0].Value), &pod)
+	if pod.Status.Phase == core.PodSucceeded {
+		jobStatus.Status = string(core.JobSuccess)
+	} else if pod.Status.Phase == core.PodFailed {
+		jobStatus.Status = string(core.JobFailed)
+	}
 	return jobStatus
 }

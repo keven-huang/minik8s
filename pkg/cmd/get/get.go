@@ -166,7 +166,11 @@ func (o *GetOptions) RunGetJob(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	var res []etcd.ListRes
-	json.Unmarshal(bodyBytes, &res)
+	err = json.Unmarshal(bodyBytes, &res)
+	if err != nil {
+		log.Println(prefix, err)
+		return err
+	}
 	fmt.Println(prefix, "Job Get successfully. Here are the results:")
 	fmt.Println("total number:", len(res))
 
@@ -181,6 +185,7 @@ func (o *GetOptions) RunGetJob(cmd *cobra.Command, args []string) error {
 			log.Println(prefix, err)
 			return err
 		}
+		fmt.Println("job:", job)
 		table.AddRow(color.RedString(job.JobName),
 			color.BlueString(string(job.Status)))
 	}
