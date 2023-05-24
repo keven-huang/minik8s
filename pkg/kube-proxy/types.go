@@ -46,6 +46,8 @@ type DNatRule struct {
 	DestIP string
 	// Dest port
 	DestPort string
+	PodIP    string
+	PodPort  string
 	// Source Ip
 	SourceIP string
 	// Source Port

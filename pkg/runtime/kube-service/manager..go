@@ -7,6 +7,7 @@ import (
 	"minik8s/pkg/client/informer"
 	"minik8s/pkg/client/tool"
 	"minik8s/pkg/service"
+	"strings"
 )
 
 type ServiceManager struct {
@@ -23,10 +24,11 @@ func NewServiceManager() *ServiceManager {
 	res.ServiceInformer = informer.NewInformer(apiconfig.SERVICE_PATH)
 	// 设置watch add service event 的回调函数
 	res.ServiceInformer.AddEventHandler(tool.Added, func(event tool.Event) {
-		fmt.Println("[info]:" + "in addServiceHandler" + event.Key)
+		fmt.Println("[kube-service][manage][addServiceHandler]:" + event.Key)
 		newService := &service.Service{}
 		err := json.Unmarshal([]byte(event.Val), newService)
 		if err != nil {
+			fmt.Println(err.Error())
 			return
 		}
 		lastService, ok := res.ServiceMapping[newService.ServiceMeta.Name]
@@ -41,15 +43,15 @@ func NewServiceManager() *ServiceManager {
 	// 设置watch delete event的回调
 	res.ServiceInformer.AddEventHandler(tool.Deleted, func(event tool.Event) {
 		// delete by name
-		fmt.Println("[info]:" + "in deleteServiceHandler" + event.Key)
+		prefix := "[kube-service][manager][deleteServiceHandler]"
+		fmt.Println(prefix + event.Key)
+		strs := strings.Split(event.Key, "/")
 		var name string
-		err := json.Unmarshal([]byte(event.Val), &name)
-		if err != nil {
-			return
-		}
+		name = strs[4]
+		fmt.Println(prefix + name)
 		lastService, ok := res.ServiceMapping[name]
 		if !ok {
-			fmt.Println("[warn]:" + "fail to delete service " + name)
+			fmt.Println(prefix + "fail to find service " + name)
 			return
 		} else {
 			lastService.Delete()             // delete service
@@ -63,5 +65,4 @@ func NewServiceManager() *ServiceManager {
 func (sm *ServiceManager) Run() {
 	// 启动ServiceInformer, it can add service
 	go sm.ServiceInformer.Run()
-
 }

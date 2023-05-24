@@ -1,6 +1,7 @@
 package kube_proxy
 
 import (
+	"fmt"
 	"minik8s/pkg/iptables"
 	"strconv"
 )
@@ -11,11 +12,19 @@ func (rule *DNatRule) toSpec() {
 	// portocol
 	rule.Spec = append(rule.Spec, "-p", rule.Protocol)
 	// source
-	rule.Spec = append(rule.Spec, "-s", rule.SourceIP, "--sport", rule.SourcePort)
+	//rule.Spec = append(rule.Spec, "-s", rule.SourceIP, "--sport", rule.SourcePort)
 	// dest
 	rule.Spec = append(rule.Spec, "-d", rule.DestIP, "--dport", rule.DestPort)
 	// action, 指做 入方向的地址转换
 	rule.Spec = append(rule.Spec, "-j", "DNAT")
+	// to
+	rule.Spec = append(rule.Spec, "--to-destination", rule.PodIP+":"+rule.PodPort)
+
+	fmt.Print("[chain][DNatRule][toSpec]: ")
+	for _, value := range rule.Spec {
+		fmt.Print(" " + value)
+	}
+	fmt.Println("")
 }
 
 func (chain *PodChain) toSpec() {
@@ -25,26 +34,41 @@ func (chain *PodChain) toSpec() {
 	chain.Spec = append(chain.Spec, "--every", strconv.Itoa(chain.RoundRabinNumber))
 	chain.Spec = append(chain.Spec, "--packet", "0")
 	chain.Spec = append(chain.Spec, "-j", chain.Name)
+	fmt.Print("[chain][PodChain][toSpec]: ")
+	for _, value := range chain.Spec {
+		fmt.Print(" " + value)
+	}
+	fmt.Println("")
 }
 
 func (chain *SvcChain) toSpec() {
 	chain.Spec = []string{"-s", "0/0"}
+	chain.Spec = append(chain.Spec, "-p", chain.Protocol)
 	chain.Spec = append(chain.Spec, "-d", chain.ClusterIp)
 	chain.Spec = append(chain.Spec, "--dport", chain.ClusterPort)
-	chain.Spec = append(chain.Spec, "-p", chain.Protocol)
 	chain.Spec = append(chain.Spec, "-j", chain.Name)
+	fmt.Print("[chain][svcChain][toSpec]: ")
+	for _, value := range chain.Spec {
+		fmt.Print(" " + value)
+	}
+	fmt.Println("")
 }
 
+// direct dstIp:dstPort -> PodIP:port
 func NewDNatRule(PodIP string,
 	port string,
 	SourceIP *string,
 	SourcePort *string,
 	protocol string,
 	father string,
-	table *string) *DNatRule {
+	table *string,
+	dstIP string,
+	dstPort string) *DNatRule {
 	res := &DNatRule{}
-	res.DestIP = PodIP
-	res.DestPort = port
+	res.PodIP = PodIP
+	res.PodPort = port
+	res.DestIP = dstIP
+	res.DestPort = dstPort
 	res.FatherChain = father
 	if SourceIP != nil {
 		res.SourceIP = *SourceIP
@@ -62,12 +86,14 @@ func NewDNatRule(PodIP string,
 	} else {
 		res.Table = "nat"
 	}
+
 	res.toSpec()
 	return res
 }
 
 // 根据pod-Info创建chain, father是service-chain
-func NewPodChain(protocol string, pod PodInfo, table string, father string, rr int) *PodChain {
+func NewPodChain(protocol string, pod PodInfo, table string, father string, rr int, dstIp string, dstPort string) *PodChain {
+	fmt.Println("[chain][NewPodChain]: dstIp:Port=" + dstIp + ":" + dstPort + "PodIP:Port=" + pod.IP + ":" + pod.Port)
 	res := &PodChain{
 		Name:             PodChainPrefix + "-" + pod.Name + pod.Port,
 		Pod:              pod,
@@ -85,7 +111,7 @@ func NewPodChain(protocol string, pod PodInfo, table string, father string, rr i
 	if err != nil {
 		panic(err.Error())
 	}
-	res.DNatRule = NewDNatRule(pod.IP, pod.Port, nil, nil, protocol, res.Name, &table)
+	res.DNatRule = NewDNatRule(pod.IP, pod.Port, nil, nil, protocol, res.Name, &table, dstIp, dstPort)
 	err = res.DNatRule.ApplyRule()
 	if err != nil {
 		panic(err.Error())
@@ -93,8 +119,48 @@ func NewPodChain(protocol string, pod PodInfo, table string, father string, rr i
 	return res
 }
 
+func AddReturnToNAT(father string, table string) {
+	fmt.Println("[chain][addReturn]: father=" + father)
+	ipt, err := iptables.New()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	if table == "" {
+		table = "nat"
+	}
+	spec := []string{}
+	spec = append(spec, "-p", "all")
+	spec = append(spec, "-j", "RETURN")
+	err = ipt.Append(table, father, spec...)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func DeleteReturnToNAT(father string, table string) {
+	fmt.Println("[chain][deleteReturn]: father=" + father)
+	ipt, err := iptables.New()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	if table == "" {
+		table = "nat"
+	}
+	spec := []string{}
+	spec = append(spec, "-p", "all")
+	spec = append(spec, "-j", "RETURN")
+	err = ipt.Delete(table, father, spec...)
+	//err = ipt.Append(table, father, spec...)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
 func NewSvcChain(name string, table string, father string, ip string, port string,
 	protocol string, pods []*PodInfo) *SvcChain {
+	fmt.Println("[chain][NewSvcChain]: sName=" + name + " sIP:port=" + ip + ":" + port + "podNum=" + strconv.Itoa(len(pods)))
 	res := &SvcChain{
 		Name:        SvcChainPrefix + "-" + name + port,
 		Table:       table,
@@ -112,7 +178,7 @@ func NewSvcChain(name string, table string, father string, ip string, port strin
 	total := len(pods)
 	res.Name2Chain = make(map[string]*PodChain)
 	for _, val := range pods {
-		curChain := NewPodChain(protocol, *val, table, father, total)
+		curChain := NewPodChain(protocol, *val, table, res.Name, total, ip, port)
 		err = curChain.ApplyChain()
 		if err != nil {
 			panic(err.Error())
@@ -120,11 +186,13 @@ func NewSvcChain(name string, table string, father string, ip string, port strin
 		total--
 		res.Name2Chain[val.Name] = curChain
 	}
+	AddReturnToNAT(res.Name, "nat")
 	return res
 }
 
 // ApplyRule add one rule, 增加一个规则的顶层接口
 func (rule *DNatRule) ApplyRule() error {
+	fmt.Println("[chain][DNAT][ApplyChain]: in")
 	ipt, err := iptables.New()
 	if err != nil {
 		return err
@@ -135,6 +203,7 @@ func (rule *DNatRule) ApplyRule() error {
 
 // DeleteRule delete one rule
 func (rule *DNatRule) DeleteRule() error {
+	fmt.Println("[chain][DNAT][DeleteChain]: in")
 	ipt, err := iptables.New()
 	if err != nil {
 		return err
@@ -144,6 +213,7 @@ func (rule *DNatRule) DeleteRule() error {
 }
 
 func (chain *PodChain) ApplyChain() error {
+	fmt.Println("[chain][PodChain][ApplyChain]: in")
 	ipt, err := iptables.New()
 	if err != nil {
 		return err
@@ -153,6 +223,7 @@ func (chain *PodChain) ApplyChain() error {
 }
 
 func (chain *PodChain) DeleteChain() error {
+	fmt.Println("[chain][PodChain][DeleteChain]: in")
 	ipt, err := iptables.New()
 	if err != nil {
 		return err
@@ -173,11 +244,13 @@ func (chain *PodChain) DeleteChain() error {
 }
 
 func (chain *SvcChain) ApplyChain() error {
+	fmt.Println("[chain][SvcChain][ApplyChain]: in")
 	ipt, err := iptables.New()
 	if err != nil {
 		return err
 	}
-	err = ipt.Append(chain.Table, chain.FatherChain, chain.Spec...)
+	err = ipt.Insert(chain.Table, chain.FatherChain, 1, chain.Spec...)
+	//err = ipt.Append(chain.Table, chain.FatherChain, chain.Spec...)
 	if err != nil {
 		return err
 	}
@@ -185,6 +258,7 @@ func (chain *SvcChain) ApplyChain() error {
 }
 
 func (chain *SvcChain) DeleteChain() error {
+	fmt.Println("[chain][SvcChain][DeleteChain]: in")
 	ipt, err := iptables.New()
 	if err != nil {
 		return err
@@ -195,18 +269,22 @@ func (chain *SvcChain) DeleteChain() error {
 		return err
 	}
 	//删除该链下的所有pod的规则
+	// 需要内存中的Name2Chain数据结构支持
 	for _, ch := range chain.Name2Chain {
 		err = ch.DeleteChain()
 		if err != nil {
 			return err
 		}
 	}
+	// 删除该链中的return链
+	DeleteReturnToNAT(chain.Name, "nat")
 	//删除该链
 	err = ipt.DeleteChain(chain.Table, chain.Name)
 	return err
 }
 
 func (chain *SvcChain) UpdateChain(newPods []*PodInfo) {
+	fmt.Println("[chain][SvcChain][UpdateChain]: in")
 	shouldRemain := make(map[string]*PodChain)
 	for k, v := range chain.Name2Chain {
 		flag := false
@@ -248,7 +326,7 @@ func (chain *SvcChain) UpdateChain(newPods []*PodInfo) {
 			}
 			chain.Name2Chain[pod.Name] = podChain
 		} else { // create new chain
-			podChain = NewPodChain(chain.Protocol, *pod, chain.Table, chain.Name, total)
+			podChain = NewPodChain(chain.Protocol, *pod, chain.Table, chain.Name, total, chain.ClusterIp, chain.ClusterPort)
 			err = podChain.ApplyChain()
 			if err != nil {
 				panic(err.Error())
@@ -271,6 +349,9 @@ func Init() {
 		return
 	}
 	err = ipt.NewChain("nat", "SERVICE")
+	// Return
+	AddReturnToNAT("SERVICE", "nat")
+
 	if err != nil {
 		panic(err.Error())
 	}
@@ -281,6 +362,7 @@ func Init() {
 	}
 	// 增加PREROUTING链
 	err = ipt.Insert("nat", "PREROUTING", 1, "-j", "SERVICE", "-s", "0/0", "-d", "0/0", "-p", "all")
+
 	if err != nil {
 		panic(err.Error())
 	}

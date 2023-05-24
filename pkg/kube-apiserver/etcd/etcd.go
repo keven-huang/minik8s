@@ -89,7 +89,7 @@ func (store *EtcdStore) GetExact(prefix string) ([]ListRes, error) {
 }
 
 // operations : get
-func (store *EtcdStore) GetWithPrefix(prefix string) ([]ListRes, error) {
+func (store *EtcdStore) GetAll(prefix string) ([]ListRes, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
 	defer cancel()
 	kv := clientv3.NewKV(store.client)
