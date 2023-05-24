@@ -45,8 +45,8 @@ func TestReplicaSetController(t *testing.T) {
 	}
 	time.Sleep(20 * time.Second)
 
-	regex := regexp.MustCompile("my-replicaset-")
-	Count(t, regex, 6, "创建replicaset失败")
+	regex := regexp.MustCompile("^my-replicaset-")
+	Count(t, regex, 6, "创建replicaset  ^my-replicaset- ")
 
 	// 创建pod, 会自动加入到replicaset中,删除一个之前的pod
 	c.SetArgs([]string{"create", "pod", "-f", "../../../cmd/kubectl/pod-example.yaml"})
@@ -56,10 +56,10 @@ func TestReplicaSetController(t *testing.T) {
 	}
 	time.Sleep(10 * time.Second)
 
-	regex = regexp.MustCompile("my-replicaset-")
-	Count(t, regex, 4, "创建pod失败 ")
-	regex = regexp.MustCompile("test5")
-	Count(t, regex, 2, "创建pod失败 ")
+	regex = regexp.MustCompile("^my-replicaset-")
+	Count(t, regex, 4, "创建pod  ^my-replicaset- ")
+	regex = regexp.MustCompile("^test5")
+	Count(t, regex, 2, "创建pod  ^test5 ")
 
 	// 删除pod, 会自动创建新的pod
 	c.SetArgs([]string{"delete", "pod", "test5"})
@@ -69,10 +69,10 @@ func TestReplicaSetController(t *testing.T) {
 	}
 	time.Sleep(10 * time.Second)
 
-	regex = regexp.MustCompile("my-replicaset-")
-	Count(t, regex, 6, "删除pod失败 ")
-	regex = regexp.MustCompile("test5")
-	Count(t, regex, 0, "删除pod失败 ")
+	regex = regexp.MustCompile("^my-replicaset-")
+	Count(t, regex, 6, "删除pod  ^my-replicaset- ")
+	regex = regexp.MustCompile("^test5")
+	Count(t, regex, 0, "删除pod  ^test5 ")
 
 	// 删除replicaset, 会删除所有的pod
 	c.SetArgs([]string{"delete", "replicaset", "my-replicaset"})
@@ -82,8 +82,8 @@ func TestReplicaSetController(t *testing.T) {
 	}
 	time.Sleep(10 * time.Second)
 
-	regex = regexp.MustCompile("my-replicaset-")
-	Count(t, regex, 0, "删除replicaset失败 ")
-	regex = regexp.MustCompile("test5")
-	Count(t, regex, 0, "删除replicaset失败 ")
+	regex = regexp.MustCompile("^my-replicaset-")
+	Count(t, regex, 0, "删除replicaset ^my-replicaset- ")
+	regex = regexp.MustCompile("^test5")
+	Count(t, regex, 0, "删除replicaset  ^test5 ")
 }

@@ -15,6 +15,7 @@ import (
 	"minik8s/pkg/util/random"
 	"minik8s/pkg/util/web"
 	"net/url"
+	"sort"
 	"time"
 )
 
@@ -453,6 +454,8 @@ func (rsc *ReplicaSetController) DeletePodWithNumber(replica *core.ReplicaSet, n
 	pod_cache := rsc.PodInformer.GetCache()
 	success := 0
 
+	var keys []string
+
 	for _, value := range *pod_cache {
 		pod := &core.Pod{}
 		err := json.Unmarshal([]byte(value), pod)
@@ -462,36 +465,51 @@ func (rsc *ReplicaSetController) DeletePodWithNumber(replica *core.ReplicaSet, n
 		}
 		for _, owner := range pod.OwnerReferences {
 			if owner.UID == replica.UID {
-				fmt.Println(prefix, "delete pod: ", pod.Name)
-
-				// 先修改pod的owner, 避免删除时触发DeletePod在里面再给replicaset减1
-				// 为了防止在修改owner时触发UpdatePod中的加入Replicaset，加一个特殊标记
-				pod.OwnerReferences = []v1.OwnerReference{
-					v1.OwnerReference{
-						APIVersion: "apps/v1",
-						Kind:       "ReplicaSet",
-						Name:       "",
-						UID:        "",
-					}}
-				updatePodToServer(rsc, pod, pod.Name, prefix)
-
-				values := url.Values{}
-				values.Add("PodName", pod.Name)
-				err := web.SendHttpRequest("DELETE", apiconfig.Server_URL+apiconfig.POD_PATH+"?"+values.Encode(),
-					web.WithPrefix(prefix),
-					web.WithLog(true))
-				if err != nil {
-					fmt.Println("[ERROR] ", prefix, err)
-					continue
-				}
-				success++
-				if success == number {
-					return success
-				}
-				//time.Sleep(time.Second * 3)
+				keys = append(keys, pod.Name)
 			}
 		}
 	}
+
+	sort.Strings(keys)
+
+	for _, key := range keys {
+		value := (*pod_cache)[key]
+		pod := &core.Pod{}
+		err := json.Unmarshal([]byte(value), pod)
+		if err != nil {
+			log.Println("[ERROR] ", prefix, err)
+			continue
+		}
+
+		fmt.Println(prefix, "delete pod: ", pod.Name)
+
+		// 先修改pod的owner, 避免删除时触发DeletePod在里面再给replicaset减1
+		// 为了防止在修改owner时触发UpdatePod中的加入Replicaset，加一个特殊标记
+		pod.OwnerReferences = []v1.OwnerReference{
+			v1.OwnerReference{
+				APIVersion: "apps/v1",
+				Kind:       "ReplicaSet",
+				Name:       "",
+				UID:        "",
+			}}
+		updatePodToServer(rsc, pod, pod.Name, prefix)
+
+		values := url.Values{}
+		values.Add("PodName", pod.Name)
+		err = web.SendHttpRequest("DELETE", apiconfig.Server_URL+apiconfig.POD_PATH+"?"+values.Encode(),
+			web.WithPrefix(prefix),
+			web.WithLog(true))
+		if err != nil {
+			fmt.Println("[ERROR] ", prefix, err)
+			continue
+		}
+		success++
+		if success == number {
+			return success
+		}
+		//time.Sleep(time.Second * 3)
+	}
+
 	return success
 }
 
