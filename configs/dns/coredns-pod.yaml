@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: coredns
+labels:
+  app: coredns
+spec:
+  nodeName: "node1"
+  containers:
+    - name: coredns
+      image: coredns/coredns
+      command: ["-conf", "/etc/coredns/Corefile"]
+      ports:
+        - name: http
+          containerPort: 53
+      volumeMounts:
+        - name: volume-coredns
+          mountPath: /etc/coredns
+  volumes:
+    - name: volume-coredns
+      hostPath: /root/dns

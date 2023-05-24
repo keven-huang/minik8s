@@ -156,10 +156,47 @@ func AddNode(node *core.Node) error {
 	}
 	return nil
 }
+func GetService(name string) (*service.Service, error) {
+	prefix := "[tool][GetService]"
+	fmt.Println(prefix + "key:" + name)
+	url := apiconfig.Server_URL + apiconfig.SERVICE_PATH + "?" + "Name=" + name
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	buf := make([]byte, 40960)
+	res := service.Service{}
+	n, err := resp.Body.Read(buf)
+	if n != 0 || err != io.EOF {
+		err = json.Unmarshal([]byte(buf[:n]), &res)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &res, nil
+}
+
 func UpdateService(service *service.Service) error {
 	url := apiconfig.Server_URL + apiconfig.SERVICE_PATH
 	fmt.Println("[tool][updateservice]: url=" + url)
 	data, err := json.Marshal(service)
+	if err != nil {
+		return err
+	}
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	fmt.Println("Response Status:", resp.Status)
+	return nil
+}
+
+func UpdateDNS(dns *core.DNS) error {
+	url := apiconfig.Server_URL + apiconfig.DNS_PATH
+	fmt.Println("[tool][updateDNS]: url=" + url)
+	data, err := json.Marshal(dns)
 	if err != nil {
 		return err
 	}

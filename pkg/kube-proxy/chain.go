@@ -343,9 +343,11 @@ func Init() {
 	// first, check exist
 	exist, err := ipt.ChainExists("nat", "SERVICE")
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
+		return
 	}
 	if exist {
+		fmt.Println("[Chain][Init] service inited before, return")
 		return
 	}
 	err = ipt.NewChain("nat", "SERVICE")

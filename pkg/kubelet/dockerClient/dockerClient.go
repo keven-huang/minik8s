@@ -253,6 +253,7 @@ func GetNetworkSettings(id string) (*types.NetworkSettings, error) {
 	return res.NetworkSettings, nil
 }
 
+// CreateContainer deprecated
 func CreateContainer(con core.Container) (container.CreateResponse, error) {
 	cli, err := GetNewClient()
 	if err != nil {
@@ -277,6 +278,7 @@ func CreateContainer(con core.Container) (container.CreateResponse, error) {
 		&container.Config{Image: con.Image, Entrypoint: con.EntryPoint, Tty: con.Tty},
 		&container.HostConfig{
 			Mounts: mountsInfo,
+			DNS:    []string{config.DnsAddress},
 		}, nil, nil, con.Name)
 	return resp, err
 }
@@ -320,7 +322,7 @@ func CreatePauseContainer(name string, ports []core.Port) (container.CreateRespo
 		ExposedPorts: portSet,
 	}, &container.HostConfig{
 		IpcMode: container.IPCModeShareable,
-		//DNS:     []string{config.DnsAddress},
+		DNS:     []string{config.DnsAddress},
 	}, nil, nil, name)
 	return response, err
 }
