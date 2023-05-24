@@ -9,8 +9,7 @@ spec:
     - name: my-container
       image: nginx:latest
       command: ["nginx", "-g", "daemon off;"]
-      resources:
-        limits:
+      limitResource:
           cpu: "1"
           memory: "128Mi"
       ports:

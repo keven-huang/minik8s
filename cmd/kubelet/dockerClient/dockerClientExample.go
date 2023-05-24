@@ -1,7 +1,7 @@
 package main
 
 // It communicates with the deamon process in host machine.
-// // equal to `docker ps`
+// equal to `docker ps`
 // func main() {
 // 	// the client version should correspond to the docker api version in host machine
 // 	cli, err := client.NewClientWithOpts(client.WithVersion("1.41"))

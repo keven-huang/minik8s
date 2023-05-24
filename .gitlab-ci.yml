@@ -18,7 +18,7 @@ build:
       elif [ "$CI_COMMIT_REF_NAME" == "feature_replicaset" ]; then
       sudo /usr/local/go/bin/go build -o /bin/kube-controller-manager ./cmd/kube-controller-manager/kube-controller-manager.go;
       else
-      echo "unsupported branch";
+      echo "Unsupported branch!";
       fi
   tags:
     - testing
@@ -27,10 +27,11 @@ build:
 test:
   stage: test
   script:
-    - make run
+    - make stop
+    - make clean
+    - sudo make run
     - sudo /usr/local/go/bin/go test ./... -v
     - make stop
     - make clean
   tags:
     - testing
-

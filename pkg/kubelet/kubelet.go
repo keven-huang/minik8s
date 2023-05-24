@@ -9,6 +9,7 @@ import (
 	"minik8s/pkg/client/informer"
 	"minik8s/pkg/client/tool"
 	"minik8s/pkg/kubelet/dockerClient"
+	"minik8s/pkg/util/file"
 	"minik8s/pkg/util/web"
 	"regexp"
 	"time"
@@ -77,9 +78,20 @@ func (k *Kubelet) UpdatePod(event tool.Event) {
 		pod.Spec.Containers[i].Name = pod.Name + "-" + v.Name
 	}
 
+	// 判断创建pod是否是gpu类型
+	if pod.Spec.GPUJob == true {
+		// 获取gpu运行文件至job目录
+		fmt.Println(prefix, "get gpufiles")
+		err = GetGpuJobFile(pod.Spec.GPUJobName)
+		if err != nil {
+			fmt.Println(prefix, "[ERROR]", err)
+			return
+		}
+	}
+
 	metaData, netSetting, err := dockerClient.CreatePod(*pod)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(prefix, err)
 		return
 	}
 
@@ -129,6 +141,27 @@ func (k *Kubelet) DeletePod(event tool.Event) {
 		fmt.Println(err)
 		return
 	}
+}
+
+func GetGpuJobFile(jobname string) error {
+	// 获取gpu运行文件至job目录
+	jobFile := tool.GetJobFile(jobname)
+	if len(jobFile.Program) == 0 || len(jobFile.Slurm) == 0 {
+		return fmt.Errorf("[kubelet] [UpdatePod] get gpufiles empty")
+	}
+	// get program
+	program_name := jobFile.JobName + ".cu"
+	err := file.MakeFile(jobFile.Program, program_name, apiconfig.JOB_FILE_DIR_PATH)
+	if err != nil {
+		return err
+	}
+	// get slurm
+	slurm_name := jobFile.JobName + ".slurm"
+	err = file.MakeFile(jobFile.Slurm, slurm_name, apiconfig.JOB_FILE_DIR_PATH)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (k *Kubelet) Listener(needLog bool) {

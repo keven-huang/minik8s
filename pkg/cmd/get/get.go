@@ -73,6 +73,10 @@ func (o *GetOptions) RunGet(cmd *cobra.Command, args []string) error {
 		{
 			return o.RunGetReplicaSet(cmd, args)
 		}
+	case "job":
+		{
+			return o.RunGetJob(cmd, args)
+		}
 	default:
 		{
 			fmt.Printf(prefix, "%s is not supported.\n", args[0])
@@ -197,3 +201,55 @@ func (o *GetOptions) RunGetReplicaSet(cmd *cobra.Command, args []string) error {
 
 	return nil
 }
+
+func (o *GetOptions) RunGetJob(cmd *cobra.Command, args []string) error {
+	prefix := "[kubectl] [get] [RunGetJob] "
+	values := url.Values{}
+	if o.GetAll {
+		values.Add("all", "true")
+	}
+
+	values.Add("prefix", "true")
+	if len(args) > 1 {
+		values.Add("Name", args[1])
+		//body = bytes.NewBuffer([]byte(args[1]))
+	}
+
+	bodyBytes := make([]byte, 0)
+	fmt.Println("ask cmd:", apiconfig.Server_URL+apiconfig.JOB_PATH+"?"+values.Encode())
+	err := web.SendHttpRequest("GET", apiconfig.Server_URL+apiconfig.JOB_PATH+"?"+values.Encode(),
+		web.WithPrefix(prefix),
+		web.WithLog(false),
+		web.WithBodyBytes(&bodyBytes))
+	if err != nil {
+		return err
+	}
+	var res []etcd.ListRes
+	err = json.Unmarshal(bodyBytes, &res)
+	if err != nil {
+		log.Println(prefix, err)
+		return err
+	}
+	fmt.Println(prefix, "Job Get successfully. Here are the results:")
+	fmt.Println("total number:", len(res))
+
+	table := uitable.New()
+	table.MaxColWidth = 100
+	table.RightAlign(10)
+	table.AddRow("NAME", "STATUS")
+	for _, val := range res {
+		job := core.JobStatus{}
+		err := json.Unmarshal([]byte(val.Value), &job)
+		if err != nil {
+			log.Println(prefix, err)
+			return err
+		}
+		fmt.Println("job:", job)
+		table.AddRow(color.RedString(job.JobName),
+			color.BlueString(string(job.Status)))
+	}
+	fmt.Println(table)
+
+	return nil
+}
+

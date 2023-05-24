@@ -1,9 +1,5 @@
 package main
 
-import (
-	"minik8s/pkg/kubelet/dockerClient"
-)
-
 // func main() {
 
 // 	containers, err := dockerClient.GetAllContainers()
@@ -21,9 +17,9 @@ import (
 // 	TestKill(id)
 // }
 
-func TestKill(id string) {
-	err := dockerClient.KillContainer(id, "SIGKILL")
-	if err != nil {
-		panic(err.Error())
-	}
-}
+// func TestKill(id string) {
+// 	err := dockerClient.KillContainer(id, "SIGKILL")
+// 	if err != nil {
+// 		panic(err.Error())
+// 	}
+// }

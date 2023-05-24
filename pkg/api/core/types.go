@@ -222,6 +222,10 @@ type PodSpec struct {
 	// requirements.
 	// +optional
 	NodeName string `json:"nodeName,omitempty" protobuf:"bytes,10,opt,name=nodeName"`
+	// whether pod is to support GPU job
+	// +optional
+	GPUJob     bool   `json:"gpu,omitempty" protobuf:"bytes,11,opt,name=gpu"`
+	GPUJobName string `json:"gpuJobName,omitempty" protobuf:"bytes,12,opt,name=gpuJobName"`
 }
 
 // Pod is a collection of containers that can run on a host. This resource is created
@@ -231,12 +235,12 @@ type Pod struct {
 	// Standard object's metadata.
 	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
 	// +optional
-	metav1.ObjectMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
+	metav1.ObjectMeta `json:"metadata" yaml:"metadata"`
 
 	// Specification of the desired behavior of the pod.
 	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
 	// +optional
-	Spec PodSpec `json:"spec,omitempty" protobuf:"bytes,2,opt,name=spec"`
+	Spec PodSpec `json:"spec,omitempty" yaml:"spec,omitempty"`
 
 	// Most recently observed status of the pod.
 	// This data may not be up to date.

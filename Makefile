@@ -9,6 +9,6 @@ run:
 	/usr/local/go/bin/go run ./cmd/kube-scheduler/kube-scheduler.go > log/scheduler.log &
 	/usr/local/go/bin/go run ./cmd/kubelet/kubelet.go > log/kubelet.log &
 	/usr/local/go/bin/go run ./cmd/kube-controller-manager/kube-controller-manager.go > log/kube-controller-manager.log &
-
+	/usr/local/go/bin/go run ./cmd/kube-controller/kube-controller.go > log/controller.log &
 stop:
 	./scripts/linux/stop.sh

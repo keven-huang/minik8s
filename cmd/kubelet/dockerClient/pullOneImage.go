@@ -8,5 +8,5 @@ package main
 // 	err := dockerClient.PullOneImage(image)
 // 	if err != nil {
 // 		panic(err.Error())
-// 	}
+// 	}c
 // }
