@@ -22,7 +22,7 @@ func Watch(c *gin.Context, s *Server) {
 	w := c.Writer
 	flusher, ok := w.(http.Flusher)
 	if !ok {
-		fmt.Printf("http server does not support flush\n")
+		fmt.Printf("web server does not support flush\n")
 		return
 	}
 	w.Header().Set("Connection", "keep-alive")
@@ -38,9 +38,9 @@ func Watch(c *gin.Context, s *Server) {
 				// resChan 已关闭，退出循环
 				return
 			}
-			fmt.Println("send watch response")
+			//fmt.Println("[api-server] [watch] send watch response")
 			resp, _ := json.Marshal(res)
-			fmt.Println(string(resp))
+			//fmt.Println(string(resp))
 			fmt.Fprintf(w, string(resp))
 			flusher.Flush()
 		}

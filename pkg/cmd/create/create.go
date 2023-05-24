@@ -3,14 +3,18 @@ package create
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/spf13/cobra"
 	"io"
+	"io/ioutil"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/pkg/api/core"
-	myJson "minik8s/pkg/util/json"
+	"minik8s/pkg/util/web"
 	"net/http"
+	"os"
 
-	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v3"
 )
 
 // CreateOptions is the commandline options for 'create' sub command
@@ -32,16 +36,17 @@ func NewCmdCreate() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create [-f FILENAME]",
 		Short: "Create a resource from a file or from stdin",
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			if o.Filename == "" {
-				fmt.Print("Error: must specify one -f\n\n")
-				return
+				fmt.Print("Error: must specify one -f\n")
+				return errors.New("must specify one -f")
 			}
 			//fmt.Println(o.Filename, args)
 			err := o.RunCreate(cmd, args)
 			if err != nil {
-				return
+				return err
 			}
+			return nil
 		},
 	}
 
@@ -53,89 +58,183 @@ func NewCmdCreate() *cobra.Command {
 
 // RunCreate performs the creation
 func (o *CreateOptions) RunCreate(cmd *cobra.Command, args []string) error {
+
 	if len(args) != 0 {
-		return fmt.Errorf("unexpected args: %v", args)
+		return fmt.Errorf("[kubectl] [create] [RunCreate] unexpected args: %v", args)
 	}
 
 	filename := o.Filename
+	file, err := os.Open(filename)
+	if err != nil {
+		return fmt.Errorf("cannot open file %s", filename)
+	}
+	defer file.Close()
+	// Read the YAML file
+	var dataMap map[string]interface{}
 
+	yamlFile, err := io.ReadAll(file)
+	if err != nil {
+		return fmt.Errorf("read yaml error")
+	}
+
+	err = yaml.Unmarshal(yamlFile, &dataMap)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	// get kind
+	var kind string
+	kind = dataMap["kind"].(string)
+	fmt.Println("kind:", kind)
+	switch kind {
+	case "Pod":
+		err = o.RunCreatePod(cmd, args, yamlFile)
+	case "ReplicaSet":
+		err = o.RunCreateReplicaSet(cmd, args, yamlFile)
+	case "Job":
+		err = o.RunCreateJob(cmd, args, yamlFile)
+	}
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
+}
+
+func (o *CreateOptions) RunCreatePod(cmd *cobra.Command, args []string, yamlFile []byte) error {
 	pod := &core.Pod{}
-	err := myJson.GetFromYaml(filename, pod)
+	err := yaml.Unmarshal(yamlFile, pod)
 	if err != nil {
 		return err
 	}
 
+	err = CreatePod(pod)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *CreateOptions) RunCreateReplicaSet(cmd *cobra.Command, args []string, yamlFile []byte) error {
+	r := &core.ReplicaSet{}
+	err := yaml.Unmarshal(yamlFile, r)
+	if err != nil {
+		return err
+	}
+
+	err = CreateReplicaSet(r)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *CreateOptions) RunCreateJob(cmd *cobra.Command, args []string, yamlFile []byte) error {
+	job := &core.Job{}
+	err := yaml.Unmarshal(yamlFile, job)
+	if err != nil {
+		return err
+	}
+
+	err = CreateJob(job)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func CreateReplicaSet(r *core.ReplicaSet) error {
+	// 序列化 调试用法，前面多两个空格，易于阅读
+	//data, err := json.MarshalIndent(pod, "", "  ")
+	data, err := json.Marshal(r)
+	if err != nil {
+		fmt.Println("[kubectl] [create] [RunCreateReplicaSet] failed to marshal:", err)
+	} else {
+		//fmt.Println("[kubectl] [create] [RunCreateReplicaSet] ", string(data))
+	}
+
+	// Send a POST request to kube-apiserver to create the replicaset
+	// 创建 PUT 请求
+	err = web.SendHttpRequest("PUT", apiconfig.Server_URL+apiconfig.REPLICASET_PATH,
+		web.WithPrefix("[kubectl] [create] [RunCreateReplicaSet] "),
+		web.WithBody(bytes.NewBuffer(data)),
+		web.WithLog(true))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func CreatePod(pod *core.Pod) error {
 	// 序列化
 	// 调试用法，前面多两个空格，易于阅读
 	//data, err := json.MarshalIndent(pod, "", "  ")
 	data, err := json.Marshal(pod)
 	if err != nil {
-		fmt.Println("failed to marshal person:", err)
+		fmt.Println("[kubectl] [create] [RunCreatePod] failed to marshal:", err)
 	} else {
-		//fmt.Println(string(data))
+		//fmt.Println("[kubectl] [create] [RunCreatePod]\n", string(data))
 	}
-
-	// 反序列化
-	pod2 := &core.Pod{}
-	err = json.Unmarshal(data, pod2)
-	if err != nil {
-		return err
-	}
-	fmt.Println(pod2)
-
-	// 检查序列化和反序列化的结果
-	myJson.CheckDeepEqual(pod, pod2)
 
 	// Send a POST request to kube-apiserver to create the pod
 	// 创建 PUT 请求
-	req, err := http.NewRequest("PUT", apiconfig.Server_URL+apiconfig.POD_PATH, bytes.NewBuffer(data))
+	err = web.SendHttpRequest("PUT", apiconfig.Server_URL+apiconfig.POD_PATH,
+		web.WithPrefix("[kubectl] [create] [RunCreate] "),
+		web.WithBody(bytes.NewBuffer(data)),
+		web.WithLog(true))
 	if err != nil {
-		fmt.Println("Error creating request:", err)
 		return err
 	}
+	return nil
+}
 
-	// 发送请求
-	client := &http.Client{}
-	resp, err := client.Do(req)
+func CreateJob(job *core.Job) error {
+	// 发送job信息至apiserver保存
+	job_data, err := json.Marshal(job)
+	if err != nil {
+		fmt.Println("marshal job error:", err)
+		return fmt.Errorf("marshal job error")
+	}
+	job_data_resp, err := http.Post(apiconfig.Server_URL+apiconfig.JOB_PATH, "application/json", bytes.NewBuffer(job_data))
 	if err != nil {
 		fmt.Println("Error sending request:", err)
 		return err
 	}
-	defer resp.Body.Close()
-
-	// 打印响应结果
-	fmt.Println("Response Status:", resp.Status)
-	// 读取响应主体内容到字节数组
-	bodyBytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Println("Error reading response body:", err)
-		return err
+	defer job_data_resp.Body.Close()
+	if job_data_resp.StatusCode != 200 {
+		return fmt.Errorf("job upload failed")
 	}
 
-	// 将字节数组转换为字符串并打印
-	fmt.Println("Response Body:", string(bodyBytes))
+	jobUpload := &core.JobUpload{}
+	// 读取 job program
+	program_path := job.Spec.JobTask.Program
+	program, err := ioutil.ReadFile(program_path)
+	if err != nil {
+		return fmt.Errorf("read program error")
+	}
+	jobUpload.JobName = job.Spec.JobTask.JobName
+	jobUpload.Program = program
+	// 生成slurm文件
+	jobUpload.Slurm = job.Spec.JobTask.GenerateSlurm()
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	// 序列化
+	filedata, err := json.Marshal(jobUpload)
+	if err != nil {
+		fmt.Println("failed to marshal gpu file:", err)
+	}
+	// 发送job文件至apiserver保存
+	resp, err := http.Post(apiconfig.Server_URL+apiconfig.JOB_FILE_PATH, "application/json", bytes.NewBuffer(filedata))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("job file upload failed")
+	}
 
-	fmt.Println("pod created successfully")
 	return nil
-
 }
-
-// "k8s.io/apimachinery/pkg/runtime/serializer/json"
-//var s runtime.Serializer
-//// Yaml decides whether yaml or json
-//option := json.SerializerOptions{Yaml: false, Pretty: false, Strict: false}
-//// json
-//s = json.NewSerializerWithOptions(json.DefaultMetaFactory, nil, nil, option)
-//
-//// 将对象编码为字节数组
-//buf := new(bytes.Buffer)
-//if err := s.Encode(*pod, buf); err != nil {
-//	panic(err)
-//}
-
-//obj, gvk, err := s.Decode([]byte(test.data), &schema.GroupVersionKind{Kind: "Test", Group: "other", Version: "blah"}, &core.Pod{})
-//
-//if !reflect.DeepEqual(test.expectedGVK, gvk) {
-//	logTestCase(t, test)
-//	t.Errorf("%d: unexpected GVK: %v", i, gvk)
-//}

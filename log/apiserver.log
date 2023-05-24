@@ -1,0 +1,161 @@
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+connect to etcd success...
+[GIN-debug] GET    /api/v1                   --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func1 (3 handlers)
+[GIN-debug] PUT    /api/v1                   --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func2 (3 handlers)
+[GIN-debug] POST   /api/v1                   --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func3 (3 handlers)
+[GIN-debug] DELETE /api/v1                   --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func4 (3 handlers)
+[GIN-debug] GET    /api/v1/nodes             --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func1 (3 handlers)
+[GIN-debug] PUT    /api/v1/nodes             --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func2 (3 handlers)
+[GIN-debug] GET    /api/v1/pods              --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func1 (3 handlers)
+[GIN-debug] PUT    /api/v1/pods              --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func2 (3 handlers)
+[GIN-debug] DELETE /api/v1/pods              --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func4 (3 handlers)
+[GIN-debug] POST   /api/v1/pods              --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func3 (3 handlers)
+[GIN-debug] GET    /watch/*resource          --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func1 (3 handlers)
+[GIN-debug] POST   /api/v1/jobs              --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func3 (3 handlers)
+[GIN-debug] GET    /api/v1/jobs              --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func1 (3 handlers)
+[GIN-debug] POST   /api/v1/jobfile           --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func3 (3 handlers)
+[GIN-debug] GET    /api/v1/jobfile           --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func1 (3 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :8080
+In GetPod
+[GIN] 2023/05/22 - 22:11:27 | 200 |    2.151686ms |       127.0.0.1 | GET      "/api/v1/pods?all=true"
+[GIN] 2023/05/22 - 22:11:27 | 200 |      439.97µs |       127.0.0.1 | GET      "/api/v1/nodes?all=true"
+path: /watch/api/v1/pods
+key: /api/v1/pods
+in sender
+path: /watch/api/v1/nodes
+key: /api/v1/nodes
+in sender
+[GIN] 2023/05/22 - 22:11:28 | 200 |    1.300248ms |       127.0.0.1 | GET      "/api/v1/jobs?all=true"
+path: /watch/api/v1/jobs
+key: /api/v1/jobs
+in sender
+[etcd] etcd have watched  /api/v1/nodes/node1   PUT
+1 202 202
+----------
+send watch response
+[GIN] 2023/05/22 - 22:11:28 | 200 |    8.251167ms |       127.0.0.1 | PUT      "/api/v1/nodes"
+{"Type":"ADDED","Key":"/api/v1/nodes/node1","Val":"{\"metadata\":{\"name\":\"node1\",\"creationTimestamp\":null},\"spec\":{},\"status\":{}}"}
+In GetPod
+[GIN] 2023/05/22 - 22:11:28 | 200 |     572.101µs |       127.0.0.1 | GET      "/api/v1/pods?all=true"
+path: /watch/api/v1/pods
+key: /api/v1/pods
+in sender
+in add job
+/api/v1/jobs/cuda
+[etcd] etcd have watched  /api/v1/jobs/cuda   PUT
+1 203 203
+----------
+send watch response
+{"Type":"ADDED","Key":"/api/v1/jobs/cuda","Val":"{\"metadata\":{\"name\":\"cuda\",\"creationTimestamp\":null},\"spec\":{\"task\":{\"name\":\"cuda\",\"partition\":\"dgx2\",\"nodes\":1,\"ntasks\":0,\"ntasks-per-node\":1,\"cpus-per-task\":1,\"gpu\":1,\"error\":\"cuda.err\",\"output\":\"cuda.out\",\"mail-type\":\"end\",\"mail-user\":\"jmhuang_2020@sjtu.edu.cn\",\"program\":\"gpu-yaml/cuda.cu\"}}}"}
+[GIN] 2023/05/22 - 22:11:31 | 200 |    8.938521ms |       127.0.0.1 | POST     "/api/v1/jobs"
+[GIN] 2023/05/22 - 22:11:31 | 200 |   37.636387ms |       127.0.0.1 | POST     "/api/v1/jobfile"
+In AddPod.
+[GIN] 2023/05/22 - 22:11:32 | 200 |    8.485992ms |       127.0.0.1 | PUT      "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/cuda   PUT
+1 205 205
+----------
+send watch response
+{"Type":"ADDED","Key":"/api/v1/pods/cuda","Val":"{\"metadata\":{\"name\":\"cuda\",\"generation\":1,\"creationTimestamp\":\"2023-05-22T14:11:32Z\"},\"spec\":{\"volumes\":[{\"name\":\"job-volume\",\"hostPath\":\"/home/job\"}],\"containers\":[{\"name\":\"gpu\",\"image\":\"gpu-jobs-image\",\"command\":[\"--jobname=cuda\",\"--outfile=cuda\",\"--errfile=cuda\"],\"entryPoint\":[\"./gpuserver\"],\"ports\":null,\"limitResource\":{\"cpu\":\"\",\"memory\":\"\"},\"tty\":false,\"volumeMounts\":[{\"name\":\"job-volume\",\"mountPath\":\"/home/job\"}]}],\"gpu\":true,\"gpuJobName\":\"cuda\"},\"status\":{\"phase\":\"Pending\"}}"}
+[etcd] etcd have watched  /api/v1/pods/cuda   PUT
+1 205 205
+----------
+send watch response
+{"Type":"ADDED","Key":"/api/v1/pods/cuda","Val":"{\"metadata\":{\"name\":\"cuda\",\"generation\":1,\"creationTimestamp\":\"2023-05-22T14:11:32Z\"},\"spec\":{\"volumes\":[{\"name\":\"job-volume\",\"hostPath\":\"/home/job\"}],\"containers\":[{\"name\":\"gpu\",\"image\":\"gpu-jobs-image\",\"command\":[\"--jobname=cuda\",\"--outfile=cuda\",\"--errfile=cuda\"],\"entryPoint\":[\"./gpuserver\"],\"ports\":null,\"limitResource\":{\"cpu\":\"\",\"memory\":\"\"},\"tty\":false,\"volumeMounts\":[{\"name\":\"job-volume\",\"mountPath\":\"/home/job\"}]}],\"gpu\":true,\"gpuJobName\":\"cuda\"},\"status\":{\"phase\":\"Pending\"}}"}
+[etcd] etcd have watched  /api/v1/pods/cuda   PUT
+2 205 206
+----------
+send watch response
+{"Type":"MODIFIED","Key":"/api/v1/pods/cuda","Val":"{\"metadata\":{\"name\":\"cuda\",\"generation\":1,\"creationTimestamp\":\"2023-05-22T14:11:32Z\"},\"spec\":{\"volumes\":[{\"name\":\"job-volume\",\"hostPath\":\"/home/job\"}],\"containers\":[{\"name\":\"gpu\",\"image\":\"gpu-jobs-image\",\"command\":[\"--jobname=cuda\",\"--outfile=cuda\",\"--errfile=cuda\"],\"entryPoint\":[\"./gpuserver\"],\"ports\":null,\"limitResource\":{\"cpu\":\"\",\"memory\":\"\"},\"tty\":false,\"volumeMounts\":[{\"name\":\"job-volume\",\"mountPath\":\"/home/job\"}]}],\"nodeName\":\"node1\",\"gpu\":true,\"gpuJobName\":\"cuda\"},\"status\":{\"phase\":\"Pending\"}}"}
+[GIN] 2023/05/22 - 22:11:32 | 200 |     8.14381ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/cuda   PUT
+2 205 206
+----------
+send watch response
+{"Type":"MODIFIED","Key":"/api/v1/pods/cuda","Val":"{\"metadata\":{\"name\":\"cuda\",\"generation\":1,\"creationTimestamp\":\"2023-05-22T14:11:32Z\"},\"spec\":{\"volumes\":[{\"name\":\"job-volume\",\"hostPath\":\"/home/job\"}],\"containers\":[{\"name\":\"gpu\",\"image\":\"gpu-jobs-image\",\"command\":[\"--jobname=cuda\",\"--outfile=cuda\",\"--errfile=cuda\"],\"entryPoint\":[\"./gpuserver\"],\"ports\":null,\"limitResource\":{\"cpu\":\"\",\"memory\":\"\"},\"tty\":false,\"volumeMounts\":[{\"name\":\"job-volume\",\"mountPath\":\"/home/job\"}]}],\"nodeName\":\"node1\",\"gpu\":true,\"gpuJobName\":\"cuda\"},\"status\":{\"phase\":\"Pending\"}}"}
+[apiserver][getjobfile] JobName cuda
+[apiserver][getjobfile] res #include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <cuda_runtime.h>
+#include "cublas_v2.h"
+#define M 6
+#define N 5
+#define IDX2C(i,j,ld) (((j)*(ld))+(i))
+
+static __inline__ void modify (cublasHandle_t handle, float *m, int ldm, int n, int p, int q, float alpha, float beta){
+    cublasSscal (handle, n-p, &alpha, &m[IDX2C(p,q,ldm)], ldm);
+    cublasSscal (handle, ldm-p, &beta, &m[IDX2C(p,q,ldm)], 1);
+}
+
+int main (void){
+    cudaError_t cudaStat;
+    cublasStatus_t stat;
+    cublasHandle_t handle;
+    int i, j;
+    float* devPtrA;
+    float* a = 0;
+    a = (float *)malloc (M * N * sizeof (*a));
+    if (!a) {
+        printf ("host memory allocation failed");
+        return EXIT_FAILURE;
+    }
+    for (j = 0; j < N; j++) {
+        for (i = 0; i < M; i++) {
+            a[IDX2C(i,j,M)] = (float)(i * M + j + 1);
+        }
+    }
+    cudaStat = cudaMalloc ((void**)&devPtrA, M*N*sizeof(*a));
+    if (cudaStat != cudaSuccess) {
+        printf ("device memory allocation failed");
+        return EXIT_FAILURE;
+    }
+    stat = cublasCreate(&handle);
+    if (stat != CUBLAS_STATUS_SUCCESS) {
+        printf ("CUBLAS initialization failed\n");
+        return EXIT_FAILURE;
+    }
+    stat = cublasSetMatrix (M, N, sizeof(*a), a, M, devPtrA, M);
+    if (stat != CUBLAS_STATUS_SUCCESS) {
+        printf ("data download failed");
+        cudaFree (devPtrA);
+        cublasDestroy(handle);
+        return EXIT_FAILURE;
+    }
+    modify (handle, devPtrA, M, N, 1, 2, 16.0f, 12.0f);
+    stat = cublasGetMatrix (M, N, sizeof(*a), devPtrA, M, a, M);
+    if (stat != CUBLAS_STATUS_SUCCESS) {
+        printf ("data upload failed");
+        cudaFree (devPtrA);
+        cublasDestroy(handle);
+        return EXIT_FAILURE;
+    }
+    cudaFree (devPtrA);
+    cublasDestroy(handle);
+    for (j = 0; j < N; j++) {
+        for (i = 0; i < M; i++) {
+            printf ("%7.0f", a[IDX2C(i,j,M)]);
+        }
+        printf ("\n");
+    }
+    free(a);
+    return EXIT_SUCCESS;
+}
+[GIN] 2023/05/22 - 22:11:33 | 200 |    1.187908ms |       127.0.0.1 | GET      "/api/v1/jobfile?JobName=cuda"
+[etcd] etcd have watched  /api/v1/pods/cuda   PUT
+3 205 207
+----------
+send watch response
+{"Type":"MODIFIED","Key":"/api/v1/pods/cuda","Val":"{\"metadata\":{\"name\":\"cuda\",\"generation\":1,\"creationTimestamp\":\"2023-05-22T14:11:32Z\"},\"spec\":{\"volumes\":[{\"name\":\"job-volume\",\"hostPath\":\"/home/job\"}],\"containers\":[{\"name\":\"cuda-gpu\",\"image\":\"gpu-jobs-image\",\"command\":[\"--jobname=cuda\",\"--outfile=cuda\",\"--errfile=cuda\"],\"entryPoint\":[\"./gpuserver\"],\"ports\":null,\"limitResource\":{\"cpu\":\"\",\"memory\":\"\"},\"tty\":false,\"volumeMounts\":[{\"name\":\"job-volume\",\"mountPath\":\"/home/job\"}]}],\"nodeName\":\"node1\",\"gpu\":true,\"gpuJobName\":\"cuda\"},\"status\":{\"phase\":\"Running\",\"podIP\":\"10.0.13.4\"}}"}
+[GIN] 2023/05/22 - 22:11:35 | 200 |     7.10808ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/cuda   PUT
+3 205 207
+----------
+send watch response
+{"Type":"MODIFIED","Key":"/api/v1/pods/cuda","Val":"{\"metadata\":{\"name\":\"cuda\",\"generation\":1,\"creationTimestamp\":\"2023-05-22T14:11:32Z\"},\"spec\":{\"volumes\":[{\"name\":\"job-volume\",\"hostPath\":\"/home/job\"}],\"containers\":[{\"name\":\"cuda-gpu\",\"image\":\"gpu-jobs-image\",\"command\":[\"--jobname=cuda\",\"--outfile=cuda\",\"--errfile=cuda\"],\"entryPoint\":[\"./gpuserver\"],\"ports\":null,\"limitResource\":{\"cpu\":\"\",\"memory\":\"\"},\"tty\":false,\"volumeMounts\":[{\"name\":\"job-volume\",\"mountPath\":\"/home/job\"}]}],\"nodeName\":\"node1\",\"gpu\":true,\"gpuJobName\":\"cuda\"},\"status\":{\"phase\":\"Running\",\"podIP\":\"10.0.13.4\"}}"}

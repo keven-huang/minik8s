@@ -3,9 +3,8 @@ package delete
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"io"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
-	"net/http"
+	"minik8s/pkg/util/web"
 	"net/url"
 )
 
@@ -26,13 +25,14 @@ func NewCmdDelete() *cobra.Command {
 	o := NewDeleteOptions()
 
 	cmd := &cobra.Command{
-		Use:   "delete (TYPE [NAME | -all])",
+		Use:   "delete TYPE [NAME | -all]",
 		Short: "Delete a resource from stdin",
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			err := o.RunDelete(cmd, args)
 			if err != nil {
-				return
+				return err
 			}
+			return nil
 		},
 	}
 
@@ -44,13 +44,31 @@ func NewCmdDelete() *cobra.Command {
 
 // RunDelete performs the creation
 func (o *DeleteOptions) RunDelete(cmd *cobra.Command, args []string) error {
-	// Send a POST request to kube-apiserver to delete the pod
-	// 创建 PUT 请求
-	if len(args) < 1 || args[0] != "pod" {
-		fmt.Println("only support pod.")
+	if len(args) < 1 {
+		fmt.Println("[kubectl] [delete] [RunDelete] must have TYPE.")
 		return nil
 	}
 
+	switch args[0] {
+	case "pod":
+		{
+			return o.RunDeletePod(cmd, args)
+		}
+	case "replicaset":
+		{
+			return o.RunDeleteReplicaSet(cmd, args)
+		}
+	default:
+		{
+			fmt.Printf("[kubectl] [delete] [RunDelete] %s is not supported.\n", args[0])
+			return nil
+		}
+	}
+
+}
+
+func (o *DeleteOptions) RunDeletePod(cmd *cobra.Command, args []string) error {
+	prefix := "[kubectl] [delete] [RunDeletePod] "
 	values := url.Values{}
 	if o.DeleteAll {
 		values.Add("all", "true")
@@ -59,37 +77,36 @@ func (o *DeleteOptions) RunDelete(cmd *cobra.Command, args []string) error {
 		values.Add("PodName", args[1])
 		//body = bytes.NewBuffer([]byte(args[1]))
 	}
-	req, err := http.NewRequest("DELETE", apiconfig.Server_URL+apiconfig.POD_PATH+"?"+values.Encode(), nil)
+
+	err := web.SendHttpRequest("DELETE", apiconfig.Server_URL+apiconfig.POD_PATH+"?"+values.Encode(),
+		web.WithPrefix(prefix),
+		web.WithLog(true))
 	if err != nil {
-		fmt.Println("Error creating request:", err)
 		return err
 	}
-
-	// 设置请求头，以指示请求体中包含表单数据
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-	// 发送请求
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Println("Error sending request:", err)
-		return err
-	}
-	defer resp.Body.Close()
-
-	// 打印响应结果
-	fmt.Println("Response Status:", resp.Status)
-	// 读取响应主体内容到字节数组
-	bodyBytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Println("Error reading response body:", err)
-		return err
-	}
-
-	// 将字节数组转换为字符串并打印
-	fmt.Println("Response Body:", string(bodyBytes))
 
 	fmt.Println("pod Delete successfully")
 	return nil
+}
 
+func (o *DeleteOptions) RunDeleteReplicaSet(cmd *cobra.Command, args []string) error {
+	prefix := "[kubectl] [delete] [RunDelete] "
+	values := url.Values{}
+	if o.DeleteAll {
+		values.Add("all", "true")
+	}
+	if len(args) > 1 {
+		values.Add("Name", args[1])
+		//body = bytes.NewBuffer([]byte(args[1]))
+	}
+
+	err := web.SendHttpRequest("DELETE", apiconfig.Server_URL+apiconfig.REPLICASET_PATH+"?"+values.Encode(),
+		web.WithPrefix(prefix),
+		web.WithLog(true))
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Delete ReplicaSet successfully")
+	return nil
 }

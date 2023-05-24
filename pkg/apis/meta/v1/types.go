@@ -14,8 +14,8 @@ import (
 )
 
 type TypeMeta struct {
-	Kind       string `json:"kind,omitempty" protobuf:"bytes,1,opt,name=kind"`
-	APIVersion string `json:"apiVersion,omitempty" protobuf:"bytes,2,opt,name=apiVersion"`
+	Kind       string `json:"kind,omitempty" yaml:"kind" protobuf:"bytes,1,opt,name=kind"`
+	APIVersion string `json:"apiVersion,omitempty" yaml:"apiVersion" protobuf:"bytes,2,opt,name=apiVersion"`
 }
 
 type ListMeta struct {
@@ -29,6 +29,22 @@ type ObjectMeta struct {
 	ResourceVersion   string    `json:"resourceVersion,omitempty" protobuf:"bytes,6,opt,name=resourceVersion"`
 	Generation        int64     `json:"generation,omitempty" protobuf:"varint,7,opt,name=generation"`
 	CreationTimestamp Time      `json:"creationTimestamp,omitempty" protobuf:"bytes,8,opt,name=creationTimestamp"`
+
+	// Map of string keys and values that can be used to organize and categorize
+	// (scope and select) objects. May match selectors of replication controllers
+	// and services.
+	// More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels
+	// +optional
+	Labels map[string]string `json:"labels,omitempty" protobuf:"bytes,11,rep,name=labels"`
+
+	// List of objects depended by this object. If ALL objects in the list have
+	// been deleted, this object will be garbage collected. If this object is managed by a controller,
+	// then an entry in this list will point to this controller, with the controller field set to true.
+	// There cannot be more than one managing controller.
+	// +optional
+	// +patchMergeKey=uid
+	// +patchStrategy=merge
+	OwnerReferences []OwnerReference `json:"ownerReferences,omitempty" patchStrategy:"merge" patchMergeKey:"uid" protobuf:"bytes,13,rep,name=ownerReferences"`
 }
 
 // APIGroup contains the name, the supported versions, and the preferred version
@@ -158,10 +174,10 @@ type LabelSelector struct {
 	// map is equivalent to an element of matchExpressions, whose key field is "key", the
 	// operator is "In", and the values array contains only "value". The requirements are ANDed.
 	// +optional
-	MatchLabels map[string]string `json:"matchLabels,omitempty" protobuf:"bytes,1,rep,name=matchLabels"`
+	MatchLabels map[string]string `json:"matchLabels,omitempty" yaml:"matchLabels" protobuf:"bytes,1,rep,name=matchLabels"`
 	// matchExpressions is a list of label selector requirements. The requirements are ANDed.
 	// +optional
-	MatchExpressions []LabelSelectorRequirement `json:"matchExpressions,omitempty" protobuf:"bytes,2,rep,name=matchExpressions"`
+	MatchExpressions []LabelSelectorRequirement `json:"matchExpressions,omitempty" yaml:"matchExpressions" protobuf:"bytes,2,rep,name=matchExpressions"`
 }
 
 // A label selector requirement is a selector that contains values, a key, and an operator that
@@ -170,16 +186,16 @@ type LabelSelectorRequirement struct {
 	// key is the label key that the selector applies to.
 	// +patchMergeKey=key
 	// +patchStrategy=merge
-	Key string `json:"key" patchStrategy:"merge" patchMergeKey:"key" protobuf:"bytes,1,opt,name=key"`
+	Key string `json:"key" yaml:"key" patchStrategy:"merge" patchMergeKey:"key" protobuf:"bytes,1,opt,name=key"`
 	// operator represents a key's relationship to a set of values.
 	// Valid operators are In, NotIn, Exists and DoesNotExist.
-	Operator LabelSelectorOperator `json:"operator" protobuf:"bytes,2,opt,name=operator,casttype=LabelSelectorOperator"`
+	Operator LabelSelectorOperator `json:"operator" yaml:"operator" protobuf:"bytes,2,opt,name=operator,casttype=LabelSelectorOperator"`
 	// values is an array of string values. If the operator is In or NotIn,
 	// the values array must be non-empty. If the operator is Exists or DoesNotExist,
 	// the values array must be empty. This array is replaced during a strategic
 	// merge patch.
 	// +optional
-	Values []string `json:"values,omitempty" protobuf:"bytes,3,rep,name=values"`
+	Values []string `json:"values,omitempty" yaml:"values" protobuf:"bytes,3,rep,name=values"`
 }
 
 // A label selector operator is the set of operators that can be used in a selector requirement.

@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cuda
+spec:
+  task:
+    name: cuda
+    partition: dgx2 # 分区（账号限制只能为dgx2）
+    nodes: 1 # 计算节点数
+    ntasks-per-node: 1 # 每个节点上任务数
+    cpus-per-task: 1 # 每个任务使用cpu核心数
+    gpu: 1 # gpu卡数（由于账号限制只能为1）
+    output: cuda.out # 结果输出文件
+    error: cuda.err # 错误输出文件
+    mail-type: end # 邮件通知（任务结束后发送邮件通知）
+    mail-user: jmhuang_2020@sjtu.edu.cn # 邮箱地址
+    program: gpu-yaml/cuda.cu # 运行的cuda程序
