@@ -43,7 +43,7 @@ func TestReplicaSetController(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	time.Sleep(15 * time.Second)
+	time.Sleep(12 * time.Second)
 
 	regex := regexp.MustCompile("^/my-replicaset-")
 	Count(t, regex, 6, "创建replicaset ^/my-replicaset- ")
@@ -54,7 +54,7 @@ func TestReplicaSetController(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	time.Sleep(10 * time.Second)
+	time.Sleep(8 * time.Second)
 
 	regex = regexp.MustCompile("^/my-replicaset-")
 	Count(t, regex, 4, "创建pod ^/my-replicaset- ")
@@ -67,7 +67,7 @@ func TestReplicaSetController(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	time.Sleep(10 * time.Second)
+	time.Sleep(8 * time.Second)
 
 	regex = regexp.MustCompile("^/my-replicaset-")
 	Count(t, regex, 6, "删除pod  ^/my-replicaset- ")
@@ -80,7 +80,7 @@ func TestReplicaSetController(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	time.Sleep(10 * time.Second)
+	time.Sleep(8 * time.Second)
 
 	regex = regexp.MustCompile("^/my-replicaset-")
 	Count(t, regex, 0, "删除replicaset ^/my-replicaset- ")
