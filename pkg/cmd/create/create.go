@@ -10,12 +10,10 @@ import (
 	"io/ioutil"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/pkg/api/core"
-	myJson "minik8s/pkg/util/json"
 	"minik8s/pkg/util/web"
 	"net/http"
 	"os"
 
-	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 )
 
@@ -90,11 +88,11 @@ func (o *CreateOptions) RunCreate(cmd *cobra.Command, args []string) error {
 	fmt.Println("kind:", kind)
 	switch kind {
 	case "Pod":
-		err = createPod(yamlFile)
+		err = o.RunCreatePod(cmd, args, yamlFile)
 	case "ReplicaSet":
-		err = o.RunCreateReplicaSet(cmd, args)
+		err = o.RunCreateReplicaSet(cmd, args, yamlFile)
 	case "Job":
-		err = createJob(yamlFile)
+		err = o.RunCreateJob(cmd, args, yamlFile)
 	}
 	if err != nil {
 		fmt.Println(err)
@@ -103,14 +101,72 @@ func (o *CreateOptions) RunCreate(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func createPod(yamlfile []byte) error {
-	// 解析文件
+func (o *CreateOptions) RunCreatePod(cmd *cobra.Command, args []string, yamlFile []byte) error {
 	pod := &core.Pod{}
-	err := yaml.Unmarshal(yamlfile, pod)
-
+	err := yaml.Unmarshal(yamlFile, pod)
 	if err != nil {
-		return fmt.Errorf("unmarshal yaml error")
+		return err
 	}
+
+	err = CreatePod(pod)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *CreateOptions) RunCreateReplicaSet(cmd *cobra.Command, args []string, yamlFile []byte) error {
+	r := &core.ReplicaSet{}
+	err := yaml.Unmarshal(yamlFile, r)
+	if err != nil {
+		return err
+	}
+
+	err = CreateReplicaSet(r)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *CreateOptions) RunCreateJob(cmd *cobra.Command, args []string, yamlFile []byte) error {
+	job := &core.Job{}
+	err := yaml.Unmarshal(yamlFile, job)
+	if err != nil {
+		return err
+	}
+
+	err = CreateJob(job)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func CreateReplicaSet(r *core.ReplicaSet) error {
+	// 序列化 调试用法，前面多两个空格，易于阅读
+	//data, err := json.MarshalIndent(pod, "", "  ")
+	data, err := json.Marshal(r)
+	if err != nil {
+		fmt.Println("[kubectl] [create] [RunCreateReplicaSet] failed to marshal:", err)
+	} else {
+		//fmt.Println("[kubectl] [create] [RunCreateReplicaSet] ", string(data))
+	}
+
+	// Send a POST request to kube-apiserver to create the replicaset
+	// 创建 PUT 请求
+	err = web.SendHttpRequest("PUT", apiconfig.Server_URL+apiconfig.REPLICASET_PATH,
+		web.WithPrefix("[kubectl] [create] [RunCreateReplicaSet] "),
+		web.WithBody(bytes.NewBuffer(data)),
+		web.WithLog(true))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func CreatePod(pod *core.Pod) error {
 	// 序列化
 	// 调试用法，前面多两个空格，易于阅读
 	//data, err := json.MarshalIndent(pod, "", "  ")
@@ -121,57 +177,19 @@ func createPod(yamlfile []byte) error {
 		//fmt.Println("[kubectl] [create] [RunCreatePod]\n", string(data))
 	}
 
-	// FIX（hjm） : 这两步后续可以去掉，只是为了调试
-	// 反序列化
-	pod2 := &core.Pod{}
-	err = json.Unmarshal(data, pod2)
-	if err != nil {
-		return err
-	}
-	fmt.Println(pod2)
-
-	// 检查序列化和反序列化的结果
-	myJson.CheckDeepEqual(pod, pod2)
-
 	// Send a POST request to kube-apiserver to create the pod
 	// 创建 PUT 请求
-	req, err := http.NewRequest("PUT", apiconfig.Server_URL+apiconfig.POD_PATH, bytes.NewBuffer(data))
+	err = web.SendHttpRequest("PUT", apiconfig.Server_URL+apiconfig.POD_PATH,
+		web.WithPrefix("[kubectl] [create] [RunCreate] "),
+		web.WithBody(bytes.NewBuffer(data)),
+		web.WithLog(true))
 	if err != nil {
-		fmt.Println("Error creating request:", err)
 		return err
 	}
-
-	// 发送请求
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Println("Error sending request:", err)
-		return err
-	}
-	defer resp.Body.Close()
-
-	// 打印响应结果
-	fmt.Println("Response Status:", resp.Status)
-	// 读取响应主体内容到字节数组
-	bodyBytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Println("Error reading response body:", err)
-		return err
-	}
-
-	// 将字节数组转换为字符串并打印
-	fmt.Println("Response Body:", string(bodyBytes))
-
-	fmt.Println("pod created successfully")
 	return nil
 }
 
-func createJob(yamlfile []byte) error {
-	job := &core.Job{}
-	err := yaml.Unmarshal(yamlfile, job)
-	if err != nil {
-		return fmt.Errorf("unmarshal yaml error")
-	}
+func CreateJob(job *core.Job) error {
 	// 发送job信息至apiserver保存
 	job_data, err := json.Marshal(job)
 	if err != nil {
@@ -216,78 +234,6 @@ func createJob(yamlfile []byte) error {
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("job file upload failed")
-	}
-
-	return nil
-}
-
-func CreatePod(pod *core.Pod) error {
-	// 序列化
-	// 调试用法，前面多两个空格，易于阅读
-	//data, err := json.MarshalIndent(pod, "", "  ")
-	data, err := json.Marshal(pod)
-	if err != nil {
-		fmt.Println("[kubectl] [create] [RunCreatePod] failed to marshal:", err)
-	} else {
-		//fmt.Println("[kubectl] [create] [RunCreatePod]\n", string(data))
-	}
-
-	// Send a POST request to kube-apiserver to create the pod
-	// 创建 PUT 请求
-	err = web.SendHttpRequest("PUT", apiconfig.Server_URL+apiconfig.POD_PATH,
-		web.WithPrefix("[kubectl] [create] [RunCreate] "),
-		web.WithBody(bytes.NewBuffer(data)),
-		web.WithLog(true))
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (o *CreateOptions) RunCreatePod(cmd *cobra.Command, args []string) error {
-	filename := o.Filename
-
-	pod := &core.Pod{}
-	err := myJson.GetFromYaml(filename, pod)
-	if err != nil {
-		return err
-	}
-
-	err = CreatePod(pod)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (o *CreateOptions) RunCreateReplicaSet(cmd *cobra.Command, args []string) error {
-	filename := o.Filename
-
-	r := &core.ReplicaSet{}
-	err := myJson.GetFromYaml(filename, r)
-	if err != nil {
-		return err
-	}
-
-	// 序列化
-	// 调试用法，前面多两个空格，易于阅读
-	//data, err := json.MarshalIndent(pod, "", "  ")
-	data, err := json.Marshal(r)
-	if err != nil {
-		fmt.Println("[kubectl] [create] [RunCreateReplicaSet] failed to marshal:", err)
-	} else {
-		//fmt.Println("[kubectl] [create] [RunCreateReplicaSet] ", string(data))
-	}
-
-	// Send a POST request to kube-apiserver to create the replicaset
-	// 创建 PUT 请求
-	err = web.SendHttpRequest("PUT", apiconfig.Server_URL+apiconfig.REPLICASET_PATH,
-		web.WithPrefix("[kubectl] [create] [RunCreateReplicaSet] "),
-		web.WithBody(bytes.NewBuffer(data)),
-		web.WithLog(true))
-	if err != nil {
-		return err
 	}
 
 	return nil
