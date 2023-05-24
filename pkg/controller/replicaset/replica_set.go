@@ -269,7 +269,7 @@ func (rsc *ReplicaSetController) DeleteReplicaset(event tool.Event) {
 	replica := &core.ReplicaSet{}
 	err := json.Unmarshal([]byte(val), replica)
 	if err != nil {
-		fmt.Println("[ERROR] ", prefix, err)
+		fmt.Println("[ERROR] ", prefix, "Unmarshal replica", err)
 		return
 	}
 
@@ -367,11 +367,11 @@ func (rsc *ReplicaSetController) DeletePod(event tool.Event) {
 	prefix := "[ReplicaSet] [DeletePod] "
 	fmt.Println(prefix, "event.type: ", tool.GetTypeName(event))
 	fmt.Println(prefix, "event.Key: ", event.Key)
-	key := rsc.PodInformer.Get(event.Key)
+	val := rsc.PodInformer.Get(event.Key)
 	rsc.PodInformer.Delete(event.Key)
 
 	pod := &core.Pod{}
-	err := json.Unmarshal([]byte(key), pod)
+	err := json.Unmarshal([]byte(val), pod)
 	if err != nil {
 		fmt.Println("[ERROR] ", prefix, "pod Unmarshal failed ", err)
 		return
@@ -456,7 +456,7 @@ func (rsc *ReplicaSetController) DeletePodWithNumber(replica *core.ReplicaSet, n
 
 	var keys []string
 
-	for _, value := range *pod_cache {
+	for key, value := range *pod_cache {
 		pod := &core.Pod{}
 		err := json.Unmarshal([]byte(value), pod)
 		if err != nil {
@@ -464,8 +464,8 @@ func (rsc *ReplicaSetController) DeletePodWithNumber(replica *core.ReplicaSet, n
 			continue
 		}
 		for _, owner := range pod.OwnerReferences {
-			if owner.UID == replica.UID {
-				keys = append(keys, pod.Name)
+			if owner.Name == replica.Name {
+				keys = append(keys, key)
 			}
 		}
 	}
@@ -492,7 +492,7 @@ func (rsc *ReplicaSetController) DeletePodWithNumber(replica *core.ReplicaSet, n
 				Name:       "",
 				UID:        "",
 			}}
-		updatePodToServer(rsc, pod, pod.Name, prefix)
+		updatePodToServer(rsc, pod, key, prefix)
 
 		values := url.Values{}
 		values.Add("PodName", pod.Name)
