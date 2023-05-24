@@ -15,6 +15,7 @@ import (
 	"minik8s/pkg/util/random"
 	"minik8s/pkg/util/web"
 	"net/url"
+	"sort"
 	"time"
 )
 
@@ -268,7 +269,7 @@ func (rsc *ReplicaSetController) DeleteReplicaset(event tool.Event) {
 	replica := &core.ReplicaSet{}
 	err := json.Unmarshal([]byte(val), replica)
 	if err != nil {
-		fmt.Println("[ERROR] ", prefix, err)
+		fmt.Println("[ERROR] ", prefix, "Unmarshal replica", err)
 		return
 	}
 
@@ -366,11 +367,11 @@ func (rsc *ReplicaSetController) DeletePod(event tool.Event) {
 	prefix := "[ReplicaSet] [DeletePod] "
 	fmt.Println(prefix, "event.type: ", tool.GetTypeName(event))
 	fmt.Println(prefix, "event.Key: ", event.Key)
-	key := rsc.PodInformer.Get(event.Key)
+	val := rsc.PodInformer.Get(event.Key)
 	rsc.PodInformer.Delete(event.Key)
 
 	pod := &core.Pod{}
-	err := json.Unmarshal([]byte(key), pod)
+	err := json.Unmarshal([]byte(val), pod)
 	if err != nil {
 		fmt.Println("[ERROR] ", prefix, "pod Unmarshal failed ", err)
 		return
@@ -453,7 +454,9 @@ func (rsc *ReplicaSetController) DeletePodWithNumber(replica *core.ReplicaSet, n
 	pod_cache := rsc.PodInformer.GetCache()
 	success := 0
 
-	for _, value := range *pod_cache {
+	var keys []string
+
+	for key, value := range *pod_cache {
 		pod := &core.Pod{}
 		err := json.Unmarshal([]byte(value), pod)
 		if err != nil {
@@ -461,37 +464,52 @@ func (rsc *ReplicaSetController) DeletePodWithNumber(replica *core.ReplicaSet, n
 			continue
 		}
 		for _, owner := range pod.OwnerReferences {
-			if owner.UID == replica.UID {
-				fmt.Println(prefix, "delete pod: ", pod.Name)
-
-				// 先修改pod的owner, 避免删除时触发DeletePod在里面再给replicaset减1
-				// 为了防止在修改owner时触发UpdatePod中的加入Replicaset，加一个特殊标记
-				pod.OwnerReferences = []v1.OwnerReference{
-					v1.OwnerReference{
-						APIVersion: "apps/v1",
-						Kind:       "ReplicaSet",
-						Name:       "",
-						UID:        "",
-					}}
-				updatePodToServer(rsc, pod, pod.Name, prefix)
-
-				values := url.Values{}
-				values.Add("PodName", pod.Name)
-				err := web.SendHttpRequest("DELETE", apiconfig.Server_URL+apiconfig.POD_PATH+"?"+values.Encode(),
-					web.WithPrefix(prefix),
-					web.WithLog(true))
-				if err != nil {
-					fmt.Println("[ERROR] ", prefix, err)
-					continue
-				}
-				success++
-				if success == number {
-					return success
-				}
-				//time.Sleep(time.Second * 3)
+			if owner.Name == replica.Name {
+				keys = append(keys, key)
 			}
 		}
 	}
+
+	sort.Strings(keys)
+
+	for _, key := range keys {
+		value := (*pod_cache)[key]
+		pod := &core.Pod{}
+		err := json.Unmarshal([]byte(value), pod)
+		if err != nil {
+			log.Println("[ERROR] ", prefix, err)
+			continue
+		}
+
+		fmt.Println(prefix, "delete pod: ", pod.Name)
+
+		// 先修改pod的owner, 避免删除时触发DeletePod在里面再给replicaset减1
+		// 为了防止在修改owner时触发UpdatePod中的加入Replicaset，加一个特殊标记
+		pod.OwnerReferences = []v1.OwnerReference{
+			v1.OwnerReference{
+				APIVersion: "apps/v1",
+				Kind:       "ReplicaSet",
+				Name:       "",
+				UID:        "",
+			}}
+		updatePodToServer(rsc, pod, key, prefix)
+
+		values := url.Values{}
+		values.Add("PodName", pod.Name)
+		err = web.SendHttpRequest("DELETE", apiconfig.Server_URL+apiconfig.POD_PATH+"?"+values.Encode(),
+			web.WithPrefix(prefix),
+			web.WithLog(true))
+		if err != nil {
+			fmt.Println("[ERROR] ", prefix, err)
+			continue
+		}
+		success++
+		if success == number {
+			return success
+		}
+		//time.Sleep(time.Second * 3)
+	}
+
 	return success
 }
 

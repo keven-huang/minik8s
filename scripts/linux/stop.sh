@@ -8,4 +8,3 @@ done
 
 docker ps -aq --filter "name=^my-replicaset|^test" | xargs docker stop
 docker ps -aq --filter "name=^my-replicaset|^test" | xargs docker rm
-
