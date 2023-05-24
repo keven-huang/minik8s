@@ -1,0 +1,2123 @@
+[httpclient] [AddNode] [CheckHttpStatus]  Response Status: 200 OK
+[httpclient] [List]  []
+[httpclient] [Watch] start watch
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-sxjqh {"metadata":{"name":"my-replicaset-sxjqh","uid":"1f68e83e-2b9a-474d-858e-3ae93b73e024","generation":1,"creationTimestamp":"2023-05-24T04:14:18Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"4249903d-5f53-40f7-a0df-b644a7117026"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}]},"status":{"phase":"Pending"}} ADDED
+[kubelet] [CreatePod]  event.Type:  Add
+[kubelet] [CreatePod]  event.Key:  /api/v1/pods/my-replicaset-sxjqh
+[kubelet] [CreatePod]  event.Val:  {"metadata":{"name":"my-replicaset-sxjqh","uid":"1f68e83e-2b9a-474d-858e-3ae93b73e024","generation":1,"creationTimestamp":"2023-05-24T04:14:18Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"4249903d-5f53-40f7-a0df-b644a7117026"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}]},"status":{"phase":"Pending"}}
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-6rkxw {"metadata":{"name":"my-replicaset-6rkxw","uid":"f351e9b9-b905-499f-8850-055305a0707a","generation":1,"creationTimestamp":"2023-05-24T04:14:18Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"4249903d-5f53-40f7-a0df-b644a7117026"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}]},"status":{"phase":"Pending"}} ADDED
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-t65pv {"metadata":{"name":"my-replicaset-t65pv","uid":"3ab5f59d-a13c-40d7-9001-293b66648753","generation":1,"creationTimestamp":"2023-05-24T04:14:18Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"4249903d-5f53-40f7-a0df-b644a7117026"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}]},"status":{"phase":"Pending"}} ADDED
+[kubelet] [CreatePod]  event.Type:  Add
+[kubelet] [CreatePod]  event.Key:  /api/v1/pods/my-replicaset-6rkxw
+[kubelet] [CreatePod]  event.Val:  {"metadata":{"name":"my-replicaset-6rkxw","uid":"f351e9b9-b905-499f-8850-055305a0707a","generation":1,"creationTimestamp":"2023-05-24T04:14:18Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"4249903d-5f53-40f7-a0df-b644a7117026"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}]},"status":{"phase":"Pending"}}
+[kubelet] [CreatePod]  event.Type:  Add
+[kubelet] [CreatePod]  event.Key:  /api/v1/pods/my-replicaset-t65pv
+[kubelet] [CreatePod]  event.Val:  {"metadata":{"name":"my-replicaset-t65pv","uid":"3ab5f59d-a13c-40d7-9001-293b66648753","generation":1,"creationTimestamp":"2023-05-24T04:14:18Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"4249903d-5f53-40f7-a0df-b644a7117026"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}]},"status":{"phase":"Pending"}}
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-sxjqh {"metadata":{"name":"my-replicaset-sxjqh","uid":"1f68e83e-2b9a-474d-858e-3ae93b73e024","generation":1,"creationTimestamp":"2023-05-24T04:14:18Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"4249903d-5f53-40f7-a0df-b644a7117026"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Pending"}} MODIFIED
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/my-replicaset-sxjqh
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"my-replicaset-sxjqh","uid":"1f68e83e-2b9a-474d-858e-3ae93b73e024","generation":1,"creationTimestamp":"2023-05-24T04:14:18Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"4249903d-5f53-40f7-a0df-b644a7117026"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Pending"}}
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-6rkxw {"metadata":{"name":"my-replicaset-6rkxw","uid":"f351e9b9-b905-499f-8850-055305a0707a","generation":1,"creationTimestamp":"2023-05-24T04:14:18Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"4249903d-5f53-40f7-a0df-b644a7117026"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Pending"}} MODIFIED
+[kubelet] [UpdatePod] [SendHttpRequest] [CheckHttpStatus]  Response Status: 200 OK
+my-replicaset-sxjqh-pause 13a5e634fcdedf10685d95a43ce23848f15f67eb4128d769ca517a2759e5516f
+my-replicaset-sxjqh-my-container 5b05cb86b7902633344d1aa46a0d9d97522d26488f69257447d73800e54242f1
+net: 
+{
+  "Bridge": "",
+  "SandboxID": "8e93ca58505a73e3ef98b6d6b4d26afc99c83f665cc4bfa0c65f11d870de205a",
+  "HairpinMode": false,
+  "LinkLocalIPv6Address": "",
+  "LinkLocalIPv6PrefixLen": 0,
+  "Ports": {
+    "0/tcp": null
+  },
+  "SandboxKey": "/var/run/docker/netns/8e93ca58505a",
+  "SecondaryIPAddresses": null,
+  "SecondaryIPv6Addresses": null,
+  "EndpointID": "3f1e78ac6d290d18da7a4b4734fbcd68e2a5b60214c2cd2221cb259cc9cd3f3a",
+  "Gateway": "10.0.13.1",
+  "GlobalIPv6Address": "",
+  "GlobalIPv6PrefixLen": 0,
+  "IPAddress": "10.0.13.5",
+  "IPPrefixLen": 24,
+  "IPv6Gateway": "",
+  "MacAddress": "02:42:0a:00:0d:05",
+  "Networks": {
+    "bridge": {
+      "IPAMConfig": null,
+      "Links": null,
+      "Aliases": null,
+      "NetworkID": "fd43e5e6509d6b8099546fc5954a27f7cff890a8edefea89bc5f4a00eda493f8",
+      "EndpointID": "3f1e78ac6d290d18da7a4b4734fbcd68e2a5b60214c2cd2221cb259cc9cd3f3a",
+      "Gateway": "10.0.13.1",
+      "IPAddress": "10.0.13.5",
+      "IPPrefixLen": 24,
+      "IPv6Gateway": "",
+      "GlobalIPv6Address": "",
+      "GlobalIPv6PrefixLen": 0,
+      "MacAddress": "02:42:0a:00:0d:05",
+      "DriverOpts": null
+    }
+  }
+}
+-----------
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/my-replicaset-6rkxw
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"my-replicaset-6rkxw","uid":"f351e9b9-b905-499f-8850-055305a0707a","generation":1,"creationTimestamp":"2023-05-24T04:14:18Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"4249903d-5f53-40f7-a0df-b644a7117026"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Pending"}}
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-t65pv {"metadata":{"name":"my-replicaset-t65pv","uid":"3ab5f59d-a13c-40d7-9001-293b66648753","generation":1,"creationTimestamp":"2023-05-24T04:14:18Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"4249903d-5f53-40f7-a0df-b644a7117026"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Pending"}} MODIFIED
+[kubelet] [UpdatePod] [SendHttpRequest] [CheckHttpStatus]  Response Status: 200 OK
+my-replicaset-6rkxw-pause 670ab3e29dc62d8302fad277ee0c642549a1880d54addb81eb6b338e5887f0d4
+my-replicaset-6rkxw-my-container 64b57fab91aec17f89f6b37834c4a8609a32f61b499545eda286c5aeb16dcf4e
+net: 
+{
+  "Bridge": "",
+  "SandboxID": "18b1abf7410e4d516ddc7b7b91e2ec32890b2e530256416ca4b1ef854a0906c5",
+  "HairpinMode": false,
+  "LinkLocalIPv6Address": "",
+  "LinkLocalIPv6PrefixLen": 0,
+  "Ports": {
+    "0/tcp": null
+  },
+  "SandboxKey": "/var/run/docker/netns/18b1abf7410e",
+  "SecondaryIPAddresses": null,
+  "SecondaryIPv6Addresses": null,
+  "EndpointID": "f9a05aa1b59a7a018263972cce190d58eb2e5e18e84c010c196aa4c1f86d2368",
+  "Gateway": "10.0.13.1",
+  "GlobalIPv6Address": "",
+  "GlobalIPv6PrefixLen": 0,
+  "IPAddress": "10.0.13.6",
+  "IPPrefixLen": 24,
+  "IPv6Gateway": "",
+  "MacAddress": "02:42:0a:00:0d:06",
+  "Networks": {
+    "bridge": {
+      "IPAMConfig": null,
+      "Links": null,
+      "Aliases": null,
+      "NetworkID": "fd43e5e6509d6b8099546fc5954a27f7cff890a8edefea89bc5f4a00eda493f8",
+      "EndpointID": "f9a05aa1b59a7a018263972cce190d58eb2e5e18e84c010c196aa4c1f86d2368",
+      "Gateway": "10.0.13.1",
+      "IPAddress": "10.0.13.6",
+      "IPPrefixLen": 24,
+      "IPv6Gateway": "",
+      "GlobalIPv6Address": "",
+      "GlobalIPv6PrefixLen": 0,
+      "MacAddress": "02:42:0a:00:0d:06",
+      "DriverOpts": null
+    }
+  }
+}
+-----------
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/my-replicaset-t65pv
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"my-replicaset-t65pv","uid":"3ab5f59d-a13c-40d7-9001-293b66648753","generation":1,"creationTimestamp":"2023-05-24T04:14:18Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"4249903d-5f53-40f7-a0df-b644a7117026"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Pending"}}
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-sxjqh {"metadata":{"name":"my-replicaset-sxjqh","uid":"1f68e83e-2b9a-474d-858e-3ae93b73e024","generation":1,"creationTimestamp":"2023-05-24T04:14:18Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"4249903d-5f53-40f7-a0df-b644a7117026"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-sxjqh-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.5"}} MODIFIED
+[kubelet] [UpdatePod] [SendHttpRequest] [CheckHttpStatus]  Response Status: 200 OK
+my-replicaset-t65pv-pause ec7520607b7fc070d83843180fc3b829e0ed78f8ecc5610f9356c4253cfed36e
+my-replicaset-t65pv-my-container fe81e3096f147695ea30caddb10bdb3c22003f45ec38935d542b259996cc150e
+net: 
+{
+  "Bridge": "",
+  "SandboxID": "f262cb000e07c1fc2ab9168b781adddeeb6e7962a87f31e5f45a4537cd7021b7",
+  "HairpinMode": false,
+  "LinkLocalIPv6Address": "",
+  "LinkLocalIPv6PrefixLen": 0,
+  "Ports": {
+    "0/tcp": null
+  },
+  "SandboxKey": "/var/run/docker/netns/f262cb000e07",
+  "SecondaryIPAddresses": null,
+  "SecondaryIPv6Addresses": null,
+  "EndpointID": "1d284c915c1a5f12e17dd7d4bd49188827231ef1a31a3939b9e3aa51424b9730",
+  "Gateway": "10.0.13.1",
+  "GlobalIPv6Address": "",
+  "GlobalIPv6PrefixLen": 0,
+  "IPAddress": "10.0.13.7",
+  "IPPrefixLen": 24,
+  "IPv6Gateway": "",
+  "MacAddress": "02:42:0a:00:0d:07",
+  "Networks": {
+    "bridge": {
+      "IPAMConfig": null,
+      "Links": null,
+      "Aliases": null,
+      "NetworkID": "fd43e5e6509d6b8099546fc5954a27f7cff890a8edefea89bc5f4a00eda493f8",
+      "EndpointID": "1d284c915c1a5f12e17dd7d4bd49188827231ef1a31a3939b9e3aa51424b9730",
+      "Gateway": "10.0.13.1",
+      "IPAddress": "10.0.13.7",
+      "IPPrefixLen": 24,
+      "IPv6Gateway": "",
+      "GlobalIPv6Address": "",
+      "GlobalIPv6PrefixLen": 0,
+      "MacAddress": "02:42:0a:00:0d:07",
+      "DriverOpts": null
+    }
+  }
+}
+-----------
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/my-replicaset-sxjqh
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"my-replicaset-sxjqh","uid":"1f68e83e-2b9a-474d-858e-3ae93b73e024","generation":1,"creationTimestamp":"2023-05-24T04:14:18Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"4249903d-5f53-40f7-a0df-b644a7117026"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-sxjqh-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.5"}}
+[kubelet] [UpdatePod]  phase is not satisfied: Running
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-6rkxw {"metadata":{"name":"my-replicaset-6rkxw","uid":"f351e9b9-b905-499f-8850-055305a0707a","generation":1,"creationTimestamp":"2023-05-24T04:14:18Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"4249903d-5f53-40f7-a0df-b644a7117026"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-6rkxw-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.6"}} MODIFIED
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/my-replicaset-6rkxw
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"my-replicaset-6rkxw","uid":"f351e9b9-b905-499f-8850-055305a0707a","generation":1,"creationTimestamp":"2023-05-24T04:14:18Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"4249903d-5f53-40f7-a0df-b644a7117026"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-6rkxw-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.6"}}
+[kubelet] [UpdatePod]  phase is not satisfied: Running
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-t65pv {"metadata":{"name":"my-replicaset-t65pv","uid":"3ab5f59d-a13c-40d7-9001-293b66648753","generation":1,"creationTimestamp":"2023-05-24T04:14:18Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"4249903d-5f53-40f7-a0df-b644a7117026"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-t65pv-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.7"}} MODIFIED
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/my-replicaset-t65pv
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"my-replicaset-t65pv","uid":"3ab5f59d-a13c-40d7-9001-293b66648753","generation":1,"creationTimestamp":"2023-05-24T04:14:18Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"4249903d-5f53-40f7-a0df-b644a7117026"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-t65pv-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.7"}}
+[kubelet] [UpdatePod]  phase is not satisfied: Running
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+[httpclient] [Watch] unmarshal: /api/v1/pods/test5 {"kind":"Pod","apiVersion":"v1","metadata":{"name":"test5","uid":"aaaf69e8-c227-42ee-8f5c-a453f6e99bba","generation":1,"creationTimestamp":"2023-05-24T04:14:36Z","labels":{"app":"my-app"}},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}]},"status":{"phase":"Pending"}} ADDED
+[kubelet] [CreatePod]  event.Type:  Add
+[kubelet] [CreatePod]  event.Key:  /api/v1/pods/test5
+[kubelet] [CreatePod]  event.Val:  {"kind":"Pod","apiVersion":"v1","metadata":{"name":"test5","uid":"aaaf69e8-c227-42ee-8f5c-a453f6e99bba","generation":1,"creationTimestamp":"2023-05-24T04:14:36Z","labels":{"app":"my-app"}},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}]},"status":{"phase":"Pending"}}
+[httpclient] [Watch] unmarshal: /api/v1/pods/test5 {"kind":"Pod","apiVersion":"v1","metadata":{"name":"test5","uid":"aaaf69e8-c227-42ee-8f5c-a453f6e99bba","generation":1,"creationTimestamp":"2023-05-24T04:14:36Z","labels":{"app":"my-app"}},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Pending"}} MODIFIED
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/test5
+[kubelet] [UpdatePod]  event.Val:  {"kind":"Pod","apiVersion":"v1","metadata":{"name":"test5","uid":"aaaf69e8-c227-42ee-8f5c-a453f6e99bba","generation":1,"creationTimestamp":"2023-05-24T04:14:36Z","labels":{"app":"my-app"}},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Pending"}}
+[httpclient] [Watch] unmarshal: /api/v1/pods/test5 {"kind":"Pod","apiVersion":"v1","metadata":{"name":"test5","uid":"aaaf69e8-c227-42ee-8f5c-a453f6e99bba","generation":1,"creationTimestamp":"2023-05-24T04:14:36Z","labels":{"app":"my-app"}},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"test5-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.8"}} MODIFIED
+[kubelet] [UpdatePod] [SendHttpRequest] [CheckHttpStatus]  Response Status: 200 OK
+test5-pause b4b40d0db0525de228fec9c7dc34eb285fcb9b688cdc209c8d6597e43a26a4bf
+test5-my-container ec24453d2b55f1a3342727e0fdfe6860d803ed2aafcd1f06f4489baf4c9e916e
+net: 
+{
+  "Bridge": "",
+  "SandboxID": "288009c93448a3995e9ad06cf87d85a762d030953c10b0692d21677ebc4e1b34",
+  "HairpinMode": false,
+  "LinkLocalIPv6Address": "",
+  "LinkLocalIPv6PrefixLen": 0,
+  "Ports": {
+    "0/tcp": null
+  },
+  "SandboxKey": "/var/run/docker/netns/288009c93448",
+  "SecondaryIPAddresses": null,
+  "SecondaryIPv6Addresses": null,
+  "EndpointID": "1602c51ae7015295b12afc667f50415e5e38bed226071d99bc3fc29698c40890",
+  "Gateway": "10.0.13.1",
+  "GlobalIPv6Address": "",
+  "GlobalIPv6PrefixLen": 0,
+  "IPAddress": "10.0.13.8",
+  "IPPrefixLen": 24,
+  "IPv6Gateway": "",
+  "MacAddress": "02:42:0a:00:0d:08",
+  "Networks": {
+    "bridge": {
+      "IPAMConfig": null,
+      "Links": null,
+      "Aliases": null,
+      "NetworkID": "fd43e5e6509d6b8099546fc5954a27f7cff890a8edefea89bc5f4a00eda493f8",
+      "EndpointID": "1602c51ae7015295b12afc667f50415e5e38bed226071d99bc3fc29698c40890",
+      "Gateway": "10.0.13.1",
+      "IPAddress": "10.0.13.8",
+      "IPPrefixLen": 24,
+      "IPv6Gateway": "",
+      "GlobalIPv6Address": "",
+      "GlobalIPv6PrefixLen": 0,
+      "MacAddress": "02:42:0a:00:0d:08",
+      "DriverOpts": null
+    }
+  }
+}
+-----------
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/test5
+[kubelet] [UpdatePod]  event.Val:  {"kind":"Pod","apiVersion":"v1","metadata":{"name":"test5","uid":"aaaf69e8-c227-42ee-8f5c-a453f6e99bba","generation":1,"creationTimestamp":"2023-05-24T04:14:36Z","labels":{"app":"my-app"}},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"test5-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.8"}}
+[kubelet] [UpdatePod]  phase is not satisfied: Running
+[httpclient] [Watch] unmarshal: /api/v1/pods/test5 {"kind":"Pod","apiVersion":"v1","metadata":{"name":"test5","uid":"aaaf69e8-c227-42ee-8f5c-a453f6e99bba","generation":1,"creationTimestamp":"2023-05-24T04:14:36Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"4249903d-5f53-40f7-a0df-b644a7117026"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"test5-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.8"}} MODIFIED
+[httpclient] [Watch] unmarshal: /api/v1/pods/test5 {"kind":"Pod","apiVersion":"v1","metadata":{"name":"test5","uid":"aaaf69e8-c227-42ee-8f5c-a453f6e99bba","generation":1,"creationTimestamp":"2023-05-24T04:14:36Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"","uid":""}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"test5-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.8"}} MODIFIED
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/test5
+[kubelet] [UpdatePod]  event.Val:  {"kind":"Pod","apiVersion":"v1","metadata":{"name":"test5","uid":"aaaf69e8-c227-42ee-8f5c-a453f6e99bba","generation":1,"creationTimestamp":"2023-05-24T04:14:36Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"4249903d-5f53-40f7-a0df-b644a7117026"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"test5-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.8"}}
+[kubelet] [UpdatePod]  phase is not satisfied: Running
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/test5
+[kubelet] [UpdatePod]  event.Val:  {"kind":"Pod","apiVersion":"v1","metadata":{"name":"test5","uid":"aaaf69e8-c227-42ee-8f5c-a453f6e99bba","generation":1,"creationTimestamp":"2023-05-24T04:14:36Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"","uid":""}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"test5-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.8"}}
+[httpclient] [Watch] unmarshal: /api/v1/pods/test5  DELETED
+[kubelet] [UpdatePod]  phase is not satisfied: Running
+In DeletePod EventHandler:
+event.Key:  /api/v1/pods/test5
+event.Val:  {"kind":"Pod","apiVersion":"v1","metadata":{"name":"test5","uid":"aaaf69e8-c227-42ee-8f5c-a453f6e99bba","generation":1,"creationTimestamp":"2023-05-24T04:14:36Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"","uid":""}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"test5-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.8"}}
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+my-replicaset-t65pv-my-container not found.
+my-replicaset-t65pv-pause not found.
+my-replicaset-6rkxw-my-container not found.
+my-replicaset-6rkxw-pause not found.
+my-replicaset-sxjqh-my-container not found.
+my-replicaset-sxjqh-pause not found.
+cuda-gpu Exited:0
+cuda-pause not found.
+cpu_stress_container Exited:137
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+test_mnt Exited:2
+test_mnt-pause not found.
+romantic_galileo not found.
+home_Etcd_1 not found.
+jovial_lamarr Exited:0
+home_myapp_1 Exited:1
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------

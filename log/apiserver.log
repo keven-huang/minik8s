@@ -1,0 +1,228 @@
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+connect to etcd success...
+[GIN-debug] GET    /api/v1                   --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func1 (3 handlers)
+[GIN-debug] PUT    /api/v1                   --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func2 (3 handlers)
+[GIN-debug] POST   /api/v1                   --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func3 (3 handlers)
+[GIN-debug] DELETE /api/v1                   --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func4 (3 handlers)
+[GIN-debug] GET    /api/v1/nodes             --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func1 (3 handlers)
+[GIN-debug] PUT    /api/v1/nodes             --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func2 (3 handlers)
+[GIN-debug] GET    /api/v1/pods              --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func1 (3 handlers)
+[GIN-debug] PUT    /api/v1/pods              --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func2 (3 handlers)
+[GIN-debug] DELETE /api/v1/pods              --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func4 (3 handlers)
+[GIN-debug] POST   /api/v1/pods              --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func3 (3 handlers)
+[GIN-debug] POST   /api/v1/services          --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func3 (3 handlers)
+[GIN-debug] DELETE /api/v1/services          --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func4 (3 handlers)
+[GIN-debug] GET    /api/v1/replicasets       --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func1 (3 handlers)
+[GIN-debug] PUT    /api/v1/replicasets       --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func2 (3 handlers)
+[GIN-debug] POST   /api/v1/replicasets       --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func3 (3 handlers)
+[GIN-debug] DELETE /api/v1/replicasets       --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func4 (3 handlers)
+[GIN-debug] GET    /watch/*resource          --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func1 (3 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :8080
+[api-server] [podHandler] [GetPod]
+[GIN] 2023/05/24 - 12:13:48 | 200 |      1.9602ms |       127.0.0.1 | GET      "/api/v1/pods?all=true"
+[api-server] [ReplicaSetHandler] [GetReplicaSet]
+[GIN] 2023/05/24 - 12:13:48 | 200 |      495.54µs |       127.0.0.1 | GET      "/api/v1/replicasets?all=true"
+path: /watch/api/v1/pods
+key: /api/v1/pods
+in sender
+path: /watch/api/v1/replicasets
+key: /api/v1/replicasets
+in sender
+[api-server] [podHandler] [GetPod]
+[GIN] 2023/05/24 - 12:13:48 | 200 |     653.521µs |       127.0.0.1 | GET      "/api/v1/pods?all=true"
+[GIN] 2023/05/24 - 12:13:48 | 200 |    6.615685ms |       127.0.0.1 | PUT      "/api/v1/nodes"
+[GIN] 2023/05/24 - 12:13:48 | 200 |     485.274µs |       127.0.0.1 | GET      "/api/v1/nodes?all=true"
+[api-server] [podHandler] [GetPod]
+path: /watch/api/v1/pods
+key: /api/v1/pods
+in sender
+[GIN] 2023/05/24 - 12:13:48 | 200 |     436.967µs |       127.0.0.1 | GET      "/api/v1/pods?all=true"
+path: /watch/api/v1/nodes
+key: /api/v1/nodes
+in sender
+path: /watch/api/v1/pods
+key: /api/v1/pods
+in sender
+[GIN] 2023/05/24 - 12:14:16 | 200 |     9.82332ms |       127.0.0.1 | PUT      "/api/v1/replicasets"
+[etcd] etcd have watched  /api/v1/replicasets/my-replicaset   PUT
+1 318 318
+----------
+In AddPod.
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-sxjqh   PUT
+1 319 319
+----------
+[GIN] 2023/05/24 - 12:14:18 | 200 |   91.384197ms |       127.0.0.1 | PUT      "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-sxjqh   PUT
+1 319 319
+----------
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-sxjqh   PUT
+1 319 319
+----------
+In AddPod.
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-6rkxw   PUT
+1 320 320
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-6rkxw   PUT
+1 320 320
+----------
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-6rkxw   PUT
+1 320 320
+----------
+----------
+[GIN] 2023/05/24 - 12:14:18 | 200 |    7.276076ms |       127.0.0.1 | PUT      "/api/v1/pods"
+In AddPod.
+[GIN] 2023/05/24 - 12:14:18 | 200 |   18.740889ms |       127.0.0.1 | PUT      "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-t65pv   PUT
+1 321 321
+----------
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-t65pv   PUT
+1 321 321
+----------
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-t65pv   PUT
+1 321 321
+----------
+[GIN] 2023/05/24 - 12:14:18 | 200 |    5.574386ms |       127.0.0.1 | POST     "/api/v1/replicasets"
+[etcd] etcd have watched  /api/v1/replicasets/my-replicaset   PUT
+2 318 322
+----------
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-sxjqh   PUT
+2 319 323
+----------
+[GIN] 2023/05/24 - 12:14:19 | 200 |    7.129247ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-sxjqh   PUT
+2 319 323
+----------
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-sxjqh   PUT
+2 319 323
+----------
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-6rkxw   PUT
+2 320 324
+----------
+[GIN] 2023/05/24 - 12:14:20 | 200 |   11.076743ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-6rkxw   PUT
+2 320 324
+----------
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-6rkxw   PUT
+2 320 324
+----------
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-t65pv   PUT
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-t65pv   PUT
+2 321 325
+----------
+[GIN] 2023/05/24 - 12:14:20 | 200 |    8.926085ms |       127.0.0.1 | POST     "/api/v1/pods"
+2 321 325
+----------
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-t65pv   PUT
+2 321 325
+----------
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-sxjqh   PUT
+3 319 326
+----------
+[GIN] 2023/05/24 - 12:14:21 | 200 |   16.739683ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-sxjqh   PUT
+3 319 326
+----------
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-sxjqh   PUT
+3 319 326
+----------
+[GIN] 2023/05/24 - 12:14:23 | 200 |    6.464226ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-6rkxw   PUT
+3 320 327
+----------
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-6rkxw   PUT
+3 320 327
+----------
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-6rkxw   PUT
+3 320 327
+----------
+[GIN] 2023/05/24 - 12:14:24 | 200 |    7.002719ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-t65pv   PUT
+3 321 328
+----------
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-t65pv   PUT
+3 321 328
+----------
+[etcd] etcd have watched  /api/v1/pods/my-replicaset-t65pv   PUT
+3 321 328
+----------
+In AddPod.
+[etcd] etcd have watched  /api/v1/pods/test5   PUT
+1 329 329
+----------
+[GIN] 2023/05/24 - 12:14:36 | 200 |    7.695089ms |       127.0.0.1 | PUT      "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/test5   PUT
+1 329 329
+----------
+[etcd] etcd have watched  /api/v1/pods/test5   PUT
+1 329 329
+----------
+[etcd] etcd have watched  /api/v1/pods/test5   PUT
+2 329 330
+----------
+[etcd] etcd have watched  /api/v1/pods/test5   PUT
+2 329 330
+----------
+[etcd] etcd have watched  /api/v1/pods/test5   PUT
+2 329 330
+----------
+[GIN] 2023/05/24 - 12:14:36 | 200 |    7.314971ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/test5   PUT
+3 329 331
+----------
+[GIN] 2023/05/24 - 12:14:39 | 200 |   15.748591ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/test5   PUT
+3 329 331
+----------
+[etcd] etcd have watched  /api/v1/pods/test5   PUT
+3 329 331
+----------
+[etcd] etcd have watched  /api/v1/pods/test5   PUT
+4 329 332
+----------
+[GIN] 2023/05/24 - 12:14:39 | 200 |    5.651221ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/test5   PUT
+4 329 332
+----------
+[etcd] etcd have watched  /api/v1/pods/test5   PUT
+4 329 332
+----------
+[etcd] etcd have watched  /api/v1/replicasets/my-replicaset   PUT
+3 318 333
+----------
+[GIN] 2023/05/24 - 12:14:39 | 200 |    4.843177ms |       127.0.0.1 | POST     "/api/v1/replicasets"
+[etcd] etcd have watched  /api/v1/pods/test5   PUT
+5 329 334
+----------
+[GIN] 2023/05/24 - 12:14:39 | 200 |    11.77456ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/test5   PUT
+5 329 334
+----------
+[etcd] etcd have watched  /api/v1/pods/test5   PUT
+5 329 334
+----------
+[api-server] [podHandler] [DeletePod]
+PodName: test5
+[etcd] etcd have watched  /api/v1/pods/test5   DELETE
+0 0 335
+----------
+[GIN] 2023/05/24 - 12:14:39 | 200 |    6.027624ms |       127.0.0.1 | DELETE   "/api/v1/pods?PodName=test5"
+[etcd] etcd have watched  /api/v1/pods/test5   DELETE
+0 0 335
+----------
+[etcd] etcd have watched  /api/v1/pods/test5   DELETE
+0 0 335
+----------
+[etcd] etcd have watched  /api/v1/replicasets/my-replicaset   PUT
+4 318 336
+----------
+[GIN] 2023/05/24 - 12:14:39 | 200 |     6.48937ms |       127.0.0.1 | POST     "/api/v1/replicasets"
+[etcd] etcd have watched  /api/v1/replicasets/my-replicaset   PUT
+5 318 337
+----------
+[GIN] 2023/05/24 - 12:14:40 | 200 |   34.810728ms |       127.0.0.1 | POST     "/api/v1/replicasets"
