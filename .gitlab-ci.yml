@@ -28,7 +28,7 @@ test:
   stage: test
   script:
     - make run
-    - sudo /usr/local/go/bin/go test ./pkg/controller/... -v
+    - sudo /usr/local/go/bin/go test ./... -v
     - make stop
     - make clean
   tags:
