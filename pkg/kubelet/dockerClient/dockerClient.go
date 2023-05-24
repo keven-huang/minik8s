@@ -7,6 +7,7 @@ package dockerClient
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -439,4 +440,17 @@ func DeletePod(pod core.Pod) error {
 	names = append(names, curPauseName)
 	err := DeleteContainers(names)
 	return err
+}
+
+func DockerStats() (*types.ContainerStats, error) {
+	cli, err := GetNewClient()
+	if err != nil {
+		return nil, err
+	}
+	resp, err := cli.ContainerStats(context.Background(), "Etcd-server", true)
+	j, err := json.Marshal(resp.Body)
+	fmt.Println(j)
+	fmt.Println(resp.Body)
+	fmt.Println(resp.OSType)
+	return nil, nil
 }
