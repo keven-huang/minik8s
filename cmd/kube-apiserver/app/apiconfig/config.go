@@ -1,8 +1,6 @@
 package apiconfig
 
-// TO DO: Add resource path
-
-const Server_URL = "http://localhost:8080"
+var Server_URL = "http://localhost:8080"
 
 // API format : /api/{version}/{group}/{resource}
 

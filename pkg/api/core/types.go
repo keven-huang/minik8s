@@ -345,6 +345,7 @@ type Node struct {
 
 // NodeSpec describes the attributes that a node is created with.
 type NodeSpec struct {
+	NodeIP string `json:"nodeIP" yaml:"nodeIP"`
 	// PodCIDR represents the pod IP range assigned to the node.
 	// +optional
 	PodCIDR string `json:"podCIDR,omitempty" protobuf:"bytes,1,opt,name=podCIDR"`

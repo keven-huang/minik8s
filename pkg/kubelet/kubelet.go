@@ -20,10 +20,12 @@ type Kubelet struct {
 	node        core.Node
 }
 
-func NewKubelet(name string) (*Kubelet, error) {
+func NewKubelet(name string, nodeIp string, masterIp string) (*Kubelet, error) {
 	node := core.Node{}
 	node.Name = name
+	node.Spec.NodeIP = nodeIp
 	err := tool.AddNode(&node)
+	apiconfig.Server_URL = masterIp
 	if err != nil {
 		return nil, err
 	}
