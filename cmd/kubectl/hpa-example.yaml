@@ -8,6 +8,7 @@ spec:
     name: my-replicaset-test
   minReplicas: 2
   maxReplicas: 10
+  periodSeconds: 10
   metrics:
   -  name: cpu
      target:
