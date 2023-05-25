@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	"minik8s/pkg/controller/replicaset"
 	jobcontroller "minik8s/pkg/kube-controller/job-controller"
+	"minik8s/pkg/kube-controller/replicaset-controller"
 )
 
 func RunReplicaSetController() {
-	ReplicaSetController, err := replicaset.NewReplicaSetController()
+	ReplicaSetController, err := replicaset_controller.NewReplicaSetController()
 	if err != nil {
 		fmt.Println(err)
 		return

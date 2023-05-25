@@ -1,4 +1,4 @@
-package replicaset
+package replicaset_controller
 
 import (
 	"fmt"
