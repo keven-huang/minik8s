@@ -35,7 +35,35 @@ func Count(t *testing.T, regex *regexp.Regexp, number int, prefix string) {
 	}
 }
 
+func killContainers() {
+	containers, err := dockerClient.GetAllContainers()
+	if err != nil {
+		return
+	}
+	regex := regexp.MustCompile("^/my-replicaset-|^/test5")
+
+	for _, con := range containers {
+		flag := false
+		for _, name := range con.Names {
+			fmt.Println(name)
+			if regex.MatchString(name) {
+				flag = true
+				break
+			}
+		}
+		if flag {
+			err := dockerClient.DeleteContainer(con.ID)
+			if err != nil {
+				fmt.Println("killContainers err: ", err)
+			} else {
+				fmt.Println("killContainers : ", con.ID)
+			}
+		}
+	}
+}
+
 func TestReplicaSetController(t *testing.T) {
+	killContainers()
 	c := cmd.NewKubectlCommand()
 	//创建replicaset
 	c.SetArgs([]string{"create", "-f", "./test_file/replicaset-example.yaml"})
