@@ -10,9 +10,14 @@ run:
 	/usr/local/go/bin/go run ./cmd/kube-service/kubeservice.go > log/kubeservice.log &
 	/usr/local/go/bin/go run ./cmd/kube-proxy/kubeproxy.go > log/kubeproxy.log &
 
+m3:
+	go run ./cmd/kubelet/kubelet.go --nodename=node3 --nodeip=192.168.1.11 --masterip=http://192.168.1.7:8080 > log/kubelet-m3.log &
+
 stop:
 	./scripts/linux/stop.sh
 
 kill:
 	sudo docker ps -aq --filter "name=^my-replicaset|^test" | xargs -r docker stop
 	sudo docker ps -aq --filter "name=^my-replicaset|^test" | xargs -r docker rm
+
+

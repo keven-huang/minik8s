@@ -36,7 +36,7 @@ type ListRes struct {
 }
 
 func List(resource string) []ListRes {
-	url := "http://127.0.0.1:8080" + resource + "?all=true"
+	url := apiconfig.Server_URL + resource + "?all=true"
 	resp, err := http.Get(url)
 	if err != nil {
 		// handle error
@@ -62,7 +62,7 @@ func Watch(resourses string) WatchInterface {
 	watcher.resultChan = make(chan Event)
 	reader := func(wc chan<- Event) {
 		fmt.Println("[httpclient] [Watch] start watch")
-		url := "http://127.0.0.1:8080/watch" + resourses + "?prefix=true"
+		url :=  apiconfig.Server_URL + "/watch" + resourses + "?prefix=true"
 		resp, err := http.Get(url)
 		if err != nil {
 			// handle error
@@ -170,6 +170,7 @@ func UpdatePod(pod *core.Pod) error {
 
 func AddNode(node *core.Node) error {
 	url := apiconfig.Server_URL + apiconfig.NODE_PATH
+	fmt.Println("[http]: ",url)
 	data, err := json.Marshal(node)
 	if err != nil {
 		return err

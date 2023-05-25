@@ -24,8 +24,8 @@ func NewKubelet(name string, nodeIp string, masterIp string) (*Kubelet, error) {
 	node := core.Node{}
 	node.Name = name
 	node.Spec.NodeIP = nodeIp
-	err := tool.AddNode(&node)
 	apiconfig.Server_URL = masterIp
+	err := tool.AddNode(&node)
 	if err != nil {
 		return nil, err
 	}
