@@ -100,10 +100,7 @@ func GetReplicaSet(c *gin.Context, s *Server) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "get ReplicaSet successfully.",
-		"Results": res,
-	})
+	c.JSON(http.StatusOK, res)
 }
 
 func DeleteReplicaSet(c *gin.Context, s *Server) {
