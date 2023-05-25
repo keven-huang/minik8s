@@ -3,10 +3,11 @@ kind: Service
 metadata:
   name: coreDNS
 spec:
+  name: coreDNS
   clusterIP: "12.1.1.1"
   selector:
-    app: coredns
+    app: coreDNS
   ports:
     - port: "53"
-      protocol: all
+      protocol: udp
       targetPort: "53"

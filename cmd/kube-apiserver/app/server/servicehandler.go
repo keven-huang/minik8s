@@ -86,7 +86,7 @@ func GetService(c *gin.Context, s *Server) {
 
 	ServiceName := c.Query("Name")
 	key := c.Request.URL.Path + "/" + string(ServiceName)
-
+	fmt.Println("key: " + key)
 	var res []etcd.ListRes
 	var err error
 
@@ -95,6 +95,7 @@ func GetService(c *gin.Context, s *Server) {
 		fmt.Println(res)
 	} else {
 		res, err = s.Etcdstore.GetExact(key)
+		fmt.Println(res)
 	}
 
 	if err != nil {
@@ -105,8 +106,5 @@ func GetService(c *gin.Context, s *Server) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "get Service successfully.",
-		"Results": res,
-	})
+	c.JSON(http.StatusOK, res)
 }

@@ -124,7 +124,7 @@ func (rs *RuntimeService) Run(event <-chan string) {
 					return
 				}
 				// flag表示之前的状态有无改变
-				fmt.Println("[service][run]: got ticker")
+				//fmt.Println("[service][run]: got ticker")
 				flag := false
 				for _, pod := range rs.Pods {
 					// 应该调用restClient，根据pod的名字查询当前pod的状态

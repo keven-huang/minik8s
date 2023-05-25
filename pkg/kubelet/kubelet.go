@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/docker/docker/api/types"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
+	kube_proxy "minik8s/configs"
 	"minik8s/pkg/api/core"
 	"minik8s/pkg/client/informer"
 	"minik8s/pkg/client/tool"
@@ -64,10 +66,16 @@ func (k *Kubelet) CreatePod(event tool.Event) {
 	for i, v := range pod.Spec.Containers {
 		pod.Spec.Containers[i].Name = pod.Name + "-" + v.Name
 	}
-
-	metaData, netSetting, err := dockerClient.CreatePod(*pod)
-	if err != nil {
-		fmt.Println(err)
+	var metaData []core.ContainerMeta
+	var netSetting *types.NetworkSettings
+	var err1 error
+	if pod.ObjectMeta.Name == kube_proxy.CoreDNSPodName {
+		metaData, netSetting, err1 = dockerClient.CreateCoreDNSPod(*pod)
+	} else {
+		metaData, netSetting, err1 = dockerClient.CreatePod(*pod)
+	}
+	if err1 != nil {
+		fmt.Println(err1)
 		return
 	}
 

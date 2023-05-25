@@ -553,11 +553,12 @@ type DNS struct {
 const (
 	FileCreatedStatus    string = "FileCreatedStatus"
 	ServiceCreatedStatus string = "ServiceCreatedStatus"
+	DeletedStatus        string = "DeletedStatus"
 )
 
 type DNSSpec struct {
-	Host      string `yaml:"host" json:"host"`           // host name
-	GatewayIp string `yaml:"gatewayIp" json:"gatewayIp"` // gatway ip
+	Host      string `yaml:"host" json:"host"`           // host name, domain name
+	GatewayIp string `yaml:"gatewayIp" json:"gatewayIp"` // gatway ip, it's nginx serviceIp, waiting for be updated
 	Paths     []Path `json:"paths" yaml:"paths"`
 }
 

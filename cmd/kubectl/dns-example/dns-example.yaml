@@ -3,8 +3,7 @@ kind: DNS
 metadata:
   name: testDns
 spec:
-  host: example.com
-  gatewayIp: 10.0.12.1
+  host: hanjinbo.com
   paths:
     - name: /path1
       service: service1
@@ -12,4 +11,3 @@ spec:
     - name: /path2
       service: service2
       port: "80"
-      

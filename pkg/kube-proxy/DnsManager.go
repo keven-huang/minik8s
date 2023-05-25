@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
+	"minik8s/configs"
 	"minik8s/pkg/api/core"
 	"minik8s/pkg/client/informer"
 	"minik8s/pkg/client/tool"
@@ -27,7 +28,7 @@ func NewDnsManager() *DNSManager {
 
 func (DNSManager *DNSManager) UpdateDNSHandler(event tool.Event) {
 	prefix := "[DNSManager][UpdateDns]"
-	fmt.Println(prefix + "key:" + event.Key)
+	//fmt.Println(prefix + "key:" + event.Key)
 	dns := &core.DNS{}
 	err := json.Unmarshal([]byte(event.Val), dns)
 	if err != nil {
@@ -37,12 +38,13 @@ func (DNSManager *DNSManager) UpdateDNSHandler(event tool.Event) {
 	switch dns.Status {
 	case "": // first create
 		{
+			fmt.Println(prefix + "first create")
 			DNSManager.Key2Dns[event.Key] = dns
-			DNSManager.copyDir(dns.Metadata.Name)
+			DNSManager.mkDir(dns.Metadata.Name)
 			// write nginx
 			DNSManager.writeNginx(dns)
 			dns.Status = core.FileCreatedStatus
-			err := tool.UpdateDNS(dns) // updateETCD
+			err := tool.UpdateDNS(dns) // updateETCD, trigger listener in Service manager
 			if err != nil {
 				fmt.Println(prefix + err.Error())
 				return
@@ -51,6 +53,7 @@ func (DNSManager *DNSManager) UpdateDNSHandler(event tool.Event) {
 		}
 	case core.ServiceCreatedStatus:
 		{
+			fmt.Println(prefix + "created nginx")
 			DNSManager.Key2Dns[event.Key] = dns
 			DNSManager.writeNginx(dns)
 			DNSManager.reloadNginx(dns)
@@ -81,15 +84,18 @@ func (DNSManager *DNSManager) Register() {
 
 func (DNSManager *DNSManager) writeNginx(dns *core.DNS) {
 	prefix := "[DNSManager][WriteNginx]"
+	fmt.Println(prefix + "in")
 	var data []string
-	data = append(data, "events {worker_connections 1024; }")
+	data = append(data, "events {")
+	data = append(data, "    worker_connections 1024;")
+	data = append(data, "}")
 	data = append(data, "http {")
-	data = append(data, "    server {", "         listen 80;")
+	data = append(data, "    server {", "        listen 80;")
 	data = append(data, fmt.Sprintf("        server_name %s;", dns.Spec.Host)) // it can be deleted maybe
 	data = append(data, DNSManager.generateConfig(dns)...)
-	data = append(data, "        }")
+	data = append(data, "    }")
 	data = append(data, "}")
-	file, err := os.OpenFile(NginxPrefix+"/"+dns.Metadata.Name+"/"+"nginx.conf", os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0666)
+	file, err := os.OpenFile(configs.NginxPrefix+"/"+dns.Metadata.Name+"/"+"nginx.conf", os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0666)
 	if err != nil {
 		fmt.Println(prefix + "open nginx file error" + err.Error())
 		return
@@ -113,26 +119,29 @@ func (DNSManager *DNSManager) generateConfig(dns *core.DNS) []string {
 	var res []string
 	for _, v := range dns.Spec.Paths {
 		res = append(res, fmt.Sprintf("        location %s {", v.Name))
-		res = append(res, fmt.Sprintf("        proxy_pass http://%s:%s;", v.Ip, v.Port))
+		res = append(res, fmt.Sprintf("            proxy_pass http://%s:%s;", v.Ip, v.Port))
 		res = append(res, "        }")
 	}
 	return res
 }
 
-func (DNSManager *DNSManager) copyDir(Dns string) {
-	prefix := "[DNSManager][CopyDir]"
-	args := fmt.Sprintf("-r %s %s", NginxPath, NginxPrefix+"/"+Dns)
-	res, err := execCommand("cp", args)
+func (DNSManager *DNSManager) mkDir(Dns string) {
+	prefix := "[DNSManager][mkDir]"
+	fmt.Println(prefix + "in")
+	args := fmt.Sprintf("%s", configs.NginxPrefix+"/"+Dns)
+	res, err := execCommand("mkdir", args)
 	if err != nil {
 		fmt.Println(prefix + err.Error())
 	} else {
+		fmt.Println(prefix + "resValue:")
 		fmt.Println(res)
 	}
 }
 
 func (DNSManager *DNSManager) deleteDir(Dns string) {
 	prefix := "[DNSManager][deleteDir]"
-	args := fmt.Sprintf("-rf %s", NginxPrefix+"/"+Dns)
+	fmt.Println(prefix + "in")
+	args := fmt.Sprintf("-rf %s", configs.NginxPrefix+"/"+Dns)
 	res, err := execCommand("rm", args)
 	if err != nil {
 		fmt.Println(prefix + err.Error())
@@ -141,13 +150,13 @@ func (DNSManager *DNSManager) deleteDir(Dns string) {
 	}
 }
 
-// add an entry to dns
+// update dns entry based on key2DNs
 // mapping from domainName -> gateway
 // the gateway is a nginx
-// TODO, file should be truncated?
 func (DNSManager *DNSManager) writeCoreDNS() {
 	prefix := "[DNSManager][WriteCoreDNS]"
-	file, err := os.OpenFile(CoreDnsPath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0666)
+	fmt.Println(prefix + "in")
+	file, err := os.OpenFile(configs.CoreDnsPath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0666)
 	defer file.Close()
 	if err != nil {
 		fmt.Println(prefix + err.Error())
@@ -174,6 +183,7 @@ func (DNSManager *DNSManager) writeCoreDNS() {
 
 func (DNSManager *DNSManager) reloadNginx(dns *core.DNS) {
 	prefix := "[DNSManager][reloadNginx]"
+	fmt.Println(prefix + "in")
 	cons, err := dockerClient.GetRunningContainers()
 	if err != nil {
 		fmt.Println(prefix + err.Error())
@@ -182,7 +192,7 @@ func (DNSManager *DNSManager) reloadNginx(dns *core.DNS) {
 	var ids []string
 	for _, val := range cons {
 		// TODO names
-		if strings.Contains(val.Names[0], GatewayContainerPrefix+dns.Metadata.Name) {
+		if strings.Contains(val.Names[0], configs.GatewayContainerPrefix+dns.Metadata.Name) {
 			ids = append(ids, val.ID)
 		}
 	}

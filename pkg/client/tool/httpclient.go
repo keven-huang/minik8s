@@ -9,6 +9,7 @@ import (
 	"minik8s/pkg/api/core"
 	"minik8s/pkg/service"
 	"minik8s/pkg/util/log"
+	"minik8s/pkg/util/web"
 	"net/http"
 	"time"
 )
@@ -135,6 +136,41 @@ func UpdatePod(pod *core.Pod) error {
 	return nil
 }
 
+// copy from create.go
+// may be deprecated after merge into dev
+func AddPod(pod *core.Pod) error {
+	data, err := json.Marshal(pod)
+	if err != nil {
+		fmt.Println("[kubectl] [create] [RunCreatePod] failed to marshal:", err)
+	} else {
+		//fmt.Println("[kubectl] [create] [RunCreatePod]\n", string(data))
+	}
+	err = web.SendHttpRequest("PUT", apiconfig.Server_URL+apiconfig.POD_PATH,
+		web.WithPrefix("[kubectl] [create] [RunCreate] "),
+		web.WithBody(bytes.NewBuffer(data)),
+		web.WithLog(true))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func DeletePod(PodName string) error {
+	url := apiconfig.Server_URL + apiconfig.POD_PATH + "?" + "PodName=" + PodName
+	req, err := http.NewRequest("DELETE", url, nil)
+	if err != nil {
+		return err
+	}
+
+	// 发送请求
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	defer resp.Body.Close()
+	err = log.CheckHttpStatus("[httpclient] [DeletePod] ", resp)
+	return nil
+}
+
 func AddNode(node *core.Node) error {
 	url := apiconfig.Server_URL + apiconfig.NODE_PATH
 	data, err := json.Marshal(node)
@@ -166,15 +202,24 @@ func GetService(name string) (*service.Service, error) {
 	}
 	defer resp.Body.Close()
 	buf := make([]byte, 40960)
-	res := service.Service{}
+	var res []ListRes
 	n, err := resp.Body.Read(buf)
 	if n != 0 || err != io.EOF {
 		err = json.Unmarshal([]byte(buf[:n]), &res)
 		if err != nil {
-			return nil, err
+			fmt.Println(prefix + err.Error())
+			return nil, nil
 		}
 	}
-	return &res, nil
+	s := service.Service{}
+	if len(res) > 0 {
+		err = json.Unmarshal([]byte(res[0].Value), &s)
+		if err != nil {
+			return nil, err
+		}
+		return &s, nil
+	}
+	return nil, nil
 }
 
 func UpdateService(service *service.Service) error {
@@ -211,7 +256,7 @@ func UpdateDNS(dns *core.DNS) error {
 
 // TODO 讨论确定一下api-sver的rest-api用法
 func DeleteService(service *service.Service) error {
-	url := apiconfig.Server_URL + apiconfig.SERVICE_PATH + "/" + service.ServiceSpec.Name
+	url := apiconfig.Server_URL + apiconfig.SERVICE_PATH + "/" + service.ServiceMeta.Name
 	fmt.Println("[tool][deleteService]: url=" + url)
 	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
@@ -230,23 +275,33 @@ func DeleteService(service *service.Service) error {
 
 func GetPod(name string) (*core.Pod, error) {
 	prefix := "[tool][GetPod]"
-	fmt.Println(prefix + "key:" + name)
-	url := apiconfig.Server_URL + apiconfig.POD_PATH + name
+	//fmt.Println(prefix + "key:" + name)
+	url := apiconfig.Server_URL + apiconfig.POD_PATH + "?" + "Name=" + name
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 	buf := make([]byte, 40960)
-	res := core.Pod{}
+	//res := core.Pod{}
+	var res []ListRes
 	n, err := resp.Body.Read(buf)
 	if n != 0 || err != io.EOF {
 		err = json.Unmarshal([]byte(buf[:n]), &res)
 		if err != nil {
-			return nil, err
+			fmt.Println(prefix + err.Error())
+			return nil, nil
 		}
 	}
-	return &res, nil
+	pod := core.Pod{}
+	if len(res) > 0 {
+		err = json.Unmarshal([]byte(res[0].Value), &pod)
+		if err != nil {
+			return nil, err
+		}
+		return &pod, nil
+	}
+	return nil, nil
 }
 
 func GetTypeName(event Event) string {

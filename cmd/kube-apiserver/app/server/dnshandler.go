@@ -42,7 +42,7 @@ func GetDNS(c *gin.Context, s *Server) {
 	fmt.Println("[DnsHandler] [GetDNS]")
 	if c.Query("all") == "true" {
 		fmt.Println("[warning] should be only one dns config")
-		res, err := s.Etcdstore.GetWithPrefix(apiconfig.DNS_PATH)
+		err, res := s.Etcdstore.GetWithPrefix(apiconfig.DNS_PATH)
 		if err != nil {
 			log.Println(err)
 			return
@@ -72,10 +72,7 @@ func GetDNS(c *gin.Context, s *Server) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "get dns successfully.",
-		"Results": res,
-	})
+	c.JSON(http.StatusOK, res)
 }
 
 func DeleteDNS(c *gin.Context, s *Server) {
@@ -105,7 +102,7 @@ func DeleteDNS(c *gin.Context, s *Server) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"message":           "delete service success",
-		"deleteServiceName": DnsConfigName,
+		"message":       "delete dns success",
+		"deleteDnsName": DnsConfigName,
 	})
 }

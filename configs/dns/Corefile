@@ -1,11 +1,7 @@
-hanjinbo.com:53 {
-	hosts /home/minik8s/configs/dns/hostfile {
-		fallthrough
-	}
-	log
-}
-
 .:53 {
+    hosts /etc/coredns/hostfile {
+    		fallthrough
+    }
 	forward . /etc/resolv.conf
 	log
 	errors

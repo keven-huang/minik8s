@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
+	kube_proxy "minik8s/configs"
 	"minik8s/pkg/api/core"
 	"minik8s/pkg/client/informer"
 	"minik8s/pkg/client/tool"
-	kube_proxy "minik8s/pkg/kube-proxy"
 	"minik8s/pkg/service"
 	"strings"
 	"sync"
@@ -78,7 +78,50 @@ func NewServiceManager() *ServiceManager {
 	})
 
 	// TODO DNS-informer
+	res.DNSInformer.AddEventHandler(tool.Added, res.DNSUpdateHandler)
+	res.DNSInformer.AddEventHandler(tool.Modified, res.DNSUpdateHandler)
+
 	return res
+}
+
+func (sm *ServiceManager) DNSUpdateHandler(event tool.Event) {
+	prefix := "[ServiceManager][DNSUpdateHandler]"
+	//fmt.Println(prefix + "key:" + event.Key)
+	dns := &core.DNS{}
+	err := json.Unmarshal([]byte(event.Val), dns)
+	if err != nil {
+		fmt.Println(prefix + err.Error())
+		return
+	}
+	if dns.Status == core.FileCreatedStatus {
+		fmt.Println(prefix + "is file created status")
+		err = tool.AddPod(GetGatewayPodSingleton(dns.Metadata.Name)) // create specific GatewayPod
+		if err != nil {
+			fmt.Println(prefix + err.Error())
+			return
+		}
+		err = tool.UpdateService(GetGatewayServiceSingleton(dns.Metadata.Name)) // create Specific GatewayService
+		if err != nil {
+			fmt.Println(prefix + err.Error())
+			return
+		}
+		sm.lock.Lock()
+		sm.name2DNS[dns.Metadata.Name] = dns
+		sm.lock.Unlock()
+	}
+	if dns.Status == core.DeletedStatus {
+		fmt.Println(prefix + "is deleted status")
+		err = tool.DeleteService(GetGatewayServiceSingleton(dns.Metadata.Name))
+		if err != nil {
+			fmt.Println(prefix + err.Error())
+			return
+		}
+		err = tool.DeletePod(dns.Metadata.Name)
+		if err != nil {
+			fmt.Println(prefix + err.Error())
+			return
+		}
+	}
 }
 
 // should be run by go-routine
@@ -90,19 +133,23 @@ func InitCoreDNS() {
 			fmt.Println(prefix + err.Error())
 			return
 		}
-		if dns != nil { // service exists before
-			fmt.Println(prefix + "CoreDNS exists!")
-			return
+		if dns != nil {
+			if dns.ServiceMeta.Name == kube_proxy.CoreDNSServiceName { // service exists before
+				fmt.Println(prefix + "CoreDNS exists!")
+				return
+			}
+			fmt.Println(prefix + "DNS parse error!!")
 		}
 		// insert to etcd,  it will be handled by kubelet
-		err = tool.UpdatePod(GetCoreDNSPodSingleton())
+		err = tool.AddPod(GetCoreDNSPodSingleton())
 		if err != nil {
 			fmt.Println(prefix + err.Error())
 			return
 		}
-		time.Sleep(5 * time.Second)
+		time.Sleep(10 * time.Second)
 		// create coreDNS service
 		err = tool.UpdateService(GetCoreDNSServiceSingleton())
+		time.Sleep(15 * time.Second)
 		if err != nil {
 			fmt.Println(prefix + err.Error())
 			return
@@ -110,9 +157,53 @@ func InitCoreDNS() {
 	}
 }
 
+// should be run by go routine
+func (sm *ServiceManager) checkNginx() {
+	prefix := "[ServiceManager][DNSChecker]"
+	for {
+		time.Sleep(2 * time.Second)
+		var rms []string
+		sm.lock.Lock()
+		if len(sm.name2DNS) > 0 {
+			fmt.Println(prefix + "running")
+		} else {
+			sm.lock.Unlock()
+			continue
+		}
+		for k, v := range sm.name2DNS {
+			res, err := tool.GetService(kube_proxy.GatewayServicePrefix + k)
+			if err != nil {
+				fmt.Println(prefix + err.Error())
+				continue
+			}
+			if res == nil {
+				continue
+			}
+			if res.ServiceSpec.Status.Phase == service.ServiceRunningPhase { // the nginx is running
+				fmt.Println(prefix + "key=" + k + "nginx service created!")
+				v.Status = core.ServiceCreatedStatus
+				v.Spec.GatewayIp = res.ServiceSpec.ClusterIP
+				err = tool.UpdateDNS(v)
+				if err != nil {
+					fmt.Println(prefix + err.Error())
+					continue
+				}
+				rms = append(rms, k)
+			}
+		}
+		for _, v := range rms {
+			delete(sm.name2DNS, v)
+		}
+		sm.lock.Unlock()
+	}
+}
 func (sm *ServiceManager) Run() {
 	// 启动ServiceInformer, it can listen and create/run service
 	go sm.ServiceInformer.Run()
 	// 启动 dns 注册服务
 	go InitCoreDNS()
+	// 启动 serverManager端的 DNS informer，主要和service配合，修改gatewayIp
+	go sm.DNSInformer.Run()
+	// 每2s 检查 nginx的状态
+	go sm.checkNginx()
 }

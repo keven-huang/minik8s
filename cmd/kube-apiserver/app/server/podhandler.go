@@ -89,10 +89,7 @@ func GetPod(c *gin.Context, s *Server) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "get pod successfully.",
-		"Results": res,
-	})
+	c.JSON(http.StatusOK, res)
 }
 
 func DeletePod(c *gin.Context, s *Server) {
