@@ -23,7 +23,6 @@ func AddJob(c *gin.Context, s *Server) {
 		return
 	}
 	key := c.Request.URL.Path + "/" + job.Name
-	fmt.Println(key)
 	res, _ := s.Etcdstore.Get(key)
 	if len(res) > 0 {
 		c.JSON(http.StatusBadRequest, gin.H{

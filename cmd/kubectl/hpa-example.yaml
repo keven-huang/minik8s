@@ -1,0 +1,15 @@
+apiVersion: app/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: my-hpa
+spec:
+  scaleTargetRef:
+    kind: ReplicaSet
+    name: my-replicaset-test
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  -  name: cpu
+     target:
+      type: Utilization
+      value: 70

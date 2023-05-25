@@ -41,7 +41,7 @@ var HandlerTable = []Handler{
 	{Type: "GET", Path: apiconfig.JOB_PATH, Eventhandler: GetJob},
 	{Type: "POST", Path: apiconfig.JOB_FILE_PATH, Eventhandler: AddJobFile},
 	{Type: "GET", Path: apiconfig.JOB_FILE_PATH, Eventhandler: GetJobFile},
+	//hpa
+	{Type: "PUT", Path: apiconfig.HPA_PATH, Eventhandler: AddHPA},
 	// watch
 	{Type: "GET", Path: "/watch/*resource", Eventhandler: Watch}}
-
-

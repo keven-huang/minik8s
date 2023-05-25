@@ -545,3 +545,38 @@ type ReplicaSetCondition struct {
 	// +optional
 	Message string `json:"message,omitempty" protobuf:"bytes,5,opt,name=message"`
 }
+
+type HPA struct {
+	metav1.TypeMeta   `json:",inline" yaml:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Spec              HPASpec `json:"spec,omitempty" yaml:"spec,omitempty"`
+}
+
+type HPASpec struct {
+	ScaleTargetRef HPARef       `json:"scaleTargetRef" yaml:"scaleTargetRef"`
+	MinReplicas    int32        `json:"minReplicas,omitempty" yaml:"minReplicas,omitempty"`
+	MaxReplicas    int32        `json:"maxReplicas" yaml:"maxReplicas"`
+	Metrics        []MetricSpec `json:"metrics,omitempty" yaml:"metrics,omitempty"`
+}
+
+type HPARef struct {
+	Kind string `json:"kind" yaml:"kind"`
+	Name string `json:"name" yaml:"name"`
+}
+
+type MetricSpec struct {
+	Name   string       `json:"name" yaml:"name"`
+	Target MetricTarget `json:"target" yaml:"target"`
+}
+
+type MetricTarget struct {
+	Type  MetricType `json:"type" yaml:"type"`
+	Value int32      `json:"value" yaml:"value"`
+}
+
+type MetricType string
+
+const (
+	MetricTypeUtilization MetricType = "Utilization"
+	MetricTypeAvgValue    MetricType = "averageValue"
+)
