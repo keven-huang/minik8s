@@ -12,3 +12,7 @@ run:
 
 stop:
 	./scripts/linux/stop.sh
+
+kill:
+	sudo docker ps -aq --filter "name=^my-replicaset|^test" | xargs -r docker stop
+	sudo docker ps -aq --filter "name=^my-replicaset|^test" | xargs -r docker rm
