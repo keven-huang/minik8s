@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/pkg/api/core"
 	"net/http"
 
@@ -32,4 +33,37 @@ func AddHPA(c *gin.Context, s *Server) {
 		fmt.Print(err)
 		return
 	}
+}
+
+func DeleteHPA(c *gin.Context, s *Server) {
+
+	if c.Query("all") == "true" {
+		// delete the keys
+		_, err := s.Etcdstore.DelAll(apiconfig.HPA_PATH)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "etcd delete HPA failed",
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"message": "delete HPAs success",
+		})
+		return
+	}
+
+	HPAName := c.Query("HPAName")
+	key := c.Request.URL.Path + "/" + string(HPAName)
+	err := s.Etcdstore.Del(key)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "etcd delete HPA failed",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "delete HPA success",
+	})
 }
