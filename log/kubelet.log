@@ -1,12 +1,12 @@
 [http]:  http://127.0.0.1:8080/api/v1/nodes
 [httpclient] [AddNode] [CheckHttpStatus]  Response Status: 200 OK
-[httpclient] [List]  [{3 /api/v1/pods/test5 {"metadata":{"name":"test5","uid":"a63c213f-fdb2-4308-9c70-b003251ff063","generation":1,"creationTimestamp":"2023-05-26T01:22:22Z","labels":{"app":"my-app"}},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"test5-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"1","memory":"128Mi"},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.2"}}}]
+[httpclient] [List]  []
 [httpclient] [Watch] start watch
-test5-my-container not found.
-test5-pause not found.
+busy-pause Exited:0
+cuda-gpu Exited:0
+cuda-pause not found.
 docker_myapp_1 Exited:1
 docker_Etcd_1 not found.
-cpu_stress_container Exited:137
 cadvisor not found.
 grafana not found.
 node_exporter not found.
@@ -19,12 +19,410 @@ angry_yonath Exited:137
 ubuntu_mnt_01 not found.
 ubuntu-test Exited:0
 -----------
-[kubelet][monitor] podName: test5
-[tool][GetPod]key:test5
-[httpclient][get pod] [{"ResourceVersion":3,"key":"/api/v1/pods/test5","value":"{\"metadata\":{\"name\":\"test5\",\"uid\":\"a63c213f-fdb2-4308-9c70-b003251ff063\",\"generation\":1,\"creationTimestamp\":\"2023-05-26T01:22:22Z\",\"labels\":{\"app\":\"my-app\"}},\"spec\":{\"volumes\":[{\"name\":\"my-volume\",\"hostPath\":\"\"}],\"containers\":[{\"name\":\"test5-my-container\",\"image\":\"nginx:latest\",\"command\":[\"nginx\",\"-g\",\"daemon off;\"],\"entryPoint\":null,\"ports\":[{\"Protocol\":\"\",\"PortNumber\":\"\"}],\"limitResource\":{\"cpu\":\"1\",\"memory\":\"128Mi\"},\"tty\":false,\"volumeMounts\":[{\"name\":\"my-volume\",\"mountPath\":\"/usr/share/nginx/html\"}]}],\"nodeName\":\"node1\"},\"status\":{\"phase\":\"Running\",\"podIP\":\"10.0.13.2\"}}"}]
-[httpclient][get pod] [{3 /api/v1/pods/test5 {"metadata":{"name":"test5","uid":"a63c213f-fdb2-4308-9c70-b003251ff063","generation":1,"creationTimestamp":"2023-05-26T01:22:22Z","labels":{"app":"my-app"}},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"test5-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"1","memory":"128Mi"},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.2"}}}]
-93b1e038e4c893ccbdde51572fe65540ffac3c81c22ed5bcb03603b2c650966a
-{0xc00033b340 linux}
-CPU Usage: 0.000000
-Memory Usage: 0.000000
-[kubelet][monitor] GetPodStats {0 0.3261933672686091 0}
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-76jzw {"metadata":{"name":"my-replicaset-76jzw","uid":"617724fa-83d2-42b4-b821-51a0305432e6","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}]},"status":{"phase":"Pending"}} ADDED
+[kubelet] [CreatePod]  event.Type:  Add
+[kubelet] [CreatePod]  event.Key:  /api/v1/pods/my-replicaset-76jzw
+[kubelet] [CreatePod]  event.Val:  {"metadata":{"name":"my-replicaset-76jzw","uid":"617724fa-83d2-42b4-b821-51a0305432e6","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}]},"status":{"phase":"Pending"}}
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-5dss7 {"metadata":{"name":"my-replicaset-5dss7","uid":"5965f22f-43f2-49cd-ae08-27b7259e0eb8","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}]},"status":{"phase":"Pending"}} ADDED
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-cfscs {"metadata":{"name":"my-replicaset-cfscs","uid":"9eee31e1-840c-4c87-8965-62f71a9be994","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}]},"status":{"phase":"Pending"}} ADDED
+[kubelet] [CreatePod]  event.Type:  Add
+[kubelet] [CreatePod]  event.Key:  /api/v1/pods/my-replicaset-5dss7
+[kubelet] [CreatePod]  event.Val:  {"metadata":{"name":"my-replicaset-5dss7","uid":"5965f22f-43f2-49cd-ae08-27b7259e0eb8","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}]},"status":{"phase":"Pending"}}
+[kubelet] [CreatePod]  event.Type:  Add
+[kubelet] [CreatePod]  event.Key:  /api/v1/pods/my-replicaset-cfscs
+[kubelet] [CreatePod]  event.Val:  {"metadata":{"name":"my-replicaset-cfscs","uid":"9eee31e1-840c-4c87-8965-62f71a9be994","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}]},"status":{"phase":"Pending"}}
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-76jzw {"metadata":{"name":"my-replicaset-76jzw","uid":"617724fa-83d2-42b4-b821-51a0305432e6","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Pending"}} MODIFIED
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/my-replicaset-76jzw
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"my-replicaset-76jzw","uid":"617724fa-83d2-42b4-b821-51a0305432e6","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Pending"}}
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-5dss7 {"metadata":{"name":"my-replicaset-5dss7","uid":"5965f22f-43f2-49cd-ae08-27b7259e0eb8","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Pending"}} MODIFIED
+[kubelet] [UpdatePod] [SendHttpRequest] [CheckHttpStatus]  Response Status: 200 OK
+my-replicaset-76jzw-pause f9b3a8d592544e12adbae0ac390b738f7cd6c07ba28fa05d22b75550e9435f23
+my-replicaset-76jzw-my-container 1bb79c141d5ec60bfa78605e81954658135dc083edeede479d1703ac8298c270
+net: 
+{
+  "Bridge": "",
+  "SandboxID": "d40cccc19caccef33dfeb5668cde9bb0906e30752496fda95178206f3025e66e",
+  "HairpinMode": false,
+  "LinkLocalIPv6Address": "",
+  "LinkLocalIPv6PrefixLen": 0,
+  "Ports": {
+    "0/tcp": null
+  },
+  "SandboxKey": "/var/run/docker/netns/d40cccc19cac",
+  "SecondaryIPAddresses": null,
+  "SecondaryIPv6Addresses": null,
+  "EndpointID": "b5bd2ac5a416f3ea459f77aa03307260abeac5149e17cce58dd33f6e5733f39d",
+  "Gateway": "10.0.13.1",
+  "GlobalIPv6Address": "",
+  "GlobalIPv6PrefixLen": 0,
+  "IPAddress": "10.0.13.2",
+  "IPPrefixLen": 24,
+  "IPv6Gateway": "",
+  "MacAddress": "02:42:0a:00:0d:02",
+  "Networks": {
+    "bridge": {
+      "IPAMConfig": null,
+      "Links": null,
+      "Aliases": null,
+      "NetworkID": "dbb461d8d55e1d2c153ae4b731c94cea0ee54cd04f9537ca17ef2d0d7715241b",
+      "EndpointID": "b5bd2ac5a416f3ea459f77aa03307260abeac5149e17cce58dd33f6e5733f39d",
+      "Gateway": "10.0.13.1",
+      "IPAddress": "10.0.13.2",
+      "IPPrefixLen": 24,
+      "IPv6Gateway": "",
+      "GlobalIPv6Address": "",
+      "GlobalIPv6PrefixLen": 0,
+      "MacAddress": "02:42:0a:00:0d:02",
+      "DriverOpts": null
+    }
+  }
+}
+-----------
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/my-replicaset-5dss7
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"my-replicaset-5dss7","uid":"5965f22f-43f2-49cd-ae08-27b7259e0eb8","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Pending"}}
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-cfscs {"metadata":{"name":"my-replicaset-cfscs","uid":"9eee31e1-840c-4c87-8965-62f71a9be994","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Pending"}} MODIFIED
+[kubelet] [UpdatePod] [SendHttpRequest] [CheckHttpStatus]  Response Status: 200 OK
+my-replicaset-5dss7-pause 91af6f67b03b8bc5b9af0ba0991fb4c27fd251f4e529b03b2a7babe8fd750e56
+my-replicaset-5dss7-my-container d1f03e34afb6b0fdb2562d818e48fd8aa9e098454fc88edbecf9c18856ab461f
+net: 
+{
+  "Bridge": "",
+  "SandboxID": "c446ce8a3da92a6750672c81cf30a94cfffacf154645b4e21ff51a3aaca9320c",
+  "HairpinMode": false,
+  "LinkLocalIPv6Address": "",
+  "LinkLocalIPv6PrefixLen": 0,
+  "Ports": {
+    "0/tcp": null
+  },
+  "SandboxKey": "/var/run/docker/netns/c446ce8a3da9",
+  "SecondaryIPAddresses": null,
+  "SecondaryIPv6Addresses": null,
+  "EndpointID": "816dd5f83873edf6e241199cb06e2a06b2f4a22f1c5e43fcac947c9fb87d545e",
+  "Gateway": "10.0.13.1",
+  "GlobalIPv6Address": "",
+  "GlobalIPv6PrefixLen": 0,
+  "IPAddress": "10.0.13.4",
+  "IPPrefixLen": 24,
+  "IPv6Gateway": "",
+  "MacAddress": "02:42:0a:00:0d:04",
+  "Networks": {
+    "bridge": {
+      "IPAMConfig": null,
+      "Links": null,
+      "Aliases": null,
+      "NetworkID": "dbb461d8d55e1d2c153ae4b731c94cea0ee54cd04f9537ca17ef2d0d7715241b",
+      "EndpointID": "816dd5f83873edf6e241199cb06e2a06b2f4a22f1c5e43fcac947c9fb87d545e",
+      "Gateway": "10.0.13.1",
+      "IPAddress": "10.0.13.4",
+      "IPPrefixLen": 24,
+      "IPv6Gateway": "",
+      "GlobalIPv6Address": "",
+      "GlobalIPv6PrefixLen": 0,
+      "MacAddress": "02:42:0a:00:0d:04",
+      "DriverOpts": null
+    }
+  }
+}
+-----------
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/my-replicaset-cfscs
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"my-replicaset-cfscs","uid":"9eee31e1-840c-4c87-8965-62f71a9be994","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Pending"}}
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-76jzw {"metadata":{"name":"my-replicaset-76jzw","uid":"617724fa-83d2-42b4-b821-51a0305432e6","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-76jzw-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.2"}} MODIFIED
+my-replicaset-cfscs-my-container not found.
+my-replicaset-cfscs-pause not found.
+my-replicaset-5dss7-my-container not found.
+my-replicaset-5dss7-pause not found.
+my-replicaset-76jzw-my-container not found.
+my-replicaset-76jzw-pause not found.
+busy-pause Exited:0
+cuda-gpu Exited:0
+cuda-pause not found.
+docker_myapp_1 Exited:1
+docker_Etcd_1 not found.
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+romantic_galileo Exited:137
+jovial_lamarr Exited:0
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+[kubelet] [UpdatePod] [SendHttpRequest] [CheckHttpStatus]  Response Status: 200 OK
+my-replicaset-cfscs-pause ef7db23b546546cf130362a09f6b22f13ebe75c9b009d3e5bc25f139f3b797c9
+my-replicaset-cfscs-my-container 85ef04c7d65c408f553fba18744106e5f1e791ca4c94be9f99f4513b631a566c
+net: 
+{
+  "Bridge": "",
+  "SandboxID": "b25b3bfe28e996dde4e379adc789e7f0eb0efc225c4261fd760cc30e0cf8e5f4",
+  "HairpinMode": false,
+  "LinkLocalIPv6Address": "",
+  "LinkLocalIPv6PrefixLen": 0,
+  "Ports": {
+    "0/tcp": null
+  },
+  "SandboxKey": "/var/run/docker/netns/b25b3bfe28e9",
+  "SecondaryIPAddresses": null,
+  "SecondaryIPv6Addresses": null,
+  "EndpointID": "5bf71d900af60ae7b745f68a3a7c261bcf52a3c846dbf1bc692d4e0b86c8d6c8",
+  "Gateway": "10.0.13.1",
+  "GlobalIPv6Address": "",
+  "GlobalIPv6PrefixLen": 0,
+  "IPAddress": "10.0.13.5",
+  "IPPrefixLen": 24,
+  "IPv6Gateway": "",
+  "MacAddress": "02:42:0a:00:0d:05",
+  "Networks": {
+    "bridge": {
+      "IPAMConfig": null,
+      "Links": null,
+      "Aliases": null,
+      "NetworkID": "dbb461d8d55e1d2c153ae4b731c94cea0ee54cd04f9537ca17ef2d0d7715241b",
+      "EndpointID": "5bf71d900af60ae7b745f68a3a7c261bcf52a3c846dbf1bc692d4e0b86c8d6c8",
+      "Gateway": "10.0.13.1",
+      "IPAddress": "10.0.13.5",
+      "IPPrefixLen": 24,
+      "IPv6Gateway": "",
+      "GlobalIPv6Address": "",
+      "GlobalIPv6PrefixLen": 0,
+      "MacAddress": "02:42:0a:00:0d:05",
+      "DriverOpts": null
+    }
+  }
+}
+-----------
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/my-replicaset-76jzw
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"my-replicaset-76jzw","uid":"617724fa-83d2-42b4-b821-51a0305432e6","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-76jzw-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.2"}}
+[kubelet] [UpdatePod]  phase is not satisfied: Running
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-5dss7 {"metadata":{"name":"my-replicaset-5dss7","uid":"5965f22f-43f2-49cd-ae08-27b7259e0eb8","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-5dss7-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.4"}} MODIFIED
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-cfscs {"metadata":{"name":"my-replicaset-cfscs","uid":"9eee31e1-840c-4c87-8965-62f71a9be994","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-cfscs-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.5"}} MODIFIED
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/my-replicaset-5dss7
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"my-replicaset-5dss7","uid":"5965f22f-43f2-49cd-ae08-27b7259e0eb8","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-5dss7-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.4"}}
+[kubelet] [UpdatePod]  phase is not satisfied: Running
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/my-replicaset-cfscs
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"my-replicaset-cfscs","uid":"9eee31e1-840c-4c87-8965-62f71a9be994","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-cfscs-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.5"}}
+[kubelet] [UpdatePod]  phase is not satisfied: Running
+[httpclient] [Watch] unmarshal: /api/v1/pods/test5 {"metadata":{"name":"test5","uid":"953610a7-2745-41ad-8a18-7e25530d0762","generation":1,"creationTimestamp":"2023-05-26T04:35:55Z","labels":{"app":"my-app"}},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"1","memory":"128Mi"},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}]},"status":{"phase":"Pending"}} ADDED
+[kubelet] [CreatePod]  event.Type:  Add
+[kubelet] [CreatePod]  event.Key:  /api/v1/pods/test5
+[kubelet] [CreatePod]  event.Val:  {"metadata":{"name":"test5","uid":"953610a7-2745-41ad-8a18-7e25530d0762","generation":1,"creationTimestamp":"2023-05-26T04:35:55Z","labels":{"app":"my-app"}},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"1","memory":"128Mi"},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}]},"status":{"phase":"Pending"}}
+[httpclient] [Watch] unmarshal: /api/v1/pods/test5 {"metadata":{"name":"test5","uid":"953610a7-2745-41ad-8a18-7e25530d0762","generation":1,"creationTimestamp":"2023-05-26T04:35:55Z","labels":{"app":"my-app"}},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"1","memory":"128Mi"},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Pending"}} MODIFIED
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/test5
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"test5","uid":"953610a7-2745-41ad-8a18-7e25530d0762","generation":1,"creationTimestamp":"2023-05-26T04:35:55Z","labels":{"app":"my-app"}},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"1","memory":"128Mi"},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Pending"}}
+[kubelet] [UpdatePod] [SendHttpRequest] [CheckHttpStatus]  Response Status: 200 OK
+[httpclient] [Watch] unmarshal: /api/v1/pods/test5 {"metadata":{"name":"test5","uid":"953610a7-2745-41ad-8a18-7e25530d0762","generation":1,"creationTimestamp":"2023-05-26T04:35:55Z","labels":{"app":"my-app"}},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"test5-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"1","memory":"128Mi"},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.6"}} MODIFIED
+test5-pause 44eaf51506f4233fd44ae39d63c1d75b488b2e08ea87b0e4962ac28a1dfb67c4
+test5-my-container aab1b38be1a0fbc3b01dfbeddcd3ba643b2ef42f1d0e4c037e0f0d0d606750a4
+net: 
+{
+  "Bridge": "",
+  "SandboxID": "e182732810e60ed9f4a38b27449d6dcefc46aac67dbde2f02eba68a47884f8d0",
+  "HairpinMode": false,
+  "LinkLocalIPv6Address": "",
+  "LinkLocalIPv6PrefixLen": 0,
+  "Ports": {
+    "0/tcp": null
+  },
+  "SandboxKey": "/var/run/docker/netns/e182732810e6",
+  "SecondaryIPAddresses": null,
+  "SecondaryIPv6Addresses": null,
+  "EndpointID": "a0bec94338f575a62ddad0eb6e5c8520360f4b71cb4322cdc426f61869d1560c",
+  "Gateway": "10.0.13.1",
+  "GlobalIPv6Address": "",
+  "GlobalIPv6PrefixLen": 0,
+  "IPAddress": "10.0.13.6",
+  "IPPrefixLen": 24,
+  "IPv6Gateway": "",
+  "MacAddress": "02:42:0a:00:0d:06",
+  "Networks": {
+    "bridge": {
+      "IPAMConfig": null,
+      "Links": null,
+      "Aliases": null,
+      "NetworkID": "dbb461d8d55e1d2c153ae4b731c94cea0ee54cd04f9537ca17ef2d0d7715241b",
+      "EndpointID": "a0bec94338f575a62ddad0eb6e5c8520360f4b71cb4322cdc426f61869d1560c",
+      "Gateway": "10.0.13.1",
+      "IPAddress": "10.0.13.6",
+      "IPPrefixLen": 24,
+      "IPv6Gateway": "",
+      "GlobalIPv6Address": "",
+      "GlobalIPv6PrefixLen": 0,
+      "MacAddress": "02:42:0a:00:0d:06",
+      "DriverOpts": null
+    }
+  }
+}
+-----------
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/test5
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"test5","uid":"953610a7-2745-41ad-8a18-7e25530d0762","generation":1,"creationTimestamp":"2023-05-26T04:35:55Z","labels":{"app":"my-app"}},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"test5-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"1","memory":"128Mi"},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.6"}}
+[kubelet] [UpdatePod]  phase is not satisfied: Running
+[httpclient] [Watch] unmarshal: /api/v1/pods/test5 {"metadata":{"name":"test5","uid":"953610a7-2745-41ad-8a18-7e25530d0762","generation":1,"creationTimestamp":"2023-05-26T04:35:55Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"test5-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"1","memory":"128Mi"},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.6"}} MODIFIED
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/test5
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"test5","uid":"953610a7-2745-41ad-8a18-7e25530d0762","generation":1,"creationTimestamp":"2023-05-26T04:35:55Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"test5-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"1","memory":"128Mi"},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.6"}}
+[kubelet] [UpdatePod]  phase is not satisfied: Running
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-5dss7 {"metadata":{"name":"my-replicaset-5dss7","uid":"5965f22f-43f2-49cd-ae08-27b7259e0eb8","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"","uid":""}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-5dss7-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.4"}} MODIFIED
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/my-replicaset-5dss7
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"my-replicaset-5dss7","uid":"5965f22f-43f2-49cd-ae08-27b7259e0eb8","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"","uid":""}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-5dss7-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.4"}}
+[kubelet] [UpdatePod]  phase is not satisfied: Running
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-5dss7  DELETED
+In DeletePod EventHandler:
+event.Key:  /api/v1/pods/my-replicaset-5dss7
+event.Val:  {"metadata":{"name":"my-replicaset-5dss7","uid":"5965f22f-43f2-49cd-ae08-27b7259e0eb8","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"","uid":""}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-5dss7-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.4"}}
+test5-my-container not found.
+test5-pause not found.
+my-replicaset-cfscs-my-container not found.
+my-replicaset-cfscs-pause not found.
+my-replicaset-76jzw-my-container not found.
+my-replicaset-76jzw-pause not found.
+busy-pause Exited:0
+cuda-gpu Exited:0
+cuda-pause not found.
+docker_myapp_1 Exited:1
+docker_Etcd_1 not found.
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+romantic_galileo Exited:137
+jovial_lamarr Exited:0
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+[httpclient] [Watch] unmarshal: /api/v1/pods/test5  DELETED
+In DeletePod EventHandler:
+event.Key:  /api/v1/pods/test5
+event.Val:  {"metadata":{"name":"test5","uid":"953610a7-2745-41ad-8a18-7e25530d0762","generation":1,"creationTimestamp":"2023-05-26T04:35:55Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"test5-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"1","memory":"128Mi"},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.6"}}
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-8rz79 {"metadata":{"name":"my-replicaset-8rz79","uid":"5df3e824-d11d-4fc0-aa4a-5c9e442e4021","generation":1,"creationTimestamp":"2023-05-26T04:36:07Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}]},"status":{"phase":"Pending"}} ADDED
+[kubelet] [CreatePod]  event.Type:  Add
+[kubelet] [CreatePod]  event.Key:  /api/v1/pods/my-replicaset-8rz79
+[kubelet] [CreatePod]  event.Val:  {"metadata":{"name":"my-replicaset-8rz79","uid":"5df3e824-d11d-4fc0-aa4a-5c9e442e4021","generation":1,"creationTimestamp":"2023-05-26T04:36:07Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}]},"status":{"phase":"Pending"}}
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-8rz79 {"metadata":{"name":"my-replicaset-8rz79","uid":"5df3e824-d11d-4fc0-aa4a-5c9e442e4021","generation":1,"creationTimestamp":"2023-05-26T04:36:07Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Pending"}} MODIFIED
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/my-replicaset-8rz79
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"my-replicaset-8rz79","uid":"5df3e824-d11d-4fc0-aa4a-5c9e442e4021","generation":1,"creationTimestamp":"2023-05-26T04:36:07Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Pending"}}
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-8rz79 {"metadata":{"name":"my-replicaset-8rz79","uid":"5df3e824-d11d-4fc0-aa4a-5c9e442e4021","generation":1,"creationTimestamp":"2023-05-26T04:36:07Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-8rz79-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.4"}} MODIFIED
+[kubelet] [UpdatePod] [SendHttpRequest] [CheckHttpStatus]  Response Status: 200 OK
+my-replicaset-8rz79-pause 72a5676d151b4cbd79ebcf03c323a94005933199ef7c5bd9d344eb39db279960
+my-replicaset-8rz79-my-container b0464ba98fe1e6b11a65be8e230b7bf9d07d91c60e61084c8a0e5741713f5ba6
+net: 
+{
+  "Bridge": "",
+  "SandboxID": "3888d6c98b972ad1af441237deadf4f2ad56c1e569e68f0d7e6f759f8def3f4c",
+  "HairpinMode": false,
+  "LinkLocalIPv6Address": "",
+  "LinkLocalIPv6PrefixLen": 0,
+  "Ports": {
+    "0/tcp": null
+  },
+  "SandboxKey": "/var/run/docker/netns/3888d6c98b97",
+  "SecondaryIPAddresses": null,
+  "SecondaryIPv6Addresses": null,
+  "EndpointID": "c24afd7290090cf7ceafc7f6afb93b5f5a0aabd2f8127a8eeda1c045d920638e",
+  "Gateway": "10.0.13.1",
+  "GlobalIPv6Address": "",
+  "GlobalIPv6PrefixLen": 0,
+  "IPAddress": "10.0.13.4",
+  "IPPrefixLen": 24,
+  "IPv6Gateway": "",
+  "MacAddress": "02:42:0a:00:0d:04",
+  "Networks": {
+    "bridge": {
+      "IPAMConfig": null,
+      "Links": null,
+      "Aliases": null,
+      "NetworkID": "dbb461d8d55e1d2c153ae4b731c94cea0ee54cd04f9537ca17ef2d0d7715241b",
+      "EndpointID": "c24afd7290090cf7ceafc7f6afb93b5f5a0aabd2f8127a8eeda1c045d920638e",
+      "Gateway": "10.0.13.1",
+      "IPAddress": "10.0.13.4",
+      "IPPrefixLen": 24,
+      "IPv6Gateway": "",
+      "GlobalIPv6Address": "",
+      "GlobalIPv6PrefixLen": 0,
+      "MacAddress": "02:42:0a:00:0d:04",
+      "DriverOpts": null
+    }
+  }
+}
+-----------
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/my-replicaset-8rz79
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"my-replicaset-8rz79","uid":"5df3e824-d11d-4fc0-aa4a-5c9e442e4021","generation":1,"creationTimestamp":"2023-05-26T04:36:07Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"my-replicaset","uid":"ca35afac-844c-4318-987b-0b726a8cab7e"}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-8rz79-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.4"}}
+[kubelet] [UpdatePod]  phase is not satisfied: Running
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-76jzw {"metadata":{"name":"my-replicaset-76jzw","uid":"617724fa-83d2-42b4-b821-51a0305432e6","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"","uid":""}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-76jzw-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.2"}} MODIFIED
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/my-replicaset-76jzw
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"my-replicaset-76jzw","uid":"617724fa-83d2-42b4-b821-51a0305432e6","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"","uid":""}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-76jzw-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.2"}}
+[kubelet] [UpdatePod]  phase is not satisfied: Running
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-76jzw  DELETED
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-8rz79 {"metadata":{"name":"my-replicaset-8rz79","uid":"5df3e824-d11d-4fc0-aa4a-5c9e442e4021","generation":1,"creationTimestamp":"2023-05-26T04:36:07Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"","uid":""}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-8rz79-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.4"}} MODIFIED
+In DeletePod EventHandler:
+event.Key:  /api/v1/pods/my-replicaset-76jzw
+event.Val:  {"metadata":{"name":"my-replicaset-76jzw","uid":"617724fa-83d2-42b4-b821-51a0305432e6","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"","uid":""}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-76jzw-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.2"}}
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/my-replicaset-8rz79
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"my-replicaset-8rz79","uid":"5df3e824-d11d-4fc0-aa4a-5c9e442e4021","generation":1,"creationTimestamp":"2023-05-26T04:36:07Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"","uid":""}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-8rz79-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.4"}}
+[kubelet] [UpdatePod]  phase is not satisfied: Running
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-8rz79  DELETED
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-cfscs {"metadata":{"name":"my-replicaset-cfscs","uid":"9eee31e1-840c-4c87-8965-62f71a9be994","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"","uid":""}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-cfscs-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.5"}} MODIFIED
+In DeletePod EventHandler:
+event.Key:  /api/v1/pods/my-replicaset-8rz79
+event.Val:  {"metadata":{"name":"my-replicaset-8rz79","uid":"5df3e824-d11d-4fc0-aa4a-5c9e442e4021","generation":1,"creationTimestamp":"2023-05-26T04:36:07Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"","uid":""}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-8rz79-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.4"}}
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/my-replicaset-cfscs
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"my-replicaset-cfscs","uid":"9eee31e1-840c-4c87-8965-62f71a9be994","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"","uid":""}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-cfscs-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.5"}}
+[kubelet] [UpdatePod]  phase is not satisfied: Running
+[httpclient] [Watch] unmarshal: /api/v1/pods/my-replicaset-cfscs  DELETED
+In DeletePod EventHandler:
+event.Key:  /api/v1/pods/my-replicaset-cfscs
+event.Val:  {"metadata":{"name":"my-replicaset-cfscs","uid":"9eee31e1-840c-4c87-8965-62f71a9be994","generation":1,"creationTimestamp":"2023-05-26T04:35:43Z","labels":{"app":"my-app"},"ownerReferences":[{"apiVersion":"apps/v1","kind":"ReplicaSet","name":"","uid":""}]},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-replicaset-cfscs-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.5"}}
+my-replicaset-cfscs-my-container Exited:0
+my-replicaset-cfscs-pause not found.
+busy-pause Exited:0
+cuda-gpu Exited:0
+cuda-pause not found.
+docker_myapp_1 Exited:1
+docker_Etcd_1 not found.
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+romantic_galileo Exited:137
+jovial_lamarr Exited:0
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+busy-pause Exited:0
+cuda-gpu Exited:0
+cuda-pause not found.
+docker_myapp_1 Exited:1
+docker_Etcd_1 not found.
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+eager_kilby Exited:0
+romantic_galileo Exited:137
+jovial_lamarr Exited:0
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------

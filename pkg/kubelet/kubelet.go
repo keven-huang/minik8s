@@ -32,7 +32,7 @@ func NewKubelet(name string, nodeIp string, masterIp string) (*Kubelet, error) {
 		return nil, err
 	}
 	return &Kubelet{
-		Monitor:     monitor.NewMonitor(9400),
+		Monitor:     monitor.NewMonitor(9400, &node),
 		PodInformer: informer.NewInformer(apiconfig.POD_PATH),
 		node:        node,
 	}, nil

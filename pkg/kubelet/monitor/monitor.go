@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/pkg/api/core"
 	"minik8s/pkg/client/tool"
 	"minik8s/pkg/kubelet/dockerClient"
@@ -14,16 +15,18 @@ import (
 
 type Monitor struct {
 	port int
+	node *core.Node
 }
 
-func NewMonitor(port int) *Monitor {
+func NewMonitor(port int, node *core.Node) *Monitor {
 	return &Monitor{
 		port: port,
+		node: node,
 	}
 }
 
 func (m *Monitor) Run() {
-	http.HandleFunc("/stats", HandlerPodRequest)
+	http.HandleFunc("/stats", m.HandlerPodRequest)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", m.port), nil)
 	if err != nil {
 		panic(err)
@@ -35,33 +38,40 @@ func readStats(reader io.Reader, v interface{}) error {
 	return dec.Decode(v)
 }
 
-func HandlerPodRequest(w http.ResponseWriter, r *http.Request) {
+func (m *Monitor) HandlerPodRequest(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-
-	queryParams := r.URL.Query()
-	podName := queryParams.Get("Name")
-	fmt.Println("[kubelet][monitor] podName:", podName)
-
-	pod, err := tool.GetPod(podName)
-	if err != nil {
-		fmt.Println("[kubelet][monitor] GetPod error:", err)
-		w.WriteHeader(http.StatusNotFound) // 返回404状态码
-		return
+	res := tool.List(apiconfig.POD_PATH)
+	resp := make([]StatsResponse, 0)
+	for _, item := range res {
+		var p core.Pod
+		err := json.Unmarshal([]byte(item.Value), &p)
+		if err != nil {
+			fmt.Println("[kubelet][monitor] Unmarshal error:", err)
+			continue
+		}
+		if p.Spec.NodeName == m.node.Name {
+			stats, err := GetPodStats(&p)
+			if err != nil {
+				fmt.Println("[kubelet][monitor] GetPodStats error:", err)
+				w.WriteHeader(http.StatusNotFound)
+				return
+			}
+			resp = append(resp, stats)
+		}
 	}
-	resp, err := GetPodStats(pod)
-	fmt.Println("[kubelet][monitor] GetPodStats", resp)
+	data, err := json.Marshal(resp)
 	if err != nil {
-		fmt.Println("[kubelet][monitor] GetPodStats error:", err)
+		fmt.Println("[kubelet][monitor] Marshal error:", err)
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	data, err := json.Marshal(resp)
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
 }
 
 func GetPodStats(pod *core.Pod) (StatsResponse, error) {
 	var resp StatsResponse
+	resp.PodName = pod.Name
 	for _, container := range pod.Spec.Containers {
 		stats, err := dockerClient.GetDockerStats(container.Name)
 		if err != nil {
