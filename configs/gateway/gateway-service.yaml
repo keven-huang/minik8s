@@ -3,9 +3,10 @@ kind: Service
 metadata:
   name: toBeReplaced
 spec:
+  name: toBeReplaced
   ports:
     - port: "80"
       targetPort: "80"
-      protocol: all
+      protocol: tcp
   selector:
     dnsName: toBeReplaced

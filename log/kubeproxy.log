@@ -1,2 +1,107 @@
 [httpclient] [List]  []
+[httpclient] [List]  []
+[Chain][Init] service inited before, return
 [httpclient] [Watch] start watch
+[httpclient] [Watch] start watch
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} ADDED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"NoOKPodsWhenInit","phase":"error"}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..
+[httpclient] [Watch] unmarshal: /api/v1/services/coreDNS {"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null} MODIFIED
+[kubeproxy][addService]key:/api/v1/services/coreDNS
+[kubeproxy][addService]waiting for select pods..

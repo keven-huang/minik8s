@@ -8,6 +8,15 @@
 云操作系统 Minik8slab
 成员：韩金铂，陆浩旗，黄嘉敏
 
+#### dns
+示例服务：
+service1, ip 11.1.1.2，访问结果1
+service2, ip 11.1.1.3, 访问结果2
+coredns服务，ip 12.1.1.1, 是一个dns服务器
+对于dns-example,启动nginx gateway的ip 13.1.1.1
+user-pod, 用户pod，置换了dns服务器为coredns
+go run kubectl.go create dns -f /home/minik8s/cmd/kubectl/dns-example/dns-example.yaml
+
 
 #### 软件架构
 软件架构说明

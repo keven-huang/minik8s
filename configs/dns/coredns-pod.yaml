@@ -12,7 +12,7 @@ spec:
       command: ["-conf", "/etc/coredns/Corefile"]
       ports:
         - name: http
-          containerPort: 53
+          containerPort: "53"
       volumeMounts:
         - name: volume-coredns
           mountPath: /etc/coredns

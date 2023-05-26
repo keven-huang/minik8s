@@ -19,30 +19,795 @@ connect to etcd success...
 [GIN-debug] PUT    /api/v1/services          --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func2 (3 handlers)
 [GIN-debug] POST   /api/v1/services          --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func3 (3 handlers)
 [GIN-debug] DELETE /api/v1/services          --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func4 (3 handlers)
+[GIN-debug] GET    /api/v1/dns               --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func1 (3 handlers)
+[GIN-debug] PUT    /api/v1/dns               --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func2 (3 handlers)
+[GIN-debug] POST   /api/v1/dns               --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func3 (3 handlers)
+[GIN-debug] DELETE /api/v1/dns               --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func4 (3 handlers)
 [GIN-debug] PUT    /api/v1/replicasets       --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func2 (3 handlers)
 [GIN-debug] GET    /watch/*resource          --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func1 (3 handlers)
 [GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
 Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
 [GIN-debug] Listening and serving HTTP on :8080
 [api-server] [podHandler] [GetPod]
-[GIN] 2023/05/23 - 09:34:40 | 200 |    3.452664ms |       127.0.0.1 | GET      "/api/v1/pods?all=true"
-[GIN] 2023/05/23 - 09:34:40 | 200 |    4.216865ms |       127.0.0.1 | GET      "/api/v1/nodes?all=true"
+[GIN] 2023/05/25 - 15:46:57 | 200 |   62.843445ms |       127.0.0.1 | GET      "/api/v1/pods?all=true"
+[GIN] 2023/05/25 - 15:46:57 | 200 |     777.996µs |       127.0.0.1 | GET      "/api/v1/nodes?all=true"
 path: /watch/api/v1/pods
 key: /api/v1/pods
 in sender
-[api-server] [ServiceHandler] [GetService]
-[GIN] 2023/05/23 - 09:34:40 | 200 |     671.479µs |       127.0.0.1 | GET      "/api/v1/services?all=true"
-path: /watch/api/v1/services
-key: /api/v1/services
-in sender
-[api-server] [ServiceHandler] [GetService]
-[GIN] 2023/05/23 - 09:34:40 | 200 |     882.685µs |       127.0.0.1 | GET      "/api/v1/services?all=true"
-path: /watch/api/v1/services
-key: /api/v1/services
-in sender
-[GIN] 2023/05/23 - 09:34:41 | 200 |   16.125771ms |       127.0.0.1 | PUT      "/api/v1/nodes"
+[GIN] 2023/05/25 - 15:46:57 | 200 |   12.900975ms |       127.0.0.1 | PUT      "/api/v1/nodes"
 [api-server] [podHandler] [GetPod]
-[GIN] 2023/05/23 - 09:34:41 | 200 |     901.278µs |       127.0.0.1 | GET      "/api/v1/pods?all=true"
+[GIN] 2023/05/25 - 15:46:57 | 200 |     778.769µs |       127.0.0.1 | GET      "/api/v1/pods?all=true"
 path: /watch/api/v1/pods
 key: /api/v1/pods
 in sender
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:46:57 | 200 |   10.054644ms |       127.0.0.1 | GET      "/api/v1/services?all=true"
+[DnsHandler] [GetDNS]
+[warning] should be only one dns config
+[GIN] 2023/05/25 - 15:46:57 | 200 |    1.823055ms |       127.0.0.1 | GET      "/api/v1/dns?all=true"
+path: /watch/api/v1/services
+key: /api/v1/services
+in sender
+path: /watch/api/v1/dns
+key: /api/v1/dns
+in sender
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:46:58 | 200 |     908.056µs |       127.0.0.1 | GET      "/api/v1/services?all=true"
+[DnsHandler] [GetDNS]
+[warning] should be only one dns config
+[GIN] 2023/05/25 - 15:46:58 | 200 |   20.134032ms |       127.0.0.1 | GET      "/api/v1/dns?all=true"
+[api-server] [ServiceHandler] [GetService]
+path: /watch/api/v1/services
+key: /api/v1/services
+in sender
+[GIN] 2023/05/25 - 15:46:58 | 200 |     1.05448ms |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[GIN] 2023/05/25 - 15:46:58 | 200 |   22.782585ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+1 309 309
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+1 309 309
+----------
+[api-server] [watch] send watch response
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+1 310 310
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+[GIN] 2023/05/25 - 15:47:03 | 200 |    8.869574ms |       127.0.0.1 | POST     "/api/v1/services"
+1 310 310
+----------
+[api-server] [watch] send watch response
+[api-server] [podHandler] [GetPod]
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:47:03 | 200 |    3.945714ms |       127.0.0.1 | GET      "/api/v1/pods?all=true"
+[GIN] 2023/05/25 - 15:47:03 | 200 |    2.469759ms |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[api-server] [podHandler] [GetPod]
+[GIN] 2023/05/25 - 15:47:03 | 200 |     1.37929ms |       127.0.0.1 | GET      "/api/v1/pods?all=true"
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"NoOKPodsWhenInit","phase":"error"}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+2 309 311
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:47:03 | 200 |    8.387283ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+2 309 311
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:47:03 | 200 |   12.020348ms |       127.0.0.1 | POST     "/api/v1/services"
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+2 310 312
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+2 310 312
+----------
+[api-server] [watch] send watch response
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+3 310 313
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+3 310 313
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:47:08 | 200 |    7.045496ms |       127.0.0.1 | POST     "/api/v1/services"
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:47:08 | 200 |     831.888µs |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[GIN] 2023/05/25 - 15:47:08 | 200 |    6.782757ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+3 309 314
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+3 309 314
+----------
+[api-server] [watch] send watch response
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+4 310 315
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:47:13 | 200 |   49.593553ms |       127.0.0.1 | POST     "/api/v1/services"
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+4 310 315
+----------
+[api-server] [watch] send watch response
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:47:13 | 200 |    1.329962ms |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+4 309 316
+----------
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+4 309 316
+[api-server] [watch] send watch response
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:47:13 | 200 |    6.640104ms |       127.0.0.1 | POST     "/api/v1/pods"
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+5 310 317
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+5 310 317
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:47:18 | 200 |   32.618377ms |       127.0.0.1 | POST     "/api/v1/services"
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:47:18 | 200 |    1.054259ms |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[GIN] 2023/05/25 - 15:47:18 | 200 |   12.319162ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+5 309 318
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+5 309 318
+----------
+[api-server] [watch] send watch response
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[GIN] 2023/05/25 - 15:47:23 | 200 |    7.572599ms |       127.0.0.1 | POST     "/api/v1/services"
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+6 310 319
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+6 310 319
+----------
+[api-server] [watch] send watch response
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:47:23 | 200 |     798.771µs |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+6 309 320
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+6 309 320
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:47:23 | 200 |    5.724502ms |       127.0.0.1 | POST     "/api/v1/pods"
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+7 310 321
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+7 310 321
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:47:28 | 200 |   11.156899ms |       127.0.0.1 | POST     "/api/v1/services"
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:47:28 | 200 |     950.406µs |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+7 309 322
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:47:28 | 200 |    5.319754ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+7 309 322
+----------
+[api-server] [watch] send watch response
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[GIN] 2023/05/25 - 15:47:33 | 200 |   35.325817ms |       127.0.0.1 | POST     "/api/v1/services"
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+8 310 323
+----------
+[api-server] [watch] send watch response
+8 310 323
+----------
+[api-server] [watch] send watch response
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:47:33 | 200 |     823.239µs |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+8 309 324
+----------
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+8 309 324
+----------
+[api-server] [watch] send watch response
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:47:33 | 200 |    7.486047ms |       127.0.0.1 | POST     "/api/v1/pods"
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+9 310 325
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:47:38 | 200 |   10.138758ms |       127.0.0.1 | POST     "/api/v1/services"
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+9 310 325
+----------
+[api-server] [watch] send watch response
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:47:38 | 200 |    17.84768ms |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+9 309 326
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:47:38 | 200 |    6.299309ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+9 309 326
+----------
+[api-server] [watch] send watch response
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+10 310 327
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+10 310 327
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:47:43 | 200 |    6.806581ms |       127.0.0.1 | POST     "/api/v1/services"
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:47:43 | 200 |     852.114µs |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+10 309 328
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:47:43 | 200 |    5.119616ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+10 309 328
+----------
+[api-server] [watch] send watch response
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+11 310 329
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:47:48 | 200 |     6.52047ms |       127.0.0.1 | POST     "/api/v1/services"
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+11 310 329
+----------
+[api-server] [watch] send watch response
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:47:48 | 200 |     731.518µs |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+11 309 330
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+11 309 330
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:47:48 | 200 |    8.041762ms |       127.0.0.1 | POST     "/api/v1/pods"
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+12 310 331
+----------
+[GIN] 2023/05/25 - 15:47:53 | 200 |   17.449942ms |       127.0.0.1 | POST     "/api/v1/services"
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+12 310 331
+----------
+[api-server] [watch] send watch response
+[api-server] [watch] send watch response
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:47:53 | 200 |     968.939µs |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+12 309 332
+----------
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+12 309 332
+----------
+[api-server] [watch] send watch response
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:47:53 | 200 |    6.118832ms |       127.0.0.1 | POST     "/api/v1/pods"
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+13 310 333
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:47:58 | 200 |    9.760859ms |       127.0.0.1 | POST     "/api/v1/services"
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+13 310 333
+----------
+[api-server] [watch] send watch response
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:47:58 | 200 |     876.367µs |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+13 309 334
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:47:58 | 200 |    5.399702ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+13 309 334
+----------
+[api-server] [watch] send watch response
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+14 310 335
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:48:03 | 200 |   34.003462ms |       127.0.0.1 | POST     "/api/v1/services"
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+14 310 335
+----------
+[api-server] [watch] send watch response
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:48:03 | 200 |   19.924151ms |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+14 309 336
+----------
+[GIN] 2023/05/25 - 15:48:03 | 200 |   17.094822ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+14 309 336
+----------
+[api-server] [watch] send watch response
+[api-server] [watch] send watch response
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+15 310 337
+----------
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+15 310 337
+----------
+[api-server] [watch] send watch response
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:48:08 | 200 |    7.412063ms |       127.0.0.1 | POST     "/api/v1/services"
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:48:08 | 200 |      945.25µs |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[GIN] 2023/05/25 - 15:48:08 | 200 |    5.478424ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+15 309 338
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+15 309 338
+----------
+[api-server] [watch] send watch response
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+16 310 339
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:48:13 | 200 |   19.382088ms |       127.0.0.1 | POST     "/api/v1/services"
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+16 310 339
+----------
+[api-server] [watch] send watch response
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:48:13 | 200 |     812.901µs |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[GIN] 2023/05/25 - 15:48:13 | 200 |    5.352983ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+16 309 340
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+16 309 340
+----------
+[api-server] [watch] send watch response
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[GIN] 2023/05/25 - 15:48:18 | 200 |   19.967614ms |       127.0.0.1 | POST     "/api/v1/services"
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+17 310 341
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+17 310 341
+----------
+[api-server] [watch] send watch response
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:48:18 | 200 |     940.119µs |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+17 309 342
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:48:18 | 200 |    6.073142ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+17 309 342
+----------
+[api-server] [watch] send watch response
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[GIN] 2023/05/25 - 15:48:23 | 200 |    8.521742ms |       127.0.0.1 | POST     "/api/v1/services"
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+18 310 343
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+18 310 343
+----------
+[api-server] [watch] send watch response
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:48:23 | 200 |     806.496µs |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+18 309 344
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+18 309 344
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:48:23 | 200 |   10.187514ms |       127.0.0.1 | POST     "/api/v1/pods"
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+19 310 345
+----------
+[GIN] 2023/05/25 - 15:48:28 | 200 |    7.520049ms |       127.0.0.1 | POST     "/api/v1/services"
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+19 310 345
+----------
+[api-server] [watch] send watch response
+[api-server] [watch] send watch response
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:48:28 | 200 |   14.875254ms |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+19 309 346
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+19 309 346
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:48:28 | 200 |    9.364472ms |       127.0.0.1 | POST     "/api/v1/pods"
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+20 310 347
+----------
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+20 310 347
+----------
+[api-server] [watch] send watch response
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:48:33 | 200 |    7.651476ms |       127.0.0.1 | POST     "/api/v1/services"
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:48:33 | 200 |     751.129µs |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+20 309 348
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:48:33 | 200 |   17.981626ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+20 309 348
+----------
+[api-server] [watch] send watch response
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[GIN] 2023/05/25 - 15:48:38 | 200 |    7.175635ms |       127.0.0.1 | POST     "/api/v1/services"
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+21 310 349
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+21 310 349
+----------
+[api-server] [watch] send watch response
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:48:38 | 200 |     744.059µs |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+21 309 350
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+21 309 350
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:48:38 | 200 |    7.177654ms |       127.0.0.1 | POST     "/api/v1/pods"
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+22 310 351
+----------
+[GIN] 2023/05/25 - 15:48:43 | 200 |     7.05929ms |       127.0.0.1 | POST     "/api/v1/services"
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+22 310 351
+----------
+[api-server] [watch] send watch response
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:48:43 | 200 |      681.91µs |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[GIN] 2023/05/25 - 15:48:43 | 200 |    5.506672ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+22 309 352
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+22 309 352
+----------
+[api-server] [watch] send watch response
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+23 310 353
+----------
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+23 310 353
+----------
+[api-server] [watch] send watch response
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:48:48 | 200 |   10.771046ms |       127.0.0.1 | POST     "/api/v1/services"
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:48:48 | 200 |     922.459µs |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+23 309 354
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:48:48 | 200 |    6.883869ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+23 309 354
+----------
+[api-server] [watch] send watch response
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+24 310 355
+----------
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+24 310 355
+----------
+[api-server] [watch] send watch response
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:48:53 | 200 |    5.861047ms |       127.0.0.1 | POST     "/api/v1/services"
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:48:53 | 200 |     774.312µs |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[GIN] 2023/05/25 - 15:48:53 | 200 |    19.15903ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+24 309 356
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+24 309 356
+----------
+[api-server] [watch] send watch response
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[GIN] 2023/05/25 - 15:48:58 | 200 |   11.854828ms |       127.0.0.1 | POST     "/api/v1/services"
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+25 310 357
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+25 310 357
+----------
+[api-server] [watch] send watch response
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:48:58 | 200 |     1.39313ms |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+25 309 358
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:48:58 | 200 |    6.652902ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+25 309 358
+----------
+[api-server] [watch] send watch response
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+26 310 359
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+26 310 359
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:49:03 | 200 |   20.796992ms |       127.0.0.1 | POST     "/api/v1/services"
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:49:03 | 200 |     841.338µs |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+26 309 360
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:49:03 | 200 |    6.649022ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+26 309 360
+----------
+[api-server] [watch] send watch response
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+27 310 361
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:49:08 | 200 |    6.941837ms |       127.0.0.1 | POST     "/api/v1/services"
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+27 310 361
+----------
+[api-server] [watch] send watch response
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:49:08 | 200 |     768.663µs |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[GIN] 2023/05/25 - 15:49:09 | 200 |    7.427294ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+27 309 362
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+27 309 362
+----------
+[api-server] [watch] send watch response
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+28 310 363
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:49:14 | 200 |    7.825668ms |       127.0.0.1 | POST     "/api/v1/services"
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+28 310 363
+----------
+[api-server] [watch] send watch response
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:49:14 | 200 |     629.914µs |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[GIN] 2023/05/25 - 15:49:14 | 200 |    17.94093ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+28 309 364
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+28 309 364
+----------
+[api-server] [watch] send watch response
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+29 310 365
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:49:19 | 200 |   12.879898ms |       127.0.0.1 | POST     "/api/v1/services"
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+29 310 365
+----------
+[api-server] [watch] send watch response
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:49:19 | 200 |     681.079µs |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+29 309 366
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+29 309 366
+----------
+[GIN] 2023/05/25 - 15:49:19 | 200 |    7.703265ms |       127.0.0.1 | POST     "/api/v1/pods"
+[api-server] [watch] send watch response
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+30 310 367
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:49:24 | 200 |   16.224816ms |       127.0.0.1 | POST     "/api/v1/services"
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+30 310 367
+----------
+[api-server] [watch] send watch response
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:49:24 | 200 |     695.344µs |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[GIN] 2023/05/25 - 15:49:24 | 200 |    6.008236ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+30 309 368
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+30 309 368
+----------
+[api-server] [watch] send watch response
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+31 310 369
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:49:29 | 200 |    8.887691ms |       127.0.0.1 | POST     "/api/v1/services"
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+31 310 369
+----------
+[api-server] [watch] send watch response
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:49:29 | 200 |    1.460413ms |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+31 309 370
+----------
+[api-server] [watch] send watch response
+31 309 370
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:49:29 | 200 |    8.222139ms |       127.0.0.1 | POST     "/api/v1/pods"
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+32 310 371
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:49:34 | 200 |    8.672788ms |       127.0.0.1 | POST     "/api/v1/services"
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+32 310 371
+----------
+[api-server] [watch] send watch response
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:49:34 | 200 |     983.468µs |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[GIN] 2023/05/25 - 15:49:34 | 200 |   17.334598ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+32 309 372
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+32 309 372
+----------
+[api-server] [watch] send watch response
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[GIN] 2023/05/25 - 15:49:39 | 200 |    8.148082ms |       127.0.0.1 | POST     "/api/v1/services"
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+33 310 373
+----------
+[api-server] [watch] send watch response
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+33 310 373
+----------
+[api-server] [watch] send watch response
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:49:39 | 200 |    1.259729ms |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[GIN] 2023/05/25 - 15:49:39 | 200 |    6.381591ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+33 309 374
+----------
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+33 309 374
+----------
+[api-server] [watch] send watch response
+[api-server] [watch] send watch response
+[serviceHandler][UpdateService]:key:/api/v1/services/coreDNS
+[serviceHandler][UpdateService]:value:{"metadata":{"name":"coreDNS","creationTimestamp":null},"spec":{"name":"","selector":{"app":"coreDNS"},"type":"","ports":[{"protocol":"all","port":"53","targetPort":"53"}],"clusterIP":"12.1.1.1","status":{"err":"","phase":""}},"podNameAndIps":null}
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+34 310 375
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:49:44 | 200 |    6.841582ms |       127.0.0.1 | POST     "/api/v1/services"
+[etcd] etcd have watched  /api/v1/services/coreDNS   PUT
+34 310 375
+----------
+[api-server] [watch] send watch response
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/25 - 15:49:44 | 200 |     843.888µs |       127.0.0.1 | GET      "/api/v1/services?Name=coreDNS"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+34 309 376
+----------
+[api-server] [watch] send watch response
+[GIN] 2023/05/25 - 15:49:44 | 200 |    5.923606ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/coreDNS   PUT
+34 309 376
+----------
+[api-server] [watch] send watch response

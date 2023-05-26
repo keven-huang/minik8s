@@ -13,7 +13,6 @@ import (
 	"minik8s/pkg/kubelet/dockerClient"
 	"os"
 	"os/exec"
-	"strconv"
 	"strings"
 )
 
@@ -58,11 +57,13 @@ func (DNSManager *DNSManager) UpdateDNSHandler(event tool.Event) {
 			DNSManager.writeNginx(dns)
 			DNSManager.reloadNginx(dns)
 			DNSManager.writeCoreDNS()
+			reloadCoreDNS()
 			break
 		}
 	}
 }
 
+// TODO why it's useless?
 func (DNSManager *DNSManager) DeleteDNSHandler(event tool.Event) {
 	prefix := "[DNSManager][DeleteDNSHandler]"
 	fmt.Println(prefix + "key: " + event.Key)
@@ -72,6 +73,7 @@ func (DNSManager *DNSManager) DeleteDNSHandler(event tool.Event) {
 	} else {
 		delete(DNSManager.Key2Dns, event.Key)
 		DNSManager.writeCoreDNS()
+		reloadCoreDNS()
 		DNSManager.deleteDir(dns.Metadata.Name)
 	}
 }
@@ -86,12 +88,14 @@ func (DNSManager *DNSManager) writeNginx(dns *core.DNS) {
 	prefix := "[DNSManager][WriteNginx]"
 	fmt.Println(prefix + "in")
 	var data []string
+	data = append(data, "user  root;")
+	data = append(data, "worker_processes  1;")
 	data = append(data, "events {")
 	data = append(data, "    worker_connections 1024;")
 	data = append(data, "}")
 	data = append(data, "http {")
 	data = append(data, "    server {", "        listen 80;")
-	data = append(data, fmt.Sprintf("        server_name %s;", dns.Spec.Host)) // it can be deleted maybe
+	//data = append(data, fmt.Sprintf("        server_name %s;", dns.Spec.Host)) // it can be deleted maybe
 	data = append(data, DNSManager.generateConfig(dns)...)
 	data = append(data, "    }")
 	data = append(data, "}")
@@ -119,7 +123,9 @@ func (DNSManager *DNSManager) generateConfig(dns *core.DNS) []string {
 	var res []string
 	for _, v := range dns.Spec.Paths {
 		res = append(res, fmt.Sprintf("        location %s {", v.Name))
-		res = append(res, fmt.Sprintf("            proxy_pass http://%s:%s;", v.Ip, v.Port))
+		if v.Ip != "" {
+			res = append(res, fmt.Sprintf("            proxy_pass http://%s:%s/;", v.Ip, v.Port))
+		}
 		res = append(res, "        }")
 	}
 	return res
@@ -166,11 +172,11 @@ func (DNSManager *DNSManager) writeCoreDNS() {
 	for _, v := range DNSManager.Key2Dns {
 		if v.Status == core.ServiceCreatedStatus {
 			cur := v.Spec.GatewayIp + " " + v.Spec.Host
-			n, err := fmt.Fprintln(writer, cur)
+			_, err := fmt.Fprintln(writer, cur)
 			if err != nil {
 				fmt.Println(prefix + err.Error())
 			} else {
-				fmt.Println(prefix + " success add " + strconv.Itoa(n) + "mappings")
+				fmt.Println(prefix + " success add mappings" + v.Spec.GatewayIp + ":" + v.Spec.Host)
 			}
 		}
 	}
@@ -181,10 +187,38 @@ func (DNSManager *DNSManager) writeCoreDNS() {
 	return
 }
 
+func reloadCoreDNS() {
+	prefix := "[DNSManager][reloadCoreDNS]"
+	fmt.Println(prefix + "in")
+	cons, err := dockerClient.GetAllContainers()
+	if err != nil {
+		fmt.Println(prefix + err.Error())
+		return
+	}
+	var ids []string
+	for _, val := range cons {
+		// TODO names
+		if strings.Contains(val.Names[0], configs.CoreDNSPodName) {
+			ids = append(ids, val.ID)
+		}
+	}
+	// reload corresponding container
+	for _, id := range ids {
+		fmt.Println(prefix + "reloading..")
+		args := fmt.Sprintf("exec %s /coredns -conf /etc/coredns/Corefile", id)
+		res, err := execCommand("docker", args)
+		if err != nil {
+			fmt.Println(prefix + err.Error())
+		} else {
+			fmt.Println(res)
+		}
+	}
+}
+
 func (DNSManager *DNSManager) reloadNginx(dns *core.DNS) {
 	prefix := "[DNSManager][reloadNginx]"
 	fmt.Println(prefix + "in")
-	cons, err := dockerClient.GetRunningContainers()
+	cons, err := dockerClient.GetAllContainers()
 	if err != nil {
 		fmt.Println(prefix + err.Error())
 		return

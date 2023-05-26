@@ -46,8 +46,8 @@ type VolumeMount struct {
 }
 
 type Port struct {
-	Protocol   string // tcp, udp
-	PortNumber string // number
+	Protocol   string `json:"protocol" yaml:"protocol"`           // tcp, udp
+	PortNumber string `json:"containerPort" yaml:"containerPort"` // number
 }
 
 type Limit struct {
@@ -558,7 +558,7 @@ const (
 
 type DNSSpec struct {
 	Host      string `yaml:"host" json:"host"`           // host name, domain name
-	GatewayIp string `yaml:"gatewayIp" json:"gatewayIp"` // gatway ip, it's nginx serviceIp, waiting for be updated
+	GatewayIp string `yaml:"gatewayIp" json:"gatewayIp"` // gatway ip, it's nginx serviceIp
 	Paths     []Path `json:"paths" yaml:"paths"`
 }
 

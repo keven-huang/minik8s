@@ -4,6 +4,7 @@ metadata:
   name: testDns
 spec:
   host: hanjinbo.com
+  gatewayIp: 13.1.1.1
   paths:
     - name: /path1
       service: service1

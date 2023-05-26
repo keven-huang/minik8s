@@ -23,8 +23,12 @@ type ServiceManager struct {
 	// Informer for dns
 	DNSInformer informer.Informer
 	// mapping from dns-config-name -> dns data structure
-	// used for delete...
+	// used for checking nginx status
+	// nginx配好之后会被删掉
 	name2DNS map[string]*core.DNS
+	// event.key -> dns
+	// 用于删除
+	dnsCache map[string]*core.DNS
 	// lock
 	lock sync.RWMutex
 }
@@ -35,6 +39,7 @@ func NewServiceManager() *ServiceManager {
 	res.lock = lock
 	res.ServiceMapping = make(map[string]*RuntimeService)
 	res.name2DNS = make(map[string]*core.DNS)
+	res.dnsCache = make(map[string]*core.DNS)
 	// 初始化serviceInformer
 	res.ServiceInformer = informer.NewInformer(apiconfig.SERVICE_PATH)
 	// 初始化 DNSInformer
@@ -80,6 +85,7 @@ func NewServiceManager() *ServiceManager {
 	// TODO DNS-informer
 	res.DNSInformer.AddEventHandler(tool.Added, res.DNSUpdateHandler)
 	res.DNSInformer.AddEventHandler(tool.Modified, res.DNSUpdateHandler)
+	res.DNSInformer.AddEventHandler(tool.Deleted, res.DNSDeleteHandler)
 
 	return res
 }
@@ -96,31 +102,44 @@ func (sm *ServiceManager) DNSUpdateHandler(event tool.Event) {
 	if dns.Status == core.FileCreatedStatus {
 		fmt.Println(prefix + "is file created status")
 		err = tool.AddPod(GetGatewayPodSingleton(dns.Metadata.Name)) // create specific GatewayPod
+		time.Sleep(10 * time.Second)
 		if err != nil {
 			fmt.Println(prefix + err.Error())
 			return
 		}
-		err = tool.UpdateService(GetGatewayServiceSingleton(dns.Metadata.Name)) // create Specific GatewayService
+		err = tool.UpdateService(GetGatewayServiceSingleton(dns)) // create Specific GatewayService
 		if err != nil {
 			fmt.Println(prefix + err.Error())
 			return
 		}
+		time.Sleep(10 * time.Second)
 		sm.lock.Lock()
 		sm.name2DNS[dns.Metadata.Name] = dns
+		sm.dnsCache[event.Key] = dns
 		sm.lock.Unlock()
 	}
-	if dns.Status == core.DeletedStatus {
-		fmt.Println(prefix + "is deleted status")
-		err = tool.DeleteService(GetGatewayServiceSingleton(dns.Metadata.Name))
+}
+
+func (sm *ServiceManager) DNSDeleteHandler(event tool.Event) {
+	prefix := "[ServiceManager][DNSDeleteHandler]"
+	fmt.Println(prefix + "key:" + event.Key)
+	dns, ok := sm.dnsCache[event.Key]
+	if !ok {
+		fmt.Println(prefix + "not found such service!")
+		return
+	} else {
+		err := tool.DeleteService(GetGatewayServiceSingleton(dns))
 		if err != nil {
 			fmt.Println(prefix + err.Error())
 			return
 		}
-		err = tool.DeletePod(dns.Metadata.Name)
+		time.Sleep(5 * time.Second)
+		err = tool.DeletePod(kube_proxy.GatewayPodPrefix + dns.Metadata.Name)
 		if err != nil {
 			fmt.Println(prefix + err.Error())
 			return
 		}
+		delete(sm.dnsCache, event.Key)
 	}
 }
 
@@ -149,7 +168,7 @@ func InitCoreDNS() {
 		time.Sleep(10 * time.Second)
 		// create coreDNS service
 		err = tool.UpdateService(GetCoreDNSServiceSingleton())
-		time.Sleep(15 * time.Second)
+		time.Sleep(10 * time.Second)
 		if err != nil {
 			fmt.Println(prefix + err.Error())
 			return
@@ -182,7 +201,21 @@ func (sm *ServiceManager) checkNginx() {
 			if res.ServiceSpec.Status.Phase == service.ServiceRunningPhase { // the nginx is running
 				fmt.Println(prefix + "key=" + k + "nginx service created!")
 				v.Status = core.ServiceCreatedStatus
+				fmt.Println(prefix + "Host=" + v.Spec.Host + "NginxIp=" + res.ServiceSpec.ClusterIP)
 				v.Spec.GatewayIp = res.ServiceSpec.ClusterIP
+				for k, p := range v.Spec.Paths {
+					//svc := sm.ServiceMapping[p.Service]
+					svc, err := tool.GetService(p.Service)
+					if err != nil {
+						fmt.Println(prefix + err.Error())
+						return
+					}
+					if svc == nil {
+						fmt.Println(prefix + "Not get such service name's ip: " + p.Service)
+						continue
+					}
+					v.Spec.Paths[k].Ip = svc.ServiceSpec.ClusterIP // set ip
+				}
 				err = tool.UpdateDNS(v)
 				if err != nil {
 					fmt.Println(prefix + err.Error())

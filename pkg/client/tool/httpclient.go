@@ -256,7 +256,7 @@ func UpdateDNS(dns *core.DNS) error {
 
 // TODO 讨论确定一下api-sver的rest-api用法
 func DeleteService(service *service.Service) error {
-	url := apiconfig.Server_URL + apiconfig.SERVICE_PATH + "/" + service.ServiceMeta.Name
+	url := apiconfig.Server_URL + apiconfig.SERVICE_PATH + "?ServiceName=" + service.ServiceMeta.Name
 	fmt.Println("[tool][deleteService]: url=" + url)
 	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {

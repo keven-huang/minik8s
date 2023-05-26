@@ -12,7 +12,8 @@ spec:
     - name: gatewayContainerToBeReplaced
       image: nginx
       ports:
-        - containerPort: 80
+        - containerPort: "80"
+          protocol: tcp
       volumeMounts:
         - name: config
           mountPath: /etc/nginx
