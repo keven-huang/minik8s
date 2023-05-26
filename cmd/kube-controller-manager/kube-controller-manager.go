@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	hpacontroller "minik8s/pkg/kube-controller/hpa-controller"
 	jobcontroller "minik8s/pkg/kube-controller/job-controller"
 	"minik8s/pkg/kube-controller/replicaset-controller"
 )
@@ -22,8 +23,15 @@ func RunJobController() {
 	jobconroller.Run()
 }
 
+func RunHpaController() {
+	hpaController := hpacontroller.NewHPAController()
+	hpaController.Register()
+	hpaController.Run()
+}
+
 func main() {
 	go RunReplicaSetController()
 	go RunJobController()
+	go RunHpaController()
 	select {}
 }

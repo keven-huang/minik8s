@@ -5,7 +5,7 @@ metadata:
 spec:
   scaleTargetRef:
     kind: ReplicaSet
-    name: my-replicaset-test
+    name: my-replicaset
   minReplicas: 2
   maxReplicas: 10
   periodSeconds: 10
@@ -13,4 +13,4 @@ spec:
   -  name: cpu
      target:
       type: Utilization
-      value: 70
+      value: 30
