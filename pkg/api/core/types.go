@@ -557,6 +557,7 @@ type HPASpec struct {
 	ScaleTargetRef HPARef       `json:"scaleTargetRef" yaml:"scaleTargetRef"`
 	MinReplicas    int32        `json:"minReplicas,omitempty" yaml:"minReplicas,omitempty"`
 	MaxReplicas    int32        `json:"maxReplicas" yaml:"maxReplicas"`
+	PeriodSeconds  int32        `json:"periodSeconds,omitempty" yaml:"periodSeconds,omitempty"`
 	Metrics        []MetricSpec `json:"metrics,omitempty" yaml:"metrics,omitempty"`
 }
 
