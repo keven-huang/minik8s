@@ -10,7 +10,7 @@ spec:
     - name: cpu_stress_container
       image: busybox
 #      entryPoint: ["/bin/sh"]
-      command: ["timeout", "60s", "/bin/sh", "-c", "while true; do :; done"]
+      command: ["timeout", "300s", "/bin/sh", "-c", "while true; do :; done"]
       limitResource:
           cpu: "1"
           memory: "128Mi"
