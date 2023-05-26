@@ -72,32 +72,49 @@ func updateReplicaSetToServer(hpac *HPAController, replica *core.ReplicaSet, key
 	return nil
 }
 
-func Scale(hpac *HPAController, r *core.ReplicaSet, r_key string, from int32, to int32, t int32) error {
-	fmt.Println("[HPA] [Scale] from: ", from, " to: ", to, " t: ", t, " r.Name: ", r.Name)
-	if from < to {
-		for i := from + 1; i <= to; i++ {
-			*r.Spec.Replicas = i
-			//更新ReplicaSet
-			err := updateReplicaSetToServer(hpac, r, r_key, "[HPA] [Scale] [updateReplicaSetToServer]")
-			if err != nil {
-				fmt.Println("[HPA] [Scale] [updateReplicaSetToServer] err: ", err)
-				return err
-			}
-			time.Sleep(time.Duration(t) * time.Second)
-		}
-	} else if from > to {
-		for i := from - 1; i >= to; i-- {
-			*r.Spec.Replicas = i
-			//更新ReplicaSet
-			err := updateReplicaSetToServer(hpac, r, r_key, "[HPA] [Scale] [updateReplicaSetToServer]")
-			if err != nil {
-				fmt.Println("[HPA] [Scale] [updateReplicaSetToServer] err: ", err)
-				return err
-			}
-			time.Sleep(time.Duration(t) * time.Second)
-		}
+func getReplicaSet(hpac *HPAController, key string) (*core.ReplicaSet, error) {
+	data := hpac.ReplicasetInformer.Get(key)
+	replica := &core.ReplicaSet{}
+	err := json.Unmarshal([]byte(data), replica)
+	if err != nil {
+		return nil, err
 	}
+	return replica, nil
+}
 
+func Scale(hpac *HPAController, r_key string, to int32, t int32) error {
+	fmt.Println("[HPA] [Scale] to: ", to, " t: ", t)
+	var last int32 = -1
+	for {
+		r, err := getReplicaSet(hpac, r_key)
+		if err != nil {
+			fmt.Println("[HPA] [Scale] [getReplicaSet] err: ", err)
+			return err
+		}
+		if !(last == -1 || last == r.Status.Replicas) {
+			fmt.Println("[HPA] [Scale] [last != r.Status.Replicas] last: ", last, " r.Status.Replicas: ", r.Status.Replicas)
+			time.Sleep(3 * time.Second)
+			continue
+		}
+		if *r.Spec.Replicas == to {
+			break
+		}
+
+		fmt.Println("[HPA] [Scale] now: ", *r.Spec.Replicas, " r.Name ", r.Name, " to:", to)
+		if *r.Spec.Replicas < to {
+			*r.Spec.Replicas = *r.Spec.Replicas + 1
+		} else if *r.Spec.Replicas > to {
+			*r.Spec.Replicas = *r.Spec.Replicas - 1
+		}
+		last = *r.Spec.Replicas
+		//更新ReplicaSet
+		err = updateReplicaSetToServer(hpac, r, r_key, "[HPA] [Scale] [updateReplicaSetToServer]")
+		if err != nil {
+			fmt.Println("[HPA] [Scale] [updateReplicaSetToServer] err: ", err)
+			return err
+		}
+		time.Sleep(time.Duration(t) * time.Second)
+	}
 	return nil
 }
 
@@ -222,7 +239,7 @@ func worker(hpac *HPAController) {
 
 			go func() {
 				hpac.mark[hpa.Name] = true
-				err := Scale(hpac, r, r_key, r.Status.Replicas, int32(newReplicas), hpa.Spec.PeriodSeconds)
+				err := Scale(hpac, r_key, int32(newReplicas), hpa.Spec.PeriodSeconds)
 				if err != nil {
 					fmt.Println("[HPA] [worker] [Scale] err: ", err)
 				}
