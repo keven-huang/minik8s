@@ -39,7 +39,8 @@ func HandlerPodRequest(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	queryParams := r.URL.Query()
-	podName := queryParams.Get("podName")
+	podName := queryParams.Get("Name")
+	fmt.Println("[kubelet][monitor] podName:", podName)
 
 	pod, err := tool.GetPod(podName)
 	if err != nil {
@@ -48,6 +49,7 @@ func HandlerPodRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	resp, err := GetPodStats(pod)
+	fmt.Println("[kubelet][monitor] GetPodStats", resp)
 	if err != nil {
 		fmt.Println("[kubelet][monitor] GetPodStats error:", err)
 		w.WriteHeader(http.StatusNotFound)
@@ -67,8 +69,8 @@ func GetPodStats(pod *core.Pod) (StatsResponse, error) {
 		}
 		var result types.StatsJSON
 		err = readStats(stats.Body, &result)
-		resp.CPUUtilization = getCPUPercent(&result)
-		resp.MemoryUsage = getMemPercent(&result)
+		resp.CPUUtilization += getCPUPercent(&result)
+		resp.MemoryUsage += getMemPercent(&result)
 		fmt.Printf("CPU Usage: %f\n", resp.CPUUtilization)
 		fmt.Printf("Memory Usage: %f\n", resp.CPUUtilization)
 	}

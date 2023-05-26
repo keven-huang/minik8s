@@ -1,5 +1,6 @@
 [httpclient] [List]  [{3 /api/v1/pods/test5 {"metadata":{"name":"test5","uid":"a63c213f-fdb2-4308-9c70-b003251ff063","generation":1,"creationTimestamp":"2023-05-26T01:22:22Z","labels":{"app":"my-app"}},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"test5-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"1","memory":"128Mi"},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node1"},"status":{"phase":"Running","podIP":"10.0.13.2"}}}]
-[httpclient] [List]  [{5 /api/v1/nodes/node1 {"metadata":{"name":"node1","uid":"7526db22-3ad3-42ca-9abb-09ff52b2e071","creationTimestamp":null},"spec":{"nodeIP":"127.0.0.1"},"status":{}}}]
+[httpclient] [List]  []
+[httpclient] [Watch] start watch
+[httpclient] [List]  []
 [httpclient] [Watch] start watch
 [httpclient] [Watch] start watch
-[httpclient] [Watch] unmarshal: /api/v1/nodes/node1 {"metadata":{"name":"node1","uid":"bfc6789b-67e0-4a99-9879-d0925850641a","creationTimestamp":null},"spec":{"nodeIP":"127.0.0.1"},"status":{}} MODIFIED
