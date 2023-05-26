@@ -9,6 +9,7 @@ import (
 	"minik8s/pkg/client/informer"
 	"minik8s/pkg/client/tool"
 	"minik8s/pkg/kubelet/dockerClient"
+	"minik8s/pkg/kubelet/monitor"
 	"minik8s/pkg/util/file"
 	"minik8s/pkg/util/web"
 	"regexp"
@@ -16,6 +17,7 @@ import (
 )
 
 type Kubelet struct {
+	Monitor     *monitor.Monitor
 	PodInformer informer.Informer
 	node        core.Node
 }
@@ -30,6 +32,7 @@ func NewKubelet(name string, nodeIp string, masterIp string) (*Kubelet, error) {
 		return nil, err
 	}
 	return &Kubelet{
+		Monitor:     monitor.NewMonitor(9400),
 		PodInformer: informer.NewInformer(apiconfig.POD_PATH),
 		node:        node,
 	}, nil
