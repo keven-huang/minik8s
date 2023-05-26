@@ -32,352 +32,78 @@ connect to etcd success...
 [GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
 Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
 [GIN-debug] Listening and serving HTTP on :8080
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/26 - 13:03:06 | 200 |    1.625377ms |       127.0.0.1 | GET      "/api/v1/services?all=true"
+path: /watch/api/v1/services
+key: /api/v1/services
+in sender
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/26 - 13:03:06 | 200 |    1.047414ms |       127.0.0.1 | GET      "/api/v1/services?all=true"
+path: /watch/api/v1/services
+key: /api/v1/services
+in sender
 [api-server] [podHandler] [GetPod]
-[GIN] 2023/05/26 - 12:35:33 | 200 |    1.892381ms |       127.0.0.1 | GET      "/api/v1/pods?all=true"
-[GIN] 2023/05/26 - 12:35:33 | 200 |     579.455µs |       127.0.0.1 | GET      "/api/v1/nodes?all=true"
+[GIN] 2023/05/26 - 13:03:06 | 200 |    1.073062ms |       127.0.0.1 | GET      "/api/v1/pods?all=true"
+[api-server] [podHandler] [GetPod]
+[GIN] 2023/05/26 - 13:03:06 | 200 |     811.963µs |       127.0.0.1 | GET      "/api/v1/jobs?all=true"
+[GIN] 2023/05/26 - 13:03:06 | 200 |    1.046154ms |       127.0.0.1 | GET      "/api/v1/pods?all=true"
+[GIN] 2023/05/26 - 13:03:06 | 200 |     533.111µs |       127.0.0.1 | GET      "/api/v1/nodes?all=true"
+path: /watch/api/v1/jobs
+key: /api/v1/jobs
+in sender
+[api-server] [ReplicaSetHandler] [GetReplicaSet]
 path: /watch/api/v1/pods
 key: /api/v1/pods
 in sender
 path: /watch/api/v1/nodes
 key: /api/v1/nodes
 in sender
-[api-server] [ServiceHandler] [GetService]
-[GIN] 2023/05/26 - 12:35:33 | 200 |     996.437µs |       127.0.0.1 | GET      "/api/v1/services?all=true"
-path: /watch/api/v1/services
-key: /api/v1/services
-in sender
-[api-server] [ServiceHandler] [GetService]
-[GIN] 2023/05/26 - 12:35:33 | 200 |     987.808µs |       127.0.0.1 | GET      "/api/v1/services?all=true"
-path: /watch/api/v1/services
-key: /api/v1/services
-in sender
-[api-server] [podHandler] [GetPod]
-[GIN] 2023/05/26 - 12:35:34 | 200 |     766.361µs |       127.0.0.1 | GET      "/api/v1/pods?all=true"
-[GIN] 2023/05/26 - 12:35:34 | 200 |    1.274929ms |       127.0.0.1 | GET      "/api/v1/jobs?all=true"
-[api-server] [ReplicaSetHandler] [GetReplicaSet]
-[GIN] 2023/05/26 - 12:35:34 | 200 |     400.337µs |       127.0.0.1 | GET      "/api/v1/replicasets?all=true"
-path: /watch/api/v1/jobs
-key: /api/v1/jobs
-in sender
+[GIN] 2023/05/26 - 13:03:06 | 200 |    1.485983ms |       127.0.0.1 | GET      "/api/v1/replicasets?all=true"
 path: /watch/api/v1/replicasets
 key: /api/v1/replicasets
 in sender
 path: /watch/api/v1/pods
 key: /api/v1/pods
 in sender
+[GIN] 2023/05/26 - 13:03:06 | 200 |    6.955565ms |       127.0.0.1 | PUT      "/api/v1/nodes"
 [etcd] etcd have watched  /api/v1/nodes/node1   PUT
-1 243 243
+1 337 337
 ----------
-[GIN] 2023/05/26 - 12:35:34 | 200 |    6.530087ms |       127.0.0.1 | PUT      "/api/v1/nodes"
 [api-server] [podHandler] [GetPod]
-[GIN] 2023/05/26 - 12:35:34 | 200 |     473.497µs |       127.0.0.1 | GET      "/api/v1/pods?all=true"
+[GIN] 2023/05/26 - 13:03:06 | 200 |      759.86µs |       127.0.0.1 | GET      "/api/v1/pods?all=true"
 path: /watch/api/v1/pods
 key: /api/v1/pods
 in sender
-[GIN] 2023/05/26 - 12:35:39 | 404 |         780ns |       127.0.0.1 | GET      "/api/v1/pods/a?all=true"
-path: /watch/api/v1/pods/a
-key: /api/v1/pods/a
-in sender
-[etcd] etcd have watched  /api/v1/replicasets/my-replicaset   PUT
-1 244 244
-----------
-[GIN] 2023/05/26 - 12:35:40 | 200 |   12.774252ms |       127.0.0.1 | PUT      "/api/v1/replicasets"
 In AddPod.
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-76jzw   PUT
-1 245 245
-[GIN] 2023/05/26 - 12:35:43 | 200 |    9.647194ms |       127.0.0.1 | PUT      "/api/v1/pods"
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-76jzw   PUT
-1 245 245
+[GIN] 2023/05/26 - 13:03:32 | 200 |   11.189836ms |       127.0.0.1 | PUT      "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/busy   PUT
+1 338 338
 ----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-76jzw   PUT
-1 245 245
+[etcd] etcd have watched  /api/v1/pods/busy   PUT
+1 338 338
 ----------
+[etcd] etcd have watched  /api/v1/pods/busy   PUT
+1 338 338
 ----------
-In AddPod.
-[GIN] 2023/05/26 - 12:35:43 | 200 |   27.159713ms |       127.0.0.1 | PUT      "/api/v1/pods"
-In AddPod.
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-5dss7   PUT
-1 246 246
+[etcd] etcd have watched  /api/v1/pods/busy   PUT
+2 338 339
 ----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-5dss7   PUT
-1 246 246
+[GIN] 2023/05/26 - 13:03:33 | 200 |    6.644506ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/busy   PUT
+2 338 339
 ----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-5dss7   PUT
-1 246 246
+[etcd] etcd have watched  /api/v1/pods/busy   PUT
+2 338 339
 ----------
-[GIN] 2023/05/26 - 12:35:43 | 200 |     8.05224ms |       127.0.0.1 | PUT      "/api/v1/pods"
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-cfscs   PUT
-1 247 247
+[etcd] etcd have watched  /api/v1/pods/busy   PUT
+3 338 340
 ----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-cfscs   PUT
-1 247 247
+[etcd] etcd have watched  /api/v1/pods/busy   PUT
+3 338 340
 ----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-cfscs   PUT
-1 247 247
+[etcd] etcd have watched  /api/v1/pods/busy   PUT
+3 338 340
 ----------
-[etcd] etcd have watched  /api/v1/replicasets/my-replicaset   PUT
-2 244 248
-----------
-[GIN] 2023/05/26 - 12:35:43 | 200 |    6.746552ms |       127.0.0.1 | POST     "/api/v1/replicasets"
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-76jzw   PUT
-2 245 249
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-76jzw   PUT
-2 245 249
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-76jzw   PUT
-2 245 249
-----------
-[GIN] 2023/05/26 - 12:35:43 | 200 |    7.097167ms |       127.0.0.1 | POST     "/api/v1/pods"
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-5dss7   PUT
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-5dss7   PUT
-2 246 250
-----------
-2 246 250
-----------
-[GIN] 2023/05/26 - 12:35:44 | 200 |   59.960351ms |       127.0.0.1 | POST     "/api/v1/pods"
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-5dss7   PUT
-2 246 250
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-cfscs   PUT
-2 247 251
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-cfscs   PUT
-2 247 251
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-cfscs   PUT
-2 247 251
-----------
-[GIN] 2023/05/26 - 12:35:45 | 200 |  948.914135ms |       127.0.0.1 | POST     "/api/v1/pods"
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-76jzw   PUT
-3 245 252
-----------
-[GIN] 2023/05/26 - 12:35:46 | 200 |   62.451396ms |       127.0.0.1 | POST     "/api/v1/pods"
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-76jzw   PUT
-3 245 252
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-76jzw   PUT
-3 245 252
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-5dss7   PUT
-3 246 253
-----------
-[GIN] 2023/05/26 - 12:35:48 | 200 |     7.50118ms |       127.0.0.1 | POST     "/api/v1/pods"
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-5dss7   PUT
-3 246 253
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-5dss7   PUT
-3 246 253
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-cfscs   PUT
-3 247 254
-----------
-[GIN] 2023/05/26 - 12:35:49 | 200 |    6.743931ms |       127.0.0.1 | POST     "/api/v1/pods"
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-cfscs   PUT
-3 247 254
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-cfscs   PUT
-3 247 254
-----------
-In AddPod.
-[etcd] etcd have watched  /api/v1/pods/test5   PUT
-1 255 255
-----------
-[GIN] 2023/05/26 - 12:35:55 | 200 |    7.956057ms |       127.0.0.1 | PUT      "/api/v1/pods"
-[etcd] etcd have watched  /api/v1/pods/test5   PUT
-1 255 255
-----------
-[etcd] etcd have watched  /api/v1/pods/test5   PUT
-1 255 255
-----------
-[etcd] etcd have watched  /api/v1/pods/test5   PUT
-2 255 256
-----------
-[GIN] 2023/05/26 - 12:35:56 | 200 |    5.970044ms |       127.0.0.1 | POST     "/api/v1/pods"
-[etcd] etcd have watched  /api/v1/pods/test5   PUT
-2 255 256
-----------
-[etcd] etcd have watched  /api/v1/pods/test5   PUT
-2 255 256
-----------
-[etcd] etcd have watched  /api/v1/pods/test5   PUT
-3 255 257
-----------
-[GIN] 2023/05/26 - 12:35:58 | 200 |   20.325688ms |       127.0.0.1 | POST     "/api/v1/pods"
-[etcd] etcd have watched  /api/v1/pods/test5   PUT
-3 255 257
-----------
-[etcd] etcd have watched  /api/v1/pods/test5   PUT
-3 255 257
-----------
-[GIN] 2023/05/26 - 12:35:58 | 200 |     5.51359ms |       127.0.0.1 | POST     "/api/v1/pods"
-[etcd] etcd have watched  /api/v1/pods/test5   PUT
-4 255 258
-----------
-[etcd] etcd have watched  /api/v1/pods/test5   PUT
-4 255 258
-----------
-[etcd] etcd have watched  /api/v1/pods/test5   PUT
-4 255 258
-----------
-[etcd] etcd have watched  /api/v1/replicasets/my-replicaset   PUT
-3 244 259
-----------
-[GIN] 2023/05/26 - 12:35:58 | 200 |    5.110805ms |       127.0.0.1 | POST     "/api/v1/replicasets"
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-5dss7   PUT
-4 246 260
-----------
-[GIN] 2023/05/26 - 12:36:01 | 200 |    7.669422ms |       127.0.0.1 | POST     "/api/v1/pods"
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-5dss7   PUT
-4 246 260
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-5dss7   PUT
-4 246 260
-----------
-[api-server] [podHandler] [DeletePod]
-PodName: my-replicaset-5dss7
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-5dss7   DELETE
-0 0 261
-----------
-[GIN] 2023/05/26 - 12:36:01 | 200 |   10.030191ms |       127.0.0.1 | DELETE   "/api/v1/pods?PodName=my-replicaset-5dss7"
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-5dss7   DELETE
-0 0 261
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-5dss7   DELETE
-0 0 261
-----------
-[etcd] etcd have watched  /api/v1/replicasets/my-replicaset   PUT
-4 244 262
-----------
-[GIN] 2023/05/26 - 12:36:01 | 200 |    5.557898ms |       127.0.0.1 | POST     "/api/v1/replicasets"
-[etcd] etcd have watched  /api/v1/replicasets/my-replicaset   PUT
-5 244 263
-----------
-[GIN] 2023/05/26 - 12:36:01 | 200 |   46.492862ms |       127.0.0.1 | POST     "/api/v1/replicasets"
-[api-server] [podHandler] [DeletePod]
-PodName: test5
-[etcd] etcd have watched  /api/v1/pods/test5   DELETE
-0 0 264
-----------
-[GIN] 2023/05/26 - 12:36:05 | 200 |    7.997869ms |       127.0.0.1 | DELETE   "/api/v1/pods?PodName=test5"
-[etcd] etcd have watched  /api/v1/pods/test5   DELETE
-0 0 264
-----------
-[etcd] etcd have watched  /api/v1/pods/test5   DELETE
-0 0 264
-----------
-[GIN] 2023/05/26 - 12:36:05 | 200 |     10.3314ms |       127.0.0.1 | POST     "/api/v1/replicasets"
-[etcd] etcd have watched  /api/v1/replicasets/my-replicaset   PUT
-6 244 265
-----------
-In AddPod.
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-8rz79   PUT
-1 266 266
-----------
-[GIN] 2023/05/26 - 12:36:07 | 200 |    8.435928ms |       127.0.0.1 | PUT      "/api/v1/pods"
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-8rz79   PUT
-1 266 266
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-8rz79   PUT
-1 266 266
-----------
-[GIN] 2023/05/26 - 12:36:07 | 200 |   24.495026ms |       127.0.0.1 | POST     "/api/v1/replicasets"
-[etcd] etcd have watched  /api/v1/replicasets/my-replicaset   PUT
-7 244 267
-----------
-[etcd] etcd have watched  /api/v1/replicasets/my-replicaset   PUT
-8 244 268
-----------
-[GIN] 2023/05/26 - 12:36:07 | 200 |    5.623326ms |       127.0.0.1 | POST     "/api/v1/replicasets"
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-8rz79   PUT
-2 266 269
-----------
-[GIN] 2023/05/26 - 12:36:07 | 200 |   19.267441ms |       127.0.0.1 | POST     "/api/v1/pods"
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-8rz79   PUT
-2 266 269
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-8rz79   PUT
-2 266 269
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-8rz79   PUT
-3 266 270
-----------
-[GIN] 2023/05/26 - 12:36:09 | 200 |     7.19838ms |       127.0.0.1 | POST     "/api/v1/pods"
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-8rz79   PUT
-3 266 270
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-8rz79   PUT
-3 266 270
-----------
-[api-server] [ReplicaSetHandler] [DeleteReplicaSet]
-Name: my-replicaset
-[etcd] etcd have watched  /api/v1/replicasets/my-replicaset   DELETE
-0 0 271
-----------
-[GIN] 2023/05/26 - 12:36:15 | 200 |    8.723947ms |       127.0.0.1 | DELETE   "/api/v1/replicasets?Name=my-replicaset"
-[GIN] 2023/05/26 - 12:36:15 | 200 |     5.60694ms |       127.0.0.1 | POST     "/api/v1/pods"
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-76jzw   PUT
-4 245 272
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-76jzw   PUT
-4 245 272
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-76jzw   PUT
-4 245 272
-----------
-[api-server] [podHandler] [DeletePod]
-PodName: my-replicaset-76jzw
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-76jzw   DELETE
-0 0 273
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-76jzw   DELETE
-0 0 273
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-76jzw   DELETE
-0 0 273
-----------
-[GIN] 2023/05/26 - 12:36:15 | 200 |    5.401025ms |       127.0.0.1 | DELETE   "/api/v1/pods?PodName=my-replicaset-76jzw"
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-8rz79   PUT
-4 266 274
-----------
-[GIN] 2023/05/26 - 12:36:15 | 200 |    4.902787ms |       127.0.0.1 | POST     "/api/v1/pods"
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-8rz79   PUT
-4 266 274
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-8rz79   PUT
-4 266 274
-----------
-[api-server] [podHandler] [DeletePod]
-PodName: my-replicaset-8rz79
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-8rz79   DELETE
-0 0 275
-[GIN] 2023/05/26 - 12:36:15 | 200 |    4.728397ms |       127.0.0.1 | DELETE   "/api/v1/pods?PodName=my-replicaset-8rz79"
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-8rz79   DELETE
-0 0 275
-----------
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-8rz79   DELETE
-0 0 275
-----------
-[GIN] 2023/05/26 - 12:36:15 | 200 |   16.266629ms |       127.0.0.1 | POST     "/api/v1/pods"
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-cfscs   PUT
-4 247 276
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-cfscs   PUT
-4 247 276
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-cfscs   PUT
-4 247 276
-----------
-[api-server] [podHandler] [DeletePod]
-PodName: my-replicaset-cfscs
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-cfscs   DELETE
-0 0 277
-----------
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-cfscs   DELETE
-0 0 277
-----------
-[GIN] 2023/05/26 - 12:36:15 | 200 |    5.361328ms |       127.0.0.1 | DELETE   "/api/v1/pods?PodName=my-replicaset-cfscs"
-[etcd] etcd have watched  /api/v1/pods/my-replicaset-cfscs   DELETE
-0 0 277
-----------
+[GIN] 2023/05/26 - 13:03:35 | 200 |   14.474581ms |       127.0.0.1 | POST     "/api/v1/pods"
+[api-server] [podHandler] [GetPod]
+[GIN] 2023/05/26 - 13:03:54 | 200 |    1.182407ms |       127.0.0.1 | GET      "/api/v1/pods?all=true"

@@ -9,8 +9,8 @@ spec:
   containers:
     - name: cpu_stress_container
       image: busybox
-      entryPoint: ["sh -c"]
-      command: ["while true; do sleep 1; done"]
+      entryPoint: ["/bin/sh"]
+      command: ["-c", "while true; do :; done"]
       limitResource:
           cpu: "1"
           memory: "128Mi"

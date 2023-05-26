@@ -6,12 +6,33 @@ import (
 )
 
 func main() {
+	busy()
 	//alpine()
 	//pause()
-	twoUbuntu()
+	// twoUbuntu()
 	//minorUbuntu()
 	//ubuntu()
 	//nginx()
+}
+
+func busy() {
+	c1 := core.Container{
+		Image:      "busybox",
+		Name:       "busy_container",
+		EntryPoint: []string{"/bin/sh"},
+		Command:    []string{"-c", "while true; do :; done"},
+		Tty:        true,
+	}
+	cons := []core.Container{c1}
+	var pod = core.Pod{}
+	pod.Spec.Containers = cons
+	pod.Name = "busy"
+	metas, _, err := dockerClient.CreatePod(pod)
+	if err != nil {
+		panic(err.Error())
+	} else {
+		print(metas)
+	}
 }
 
 func minorUbuntu() {
