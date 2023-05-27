@@ -10,5 +10,10 @@ spec:
     - name: server
       image: chasingdreams/minor_ubuntu:v3
       tty: true
-      command: ["/bin/sh"]
-
+      command: ["/home/user-cmd.bash"]
+      volumeMounts:
+        - name: volume-usr
+          mountPath: /home
+  volumes:
+    - name: volume-usr
+      hostPath: /home/minik8s/cmd/kubectl/dns-example

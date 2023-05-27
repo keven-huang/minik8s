@@ -13,6 +13,25 @@ import (
 	"time"
 )
 
+func samePods(a []*core.Pod, b []*core.Pod) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for _, v := range a {
+		flag := false
+		for _, v1 := range b {
+			if v.UID == v1.UID && v.ResourceVersion == v1.ResourceVersion {
+				flag = true
+				break
+			}
+		}
+		if flag == false {
+			return false
+		}
+	}
+	return true
+}
+
 // findPods
 // runtimeService根据seletors的信息找到
 func (rs *RuntimeService) findPods(isCreate bool) error {
@@ -52,6 +71,10 @@ func (rs *RuntimeService) findPods(isCreate bool) error {
 			fmt.Println(prefix + "chosen Pod:" + pod.Name)
 			filtedPods = append(filtedPods, pod)
 		}
+	}
+	if samePods(rs.Pods, filtedPods) && isCreate == false {
+		fmt.Println("Same pods, not update etcd")
+		return nil
 	}
 	// 更新pods为最新
 	rs.Pods = filtedPods
@@ -123,27 +146,10 @@ func (rs *RuntimeService) Run(event <-chan string) {
 					fmt.Println("[service][run]: stop")
 					return
 				}
-				// flag表示之前的状态有无改变
-				//fmt.Println("[service][run]: got ticker")
-				flag := false
-				for _, pod := range rs.Pods {
-					// 应该调用restClient，根据pod的名字查询当前pod的状态
-					_, err := tool.GetPod(pod.Name)
-					if err != nil { // pod生命周期结束，需要重新选择
-						//pod.Status.Phase = core.PodSucceeded
-						flag = true
-						continue
-					}
-					//if curPod == nil {
-					//
-					//}
-				}
-				if flag { //
-					fmt.Println("[service][run]: refind pods")
-					err := rs.findPods(false)
-					if err != nil { // 这里直接终止
-						panic(err.Error())
-					}
+				fmt.Println("[service][run]: refind pods")
+				err := rs.findPods(false)
+				if err != nil { // 这里直接终止
+					panic(err.Error())
 				}
 				rs.ifSend = true
 			default:
@@ -187,7 +193,7 @@ func (rs *RuntimeService) Delete() {
 	rs.isDead = true
 	rs.stopChan <- true // close the ticker
 	defer close(rs.eventChan)
-	//err := tool.DeleteService(rs.ServiceConfig) // delete etcd
+	//_ := tool.DeleteService(rs.ServiceConfig) // delete etcd
 	//if err != nil {
 	//	fmt.Println(err.Error())
 	//}

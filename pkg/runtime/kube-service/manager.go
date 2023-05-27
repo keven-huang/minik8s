@@ -56,6 +56,25 @@ func NewServiceManager() *ServiceManager {
 	return res
 }
 
+func sameSvc(s1 *service.Service, s2 *service.Service) bool {
+	if len(s1.PodNameAndIps) != len(s2.PodNameAndIps) {
+		return false
+	}
+	for _, pap := range s1.PodNameAndIps {
+		flag := false
+		for _, pap2 := range s2.PodNameAndIps {
+			if pap.Name == pap2.Name && pap.Ip == pap2.Ip {
+				flag = true
+				break
+			}
+		}
+		if flag == false {
+			return false
+		}
+	}
+	return true
+}
+
 func (sm *ServiceManager) UpdateServiceHandler(event tool.Event) {
 	fmt.Println("[kube-service][manage][addServiceHandler]:" + event.Key)
 	newService := &service.Service{}
@@ -68,7 +87,16 @@ func (sm *ServiceManager) UpdateServiceHandler(event tool.Event) {
 	if !ok { // 新建
 		sm.ServiceMapping[newService.ServiceMeta.Name] = CreateService(newService)
 	} else { // 删除老的，创建新的
-		lastService.Delete()                                   // delete service
+		if sameSvc(lastService.ServiceConfig, newService) {
+			return
+		}
+		lastService.Delete()                                 // delete service
+		err := tool.DeleteService(lastService.ServiceConfig) // delete from etcd
+		time.Sleep(5 * time.Second)
+		if err != nil {
+			fmt.Println(err)
+			//return
+		}
 		delete(sm.ServiceMapping, newService.ServiceMeta.Name) // delete from map
 		sm.ServiceMapping[newService.ServiceMeta.Name] = CreateService(newService)
 	}
@@ -150,6 +178,7 @@ func InitCoreDNS() {
 	for {
 		prefix := "[serviceManager][initCoreDNS]"
 		dns, err := tool.GetService(kube_proxy.CoreDNSServiceName)
+		time.Sleep(2 * time.Second)
 		if err != nil {
 			fmt.Println(prefix + err.Error())
 			return

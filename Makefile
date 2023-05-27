@@ -8,13 +8,13 @@ clean:
 construct:
 	mkdir -p /root/nginx
 	mkdir -p bin
-	iptables-save > ./iptable_ori
 	/usr/local/go/bin/go build -o ./binx/kube-apiserver ./cmd/kube-apiserver/kube-apiserver.go
 	/usr/local/go/bin/go build -o ./binx/kube-scheduler ./cmd/kube-scheduler/kube-scheduler.go
 	/usr/local/go/bin/go build -o ./binx/kubelet ./cmd/kubelet/kubelet.go
 	/usr/local/go/bin/go build -o ./binx/kube-controller-manager ./cmd/kube-controller-manager/kube-controller-manager.go
 	/usr/local/go/bin/go build -o ./binx/kubeproxy ./cmd/kube-proxy/kubeproxy.go
 	/usr/local/go/bin/go build -o ./binx/kubeservice ./cmd/kube-service/kubeservice.go
+	/usr/local/go/bin/go build -o ./binx/kubectl ./cmd/kubectl/kubectl.go
 
 build:
 	/usr/local/go/bin/go build -o ./binx/kube-apiserver ./cmd/kube-apiserver/kube-apiserver.go
@@ -25,6 +25,7 @@ build:
 	/usr/local/go/bin/go build -o ./binx/kubeservice ./cmd/kube-service/kubeservice.go
 
 run:
+	iptables-save > ./iptable_ori
 	./binx/kube-apiserver > log/apiserver.log &
 	sleep 5
 	./binx/kube-scheduler > log/scheduler.log &
@@ -33,7 +34,7 @@ run:
 	./binx/kubeproxy > log/kubeproxy.log &
 	sleep 1
 	./binx/kubeservice > log/kubeservice.log &
-
+	sleep 15
 
 m3:
 	go run ./cmd/kubelet/kubelet.go --nodename=node3 --nodeip=192.168.1.11 --masterip=http://192.168.1.7:8080 > log/kubelet-m3.log &
@@ -51,4 +52,60 @@ kill:
 	sudo docker ps -aq --filter "name=^my-replicaset|^test" | xargs -r docker stop
 	sudo docker ps -aq --filter "name=^my-replicaset|^test" | xargs -r docker rm
 
+# need webs in /home/webs
+testsvc:
+	./binx/kubectl create -f ./cmd/kubectl/service-example/server-pod.yaml
+	sleep 5
+	./binx/kubectl create -f ./cmd/kubectl/service-example/server-pod2.yaml
+	sleep 5
+	./binx/kubectl create -f ./cmd/kubectl/service-example/server-service.yaml
+	sleep 10
+	curl 11.1.1.1
+	curl 11.1.1.1
+	curl 11.1.1.1
+	curl 11.1.1.1
+	./binx/kubectl create -f ./cmd/kubectl/service-example/server-pod3.yaml
+	sleep 10
+	curl 11.1.1.1
+	curl 11.1.1.1
+	curl 11.1.1.1
+	curl 11.1.1.1
+	curl 11.1.1.1
 
+delsvc:
+	./binx/kubectl delete service webservice
+	sleep 5
+	./binx/kubectl delete pod tinyserver1
+	sleep 2
+	./binx/kubectl delete pod tinyserver2
+	sleep 2
+	./binx/kubectl delete pod tinyserver3
+
+# need project in /home/minik8s
+testdns:
+	./binx/kubectl create -f ./cmd/kubectl/dns-example/server-pod1.yaml
+	sleep 5
+	./binx/kubectl create -f ./cmd/kubectl/dns-example/server-pod2.yaml
+	sleep 5
+	./binx/kubectl create -f ./cmd/kubectl/dns-example/server-service1.yaml
+	sleep 10
+	./binx/kubectl create -f ./cmd/kubectl/dns-example/server-service2.yaml
+	sleep 10
+	./binx/kubectl create -f ./cmd/kubectl/dns-example/dns-example.yaml
+	sleep 30
+	./binx/kubectl create -f ./cmd/kubectl/dns-example/user-pod.yaml
+	sleep 10
+	docker logs user1-server
+
+deltestdns:
+	./binx/kubectl delete dns testDns
+	sleep 20
+	./binx/kubectl delete service service1
+	sleep 5
+	./binx/kubectl delete service service2
+	sleep 5
+	./binx/kubectl delete pod dns-example-pod1
+	sleep 2
+	./binx/kubectl delete pod dns-example-pod2
+	sleep 2
+	./binx/kubectl delete pod user1
