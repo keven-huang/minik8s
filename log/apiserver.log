@@ -28,82 +28,191 @@ connect to etcd success...
 [GIN-debug] POST   /api/v1/jobfile           --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func3 (3 handlers)
 [GIN-debug] GET    /api/v1/jobfile           --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func1 (3 handlers)
 [GIN-debug] PUT    /api/v1/hpa               --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func2 (3 handlers)
+[GIN-debug] DELETE /api/v1/hpa               --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func4 (3 handlers)
 [GIN-debug] GET    /watch/*resource          --> minik8s/cmd/kube-apiserver/app/server.(*Server).RegisterHandler.func1 (3 handlers)
 [GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
 Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
 [GIN-debug] Listening and serving HTTP on :8080
 [api-server] [ServiceHandler] [GetService]
-[GIN] 2023/05/26 - 13:03:06 | 200 |    1.625377ms |       127.0.0.1 | GET      "/api/v1/services?all=true"
-path: /watch/api/v1/services
-key: /api/v1/services
-in sender
-[api-server] [ServiceHandler] [GetService]
-[GIN] 2023/05/26 - 13:03:06 | 200 |    1.047414ms |       127.0.0.1 | GET      "/api/v1/services?all=true"
+[GIN] 2023/05/27 - 13:18:32 | 200 |    1.989415ms |       127.0.0.1 | GET      "/api/v1/services?all=true"
 path: /watch/api/v1/services
 key: /api/v1/services
 in sender
 [api-server] [podHandler] [GetPod]
-[GIN] 2023/05/26 - 13:03:06 | 200 |    1.073062ms |       127.0.0.1 | GET      "/api/v1/pods?all=true"
-[api-server] [podHandler] [GetPod]
-[GIN] 2023/05/26 - 13:03:06 | 200 |     811.963µs |       127.0.0.1 | GET      "/api/v1/jobs?all=true"
-[GIN] 2023/05/26 - 13:03:06 | 200 |    1.046154ms |       127.0.0.1 | GET      "/api/v1/pods?all=true"
-[GIN] 2023/05/26 - 13:03:06 | 200 |     533.111µs |       127.0.0.1 | GET      "/api/v1/nodes?all=true"
-path: /watch/api/v1/jobs
-key: /api/v1/jobs
-in sender
-[api-server] [ReplicaSetHandler] [GetReplicaSet]
+[GIN] 2023/05/27 - 13:18:33 | 200 |    1.178616ms |       127.0.0.1 | GET      "/api/v1/pods?all=true"
+[GIN] 2023/05/27 - 13:18:33 | 200 |     472.177µs |       127.0.0.1 | GET      "/api/v1/nodes?all=true"
 path: /watch/api/v1/pods
 key: /api/v1/pods
 in sender
 path: /watch/api/v1/nodes
 key: /api/v1/nodes
 in sender
-[GIN] 2023/05/26 - 13:03:06 | 200 |    1.485983ms |       127.0.0.1 | GET      "/api/v1/replicasets?all=true"
+[api-server] [ServiceHandler] [GetService]
+[GIN] 2023/05/27 - 13:18:33 | 200 |    1.072015ms |       127.0.0.1 | GET      "/api/v1/services?all=true"
+path: /watch/api/v1/services
+key: /api/v1/services
+in sender
+[api-server] [podHandler] [GetPod]
+[api-server] [podHandler] [GetPod]
+[GIN] 2023/05/27 - 13:18:33 | 200 |     824.035µs |       127.0.0.1 | GET      "/api/v1/pods?all=true"
+[GIN] 2023/05/27 - 13:18:33 | 200 |    1.519841ms |       127.0.0.1 | GET      "/api/v1/jobs?all=true"
+[GIN] 2023/05/27 - 13:18:33 | 200 |    1.216089ms |       127.0.0.1 | GET      "/api/v1/pods?all=true"
+[api-server] [ReplicaSetHandler] [GetReplicaSet]
+[api-server] [ReplicaSetHandler] [GetReplicaSet]
+path: /watch/api/v1/jobs
+key: /api/v1/jobs
+in sender
+[GIN] 2023/05/27 - 13:18:33 | 200 |    1.046873ms |       127.0.0.1 | GET      "/api/v1/replicasets?all=true"
+[GIN] 2023/05/27 - 13:18:33 | 200 |    1.186324ms |       127.0.0.1 | GET      "/api/v1/replicasets?all=true"
+path: /watch/api/v1/pods
+key: /api/v1/pods
+in sender
+[GIN] 2023/05/27 - 13:18:33 | 404 |         306ns |       127.0.0.1 | GET      "/api/v1/hpa?all=true"
 path: /watch/api/v1/replicasets
 key: /api/v1/replicasets
 in sender
+path: /watch/api/v1/hpa
+key: /api/v1/hpa
+in sender
 path: /watch/api/v1/pods
 key: /api/v1/pods
 in sender
-[GIN] 2023/05/26 - 13:03:06 | 200 |    6.955565ms |       127.0.0.1 | PUT      "/api/v1/nodes"
+path: /watch/api/v1/replicasets
+key: /api/v1/replicasets
+in sender
 [etcd] etcd have watched  /api/v1/nodes/node1   PUT
-1 337 337
+1 758 758
 ----------
+[GIN] 2023/05/27 - 13:18:33 | 200 |    8.848459ms |       127.0.0.1 | PUT      "/api/v1/nodes"
 [api-server] [podHandler] [GetPod]
-[GIN] 2023/05/26 - 13:03:06 | 200 |      759.86µs |       127.0.0.1 | GET      "/api/v1/pods?all=true"
+[GIN] 2023/05/27 - 13:18:33 | 200 |     650.531µs |       127.0.0.1 | GET      "/api/v1/pods?all=true"
 path: /watch/api/v1/pods
 key: /api/v1/pods
 in sender
+[etcd] etcd have watched  /api/v1/jobs/cuda   PUT
+1 759 759
+----------
+[GIN] 2023/05/27 - 13:19:30 | 200 |    8.226504ms |       127.0.0.1 | POST     "/api/v1/jobs"
+[GIN] 2023/05/27 - 13:19:30 | 200 |   24.139727ms |       127.0.0.1 | POST     "/api/v1/jobfile"
 In AddPod.
-[GIN] 2023/05/26 - 13:03:32 | 200 |   11.189836ms |       127.0.0.1 | PUT      "/api/v1/pods"
-[etcd] etcd have watched  /api/v1/pods/busy   PUT
-1 338 338
+[GIN] 2023/05/27 - 13:19:31 | 200 |    7.592335ms |       127.0.0.1 | PUT      "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/cuda   PUT
+1 761 761
 ----------
-[etcd] etcd have watched  /api/v1/pods/busy   PUT
-1 338 338
+[etcd] etcd have watched  /api/v1/pods/cuda   PUT
+1 761 761
 ----------
-[etcd] etcd have watched  /api/v1/pods/busy   PUT
-1 338 338
+[etcd] etcd have watched  /api/v1/pods/cuda   PUT
+1 761 761
 ----------
-[etcd] etcd have watched  /api/v1/pods/busy   PUT
-2 338 339
+[etcd] etcd have watched  /api/v1/pods/cuda   PUT
+1 761 761
 ----------
-[GIN] 2023/05/26 - 13:03:33 | 200 |    6.644506ms |       127.0.0.1 | POST     "/api/v1/pods"
-[etcd] etcd have watched  /api/v1/pods/busy   PUT
-2 338 339
+[etcd] etcd have watched  /api/v1/pods/cuda   PUT
+2 761 762
 ----------
-[etcd] etcd have watched  /api/v1/pods/busy   PUT
-2 338 339
+[GIN] 2023/05/27 - 13:19:32 | 200 |    8.084685ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/cuda   PUT
+2 761 762
 ----------
-[etcd] etcd have watched  /api/v1/pods/busy   PUT
-3 338 340
+[etcd] etcd have watched  /api/v1/pods/cuda   PUT
+2 761 762
 ----------
-[etcd] etcd have watched  /api/v1/pods/busy   PUT
-3 338 340
+[etcd] etcd have watched  /api/v1/pods/cuda   PUT
+2 761 762
 ----------
-[etcd] etcd have watched  /api/v1/pods/busy   PUT
-3 338 340
+[apiserver][getjobfile] JobName cuda
+[apiserver][getjobfile] res #include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <cuda_runtime.h>
+#include "cublas_v2.h"
+#define M 6
+#define N 5
+#define IDX2C(i,j,ld) (((j)*(ld))+(i))
+
+static __inline__ void modify (cublasHandle_t handle, float *m, int ldm, int n, int p, int q, float alpha, float beta){
+    cublasSscal (handle, n-p, &alpha, &m[IDX2C(p,q,ldm)], ldm);
+    cublasSscal (handle, ldm-p, &beta, &m[IDX2C(p,q,ldm)], 1);
+}
+
+int main (void){
+    cudaError_t cudaStat;
+    cublasStatus_t stat;
+    cublasHandle_t handle;
+    int i, j;
+    float* devPtrA;
+    float* a = 0;
+    a = (float *)malloc (M * N * sizeof (*a));
+    if (!a) {
+        printf ("host memory allocation failed");
+        return EXIT_FAILURE;
+    }
+    for (j = 0; j < N; j++) {
+        for (i = 0; i < M; i++) {
+            a[IDX2C(i,j,M)] = (float)(i * M + j + 1);
+        }
+    }
+    cudaStat = cudaMalloc ((void**)&devPtrA, M*N*sizeof(*a));
+    if (cudaStat != cudaSuccess) {
+        printf ("device memory allocation failed");
+        return EXIT_FAILURE;
+    }
+    stat = cublasCreate(&handle);
+    if (stat != CUBLAS_STATUS_SUCCESS) {
+        printf ("CUBLAS initialization failed\n");
+        return EXIT_FAILURE;
+    }
+    stat = cublasSetMatrix (M, N, sizeof(*a), a, M, devPtrA, M);
+    if (stat != CUBLAS_STATUS_SUCCESS) {
+        printf ("data download failed");
+        cudaFree (devPtrA);
+        cublasDestroy(handle);
+        return EXIT_FAILURE;
+    }
+    modify (handle, devPtrA, M, N, 1, 2, 16.0f, 12.0f);
+    stat = cublasGetMatrix (M, N, sizeof(*a), devPtrA, M, a, M);
+    if (stat != CUBLAS_STATUS_SUCCESS) {
+        printf ("data upload failed");
+        cudaFree (devPtrA);
+        cublasDestroy(handle);
+        return EXIT_FAILURE;
+    }
+    cudaFree (devPtrA);
+    cublasDestroy(handle);
+    for (j = 0; j < N; j++) {
+        for (i = 0; i < M; i++) {
+            printf ("%7.0f", a[IDX2C(i,j,M)]);
+        }
+        printf ("\n");
+    }
+    free(a);
+    return EXIT_SUCCESS;
+}
+[GIN] 2023/05/27 - 13:19:32 | 200 |    1.134963ms |       127.0.0.1 | GET      "/api/v1/jobfile?JobName=cuda"
+[etcd] etcd have watched  /api/v1/pods/cuda   PUT
+3 761 763
 ----------
-[GIN] 2023/05/26 - 13:03:35 | 200 |   14.474581ms |       127.0.0.1 | POST     "/api/v1/pods"
-[api-server] [podHandler] [GetPod]
-[GIN] 2023/05/26 - 13:03:54 | 200 |    1.182407ms |       127.0.0.1 | GET      "/api/v1/pods?all=true"
+[GIN] 2023/05/27 - 13:19:34 | 200 |     8.29275ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/cuda   PUT
+3 761 763
+----------
+[etcd] etcd have watched  /api/v1/pods/cuda   PUT
+3 761 763
+----------
+[etcd] etcd have watched  /api/v1/pods/cuda   PUT
+3 761 763
+----------
+[etcd] etcd have watched  /api/v1/pods/cuda   PUT
+4 761 764
+----------
+[GIN] 2023/05/27 - 13:20:03 | 200 |    8.850145ms |       127.0.0.1 | POST     "/api/v1/pods"
+[etcd] etcd have watched  /api/v1/pods/cuda   PUT
+4 761 764
+----------
+[etcd] etcd have watched  /api/v1/pods/cuda   PUT
+4 761 764
+----------
+[etcd] etcd have watched  /api/v1/pods/cuda   PUT
+4 761 764
+----------
