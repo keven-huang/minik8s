@@ -9,30 +9,30 @@ construct:
 	mkdir -p /root/nginx
 	mkdir -p bin
 	iptables-save > ./iptable_ori
-	/usr/local/go/bin/go build -o ./bin/kube-apiserver ./cmd/kube-apiserver/kube-apiserver.go
-	/usr/local/go/bin/go build -o ./bin/kube-scheduler ./cmd/kube-scheduler/kube-scheduler.go
-	/usr/local/go/bin/go build -o ./bin/kubelet ./cmd/kubelet/kubelet.go
-	/usr/local/go/bin/go build -o ./bin/kube-controller-manager ./cmd/kube-controller-manager/kube-controller-manager.go
-	/usr/local/go/bin/go build -o ./bin/kubeproxy ./cmd/kube-proxy/kubeproxy.go
-	/usr/local/go/bin/go build -o ./bin/kubeservice ./cmd/kube-service/kubeservice.go
+	/usr/local/go/bin/go build -o ./binx/kube-apiserver ./cmd/kube-apiserver/kube-apiserver.go
+	/usr/local/go/bin/go build -o ./binx/kube-scheduler ./cmd/kube-scheduler/kube-scheduler.go
+	/usr/local/go/bin/go build -o ./binx/kubelet ./cmd/kubelet/kubelet.go
+	/usr/local/go/bin/go build -o ./binx/kube-controller-manager ./cmd/kube-controller-manager/kube-controller-manager.go
+	/usr/local/go/bin/go build -o ./binx/kubeproxy ./cmd/kube-proxy/kubeproxy.go
+	/usr/local/go/bin/go build -o ./binx/kubeservice ./cmd/kube-service/kubeservice.go
 
 build:
-	/usr/local/go/bin/go build -o ./bin/kube-apiserver ./cmd/kube-apiserver/kube-apiserver.go
-	/usr/local/go/bin/go build -o ./bin/kube-scheduler ./cmd/kube-scheduler/kube-scheduler.go
-	/usr/local/go/bin/go build -o ./bin/kubelet ./cmd/kubelet/kubelet.go
-	/usr/local/go/bin/go build -o ./bin/kube-controller-manager ./cmd/kube-controller-manager/kube-controller-manager.go
-	/usr/local/go/bin/go build -o ./bin/kubeproxy ./cmd/kube-proxy/kubeproxy.go
-	/usr/local/go/bin/go build -o ./bin/kubeservice ./cmd/kube-service/kubeservice.go
+	/usr/local/go/bin/go build -o ./binx/kube-apiserver ./cmd/kube-apiserver/kube-apiserver.go
+	/usr/local/go/bin/go build -o ./binx/kube-scheduler ./cmd/kube-scheduler/kube-scheduler.go
+	/usr/local/go/bin/go build -o ./binx/kubelet ./cmd/kubelet/kubelet.go
+	/usr/local/go/bin/go build -o ./binx/kube-controller-manager ./cmd/kube-controller-manager/kube-controller-manager.go
+	/usr/local/go/bin/go build -o ./binx/kubeproxy ./cmd/kube-proxy/kubeproxy.go
+	/usr/local/go/bin/go build -o ./binx/kubeservice ./cmd/kube-service/kubeservice.go
 
 run:
-	./bin/kube-apiserver > log/apiserver.log &
+	./binx/kube-apiserver > log/apiserver.log &
 	sleep 5
-	./bin/kube-scheduler > log/scheduler.log &
-	./bin/kubelet --nodename=node1 --nodeip=127.0.0.1 --masterip=http://127.0.0.1:8080 > log/kubelet.log &
-	./bin/kube-controller-manager > log/controller-manager.log &
-	./bin/kubeproxy > log/kubeproxy.log &
+	./binx/kube-scheduler > log/scheduler.log &
+	./binx/kubelet --nodename=node1 --nodeip=127.0.0.1 --masterip=http://127.0.0.1:8080 > log/kubelet.log &
+	./binx/kube-controller-manager > log/controller-manager.log &
+	./binx/kubeproxy > log/kubeproxy.log &
 	sleep 1
-	./bin/kubeservice > log/kubeservice.log &
+	./binx/kubeservice > log/kubeservice.log &
 
 
 m3:
