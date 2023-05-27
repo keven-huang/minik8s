@@ -1,8 +1,8 @@
 clean:
 	etcdctl del "/api" --prefix
-	rm -rf ./bin
-	rm -rf /root/nginx
-	rm ./iptable_ori
+	rm -rf ./bin 2>/dev/null || true
+	rm -rf /root/nginx 2>/dev/null || true
+	rm ./iptable_ori 2>/dev/null || true
 
 construct:
 	mkdir -p /root/nginx
@@ -40,7 +40,9 @@ m3:
 stop:
 	./scripts/linux/stop.sh
 	sleep 2
-	iptables-restore < ./iptable_ori
+ifeq (iptable_ori, $(wildcard iptable_ori))
+	iptables-restore < iptable_ori
+endif
 	sudo docker ps -aq --filter "name=^coreDNS" | xargs -r docker stop
 	sudo docker ps -aq --filter "name=^coreDNS" | xargs -r docker rm
 
