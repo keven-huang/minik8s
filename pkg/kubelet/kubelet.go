@@ -156,13 +156,13 @@ func GetGpuJobFile(jobname string) error {
 	}
 	// get program
 	program_name := jobFile.JobName + ".cu"
-	err := file.MakeFile(jobFile.Program, program_name, apiconfig.JOB_FILE_DIR_PATH)
+	err := file.MakeFile(jobFile.Program, program_name, apiconfig.JOB_FILE_DIR_PATH+"/"+jobFile.JobName)
 	if err != nil {
 		return err
 	}
 	// get slurm
 	slurm_name := jobFile.JobName + ".slurm"
-	err = file.MakeFile(jobFile.Slurm, slurm_name, apiconfig.JOB_FILE_DIR_PATH)
+	err = file.MakeFile(jobFile.Slurm, slurm_name, apiconfig.JOB_FILE_DIR_PATH+"/"+jobFile.JobName)
 	if err != nil {
 		return err
 	}
