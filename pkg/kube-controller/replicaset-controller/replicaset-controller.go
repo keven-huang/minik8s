@@ -273,14 +273,12 @@ func (rsc *ReplicaSetController) DeleteReplicaset(event tool.Event) {
 		return
 	}
 
-	number := rsc.DeletePodWithNumber(replica, int(replica.Status.Replicas), prefix)
+	// 不一定是(replica.Status.Replicas), 可能正好因为Failed而删除，应该遍历所有
+	//number := rsc.DeletePodWithNumber(replica, int(replica.Status.Replicas), prefix)
+	number := rsc.DeletePodWithNumber(replica, 10000, prefix)
 
-	if number != int(replica.Status.Replicas) {
-		fmt.Println("[ERROR] ", prefix, "only delete ", number, " pods. remain ",
-			int(replica.Status.Replicas)-number, " pods.")
-	} else {
-		fmt.Println(prefix, "Successfully delete ", number, " pods in replicaset: ", replica.Name)
-	}
+	fmt.Println(prefix, "Successfully delete ", number, " pods in replicaset: ", replica.Name)
+
 }
 
 // add pod后首先等scheduler调度,因此不进行操作，操作在UpdatePod中进行
@@ -309,6 +307,23 @@ func (rsc *ReplicaSetController) UpdatePod(event tool.Event) {
 	err := json.Unmarshal([]byte(event.Val), pod)
 	if err != nil {
 		fmt.Println("[ERROR] ", prefix, "pod Unmarshal", err)
+		return
+	}
+
+	if pod.Status.Phase == core.PodFailed {
+		fmt.Println(prefix, "pod failed, name:", pod.Name)
+
+		values := url.Values{}
+		values.Add("PodName", pod.Name)
+
+		err = web.SendHttpRequest("DELETE", apiconfig.Server_URL+apiconfig.POD_PATH+"?"+values.Encode(),
+			web.WithPrefix(prefix),
+			web.WithLog(true))
+		if err != nil {
+			return
+		}
+
+		//rsc.PodInformer.Delete(apiconfig.POD_PATH + "/" + pod.Name)
 		return
 	}
 
@@ -374,6 +389,7 @@ func (rsc *ReplicaSetController) DeletePod(event tool.Event) {
 	err := json.Unmarshal([]byte(val), pod)
 	if err != nil {
 		fmt.Println("[ERROR] ", prefix, "pod Unmarshal failed ", err)
+		fmt.Println("[ERROR] ", prefix, "pod val ", val)
 		return
 	}
 

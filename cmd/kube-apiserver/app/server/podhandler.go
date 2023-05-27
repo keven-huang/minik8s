@@ -142,6 +142,14 @@ func UpdatePod(c *gin.Context, s *Server) {
 	}
 	key := c.Request.URL.Path + "/" + pod.Name
 
+	res, err := s.Etcdstore.Get(key)
+	if len(res) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Pod Not Found.",
+		})
+		return
+	}
+
 	body, _ := json.Marshal(pod)
 	err = s.Etcdstore.Put(key, string(body))
 	if err != nil {
