@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/spf13/cobra"
 	"io"
 	"io/ioutil"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
@@ -14,6 +13,8 @@ import (
 	"minik8s/pkg/util/web"
 	"net/http"
 	"os"
+
+	"github.com/spf13/cobra"
 
 	"gopkg.in/yaml.v3"
 )
@@ -96,6 +97,8 @@ func (o *CreateOptions) RunCreate(cmd *cobra.Command, args []string) error {
 		err = o.RunCreateJob(cmd, args, yamlFile)
 	case "Service":
 		err = o.RunCreateService(cmd, args, yamlFile)
+	case "HorizontalPodAutoscaler":
+		err = o.RunCreateHorizontalPodAutoscaler(cmd, args, yamlFile)
 	}
 
 	if err != nil {
@@ -161,7 +164,21 @@ func (o *CreateOptions) RunCreateService(cmd *cobra.Command, args []string, yaml
 	return nil
 }
 
-func CreateService(s *service.Service) error{
+func (o *CreateOptions) RunCreateHorizontalPodAutoscaler(cmd *cobra.Command, args []string, yamlFile []byte) error {
+	hpa := &core.HPA{}
+	err := yaml.Unmarshal(yamlFile, hpa)
+	if err != nil {
+		return err
+	}
+
+	err = CreateHPA(hpa)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func CreateService(s *service.Service) error {
 	data, err := json.Marshal(s)
 	if err != nil {
 		fmt.Println("[kubectl] [create] [RunCreateService] failed to marshal:", err)
@@ -271,5 +288,22 @@ func CreateJob(job *core.Job) error {
 		return fmt.Errorf("job file upload failed")
 	}
 
+	return nil
+}
+
+func CreateHPA(hpa *core.HPA) error {
+	data, err := json.Marshal(hpa)
+	if err != nil {
+		fmt.Println("[kubectl] [create] [RunCreateHPA] failed to marshal:", err)
+	} else {
+		fmt.Println("[kubectl] [create] [RunCreateHPA] ", string(data))
+	}
+	err = web.SendHttpRequest("PUT", apiconfig.Server_URL+apiconfig.HPA_PATH,
+		web.WithPrefix("[kubectl] [create] [RunCreateHPA] "),
+		web.WithBody(bytes.NewBuffer(data)),
+		web.WithLog(true))
+	if err != nil {
+		return err
+	}
 	return nil
 }

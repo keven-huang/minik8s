@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	"minik8s/pkg/cmd/apply"
 	"minik8s/pkg/cmd/create"
 	"minik8s/pkg/cmd/delete"
 	"minik8s/pkg/cmd/get"
@@ -16,5 +17,6 @@ func NewKubectlCommand() *cobra.Command {
 	rootCmd.AddCommand(create.NewCmdCreate())
 	rootCmd.AddCommand(delete.NewCmdDelete())
 	rootCmd.AddCommand(get.NewCmdGet())
+	rootCmd.AddCommand(apply.NewCmdApply())
 	return rootCmd
 }

@@ -7,16 +7,18 @@ package dockerClient
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
+	"minik8s/pkg/api/core"
+	"minik8s/pkg/kubelet/config"
+
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/api/types/volume"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
-	"io"
-	"minik8s/pkg/api/core"
-	"minik8s/pkg/kubelet/config"
 )
 
 func GetNewClient() (*client.Client, error) {
@@ -439,4 +441,40 @@ func DeletePod(pod core.Pod) error {
 	names = append(names, curPauseName)
 	err := DeleteContainers(names)
 	return err
+}
+
+func DockerStats() (*types.ContainerStats, error) {
+	cli, err := GetNewClient()
+	if err != nil {
+		return nil, err
+	}
+	resp, err := cli.ContainerStats(context.Background(), "Etcd-server", true)
+	j, err := json.Marshal(resp.Body)
+	fmt.Println(j)
+	fmt.Println(resp.Body)
+	fmt.Println(resp.OSType)
+	return nil, nil
+}
+
+func GetDockerStats(name string) (types.ContainerStats, error) {
+	containers, err := GetAllContainers()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	for _, v := range containers {
+		if v.Names[0] == "/"+name {
+			fmt.Println(v.ID)
+			cli, err := GetNewClient()
+			if err != nil {
+				fmt.Println(err.Error())
+			}
+			resp, err := cli.ContainerStats(context.Background(), v.ID, false)
+			if err != nil {
+				fmt.Println(err.Error())
+			}
+			fmt.Println(resp)
+			return resp, nil
+		}
+	}
+	return types.ContainerStats{}, fmt.Errorf("no such container")
 }

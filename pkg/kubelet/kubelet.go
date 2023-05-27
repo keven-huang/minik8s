@@ -9,6 +9,7 @@ import (
 	"minik8s/pkg/client/informer"
 	"minik8s/pkg/client/tool"
 	"minik8s/pkg/kubelet/dockerClient"
+	"minik8s/pkg/kubelet/monitor"
 	"minik8s/pkg/util/file"
 	"minik8s/pkg/util/web"
 	"regexp"
@@ -16,18 +17,22 @@ import (
 )
 
 type Kubelet struct {
+	Monitor     *monitor.Monitor
 	PodInformer informer.Informer
 	node        core.Node
 }
 
-func NewKubelet(name string) (*Kubelet, error) {
+func NewKubelet(name string, nodeIp string, masterIp string) (*Kubelet, error) {
 	node := core.Node{}
 	node.Name = name
+	node.Spec.NodeIP = nodeIp
+	apiconfig.Server_URL = masterIp
 	err := tool.AddNode(&node)
 	if err != nil {
 		return nil, err
 	}
 	return &Kubelet{
+		Monitor:     monitor.NewMonitor(9400, &node),
 		PodInformer: informer.NewInformer(apiconfig.POD_PATH),
 		node:        node,
 	}, nil
@@ -151,13 +156,13 @@ func GetGpuJobFile(jobname string) error {
 	}
 	// get program
 	program_name := jobFile.JobName + ".cu"
-	err := file.MakeFile(jobFile.Program, program_name, apiconfig.JOB_FILE_DIR_PATH)
+	err := file.MakeFile(jobFile.Program, program_name, apiconfig.JOB_FILE_DIR_PATH+"/"+jobFile.JobName)
 	if err != nil {
 		return err
 	}
 	// get slurm
 	slurm_name := jobFile.JobName + ".slurm"
-	err = file.MakeFile(jobFile.Slurm, slurm_name, apiconfig.JOB_FILE_DIR_PATH)
+	err = file.MakeFile(jobFile.Slurm, slurm_name, apiconfig.JOB_FILE_DIR_PATH+"/"+jobFile.JobName)
 	if err != nil {
 		return err
 	}
@@ -236,6 +241,7 @@ func (k *Kubelet) Listener(needLog bool) {
 }
 
 func (k *Kubelet) Run() {
+	go k.Monitor.Run()
 	go k.PodInformer.Run()
 	go k.Listener(true)
 	select {}

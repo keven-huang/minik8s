@@ -345,6 +345,7 @@ type Node struct {
 
 // NodeSpec describes the attributes that a node is created with.
 type NodeSpec struct {
+	NodeIP string `json:"nodeIP" yaml:"nodeIP"`
 	// PodCIDR represents the pod IP range assigned to the node.
 	// +optional
 	PodCIDR string `json:"podCIDR,omitempty" protobuf:"bytes,1,opt,name=podCIDR"`
@@ -545,3 +546,39 @@ type ReplicaSetCondition struct {
 	// +optional
 	Message string `json:"message,omitempty" protobuf:"bytes,5,opt,name=message"`
 }
+
+type HPA struct {
+	metav1.TypeMeta   `json:",inline" yaml:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Spec              HPASpec `json:"spec,omitempty" yaml:"spec,omitempty"`
+}
+
+type HPASpec struct {
+	ScaleTargetRef HPARef       `json:"scaleTargetRef" yaml:"scaleTargetRef"`
+	MinReplicas    int32        `json:"minReplicas,omitempty" yaml:"minReplicas,omitempty"`
+	MaxReplicas    int32        `json:"maxReplicas" yaml:"maxReplicas"`
+	PeriodSeconds  int32        `json:"periodSeconds,omitempty" yaml:"periodSeconds,omitempty"`
+	Metrics        []MetricSpec `json:"metrics,omitempty" yaml:"metrics,omitempty"`
+}
+
+type HPARef struct {
+	Kind string `json:"kind" yaml:"kind"`
+	Name string `json:"name" yaml:"name"`
+}
+
+type MetricSpec struct {
+	Name   string       `json:"name" yaml:"name"`
+	Target MetricTarget `json:"target" yaml:"target"`
+}
+
+type MetricTarget struct {
+	Type  MetricType `json:"type" yaml:"type"`
+	Value int32      `json:"value" yaml:"value"`
+}
+
+type MetricType string
+
+const (
+	MetricTypeUtilization MetricType = "Utilization"
+	MetricTypeAvgValue    MetricType = "averageValue"
+)

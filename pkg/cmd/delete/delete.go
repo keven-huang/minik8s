@@ -62,6 +62,10 @@ func (o *DeleteOptions) RunDelete(cmd *cobra.Command, args []string) error {
 		{
 			return o.RunDeleteService(cmd, args)
 		}
+	case "hpa":
+		{
+			return o.RunDeleteHPA(cmd, args)
+		}
 	default:
 		{
 			fmt.Printf("[kubectl] [delete] [RunDelete] %s is not supported.\n", args[0])
@@ -116,12 +120,6 @@ func (o *DeleteOptions) RunDeleteReplicaSet(cmd *cobra.Command, args []string) e
 }
 
 func (o *DeleteOptions) RunDeleteService(cmd *cobra.Command, args []string) error {
-	// 创建 PUT 请求
-	if len(args) < 1 || args[0] != "service" {
-		fmt.Println("only support service.")
-		return nil
-	}
-
 	values := url.Values{}
 	if o.DeleteAll {
 		values.Add("all", "true")
@@ -139,5 +137,26 @@ func (o *DeleteOptions) RunDeleteService(cmd *cobra.Command, args []string) erro
 	}
 
 	fmt.Println("service Delete successfully")
+	return nil
+}
+
+func (o *DeleteOptions) RunDeleteHPA(cmd *cobra.Command, args []string) error {
+	values := url.Values{}
+	if o.DeleteAll {
+		values.Add("all", "true")
+	}
+	if len(args) > 1 {
+		values.Add("HPAName", args[1])
+		//body = bytes.NewBuffer([]byte(args[1]))
+	}
+
+	err := web.SendHttpRequest("DELETE", apiconfig.Server_URL+apiconfig.HPA_PATH+"?"+values.Encode(),
+		web.WithPrefix("[kubectl] [delete] [DeleteHPA] "),
+		web.WithLog(true))
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("hpa Delete successfully")
 	return nil
 }

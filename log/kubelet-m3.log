@@ -1,0 +1,72 @@
+[http]:  http://192.168.1.7:8080/api/v1/nodes
+[httpclient] [AddNode] [CheckHttpStatus]  Response Status: 200 OK
+[httpclient] [List]  []
+[httpclient] [Watch] start watch
+stupefied_germain Exited:137
+-----------
+[httpclient] [Watch] unmarshal: /api/v1/pods/test5 {"metadata":{"name":"test5","uid":"9b5b9322-c629-4cf6-a65d-066727f3d928","generation":1,"creationTimestamp":"2023-05-25T13:50:42Z","labels":{"app":"my-app"}},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"1","memory":"128Mi"},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}]},"status":{"phase":"Pending"}} ADDED
+[kubelet] [CreatePod]  event.Type:  Add
+[kubelet] [CreatePod]  event.Key:  /api/v1/pods/test5
+[kubelet] [CreatePod]  event.Val:  {"metadata":{"name":"test5","uid":"9b5b9322-c629-4cf6-a65d-066727f3d928","generation":1,"creationTimestamp":"2023-05-25T13:50:42Z","labels":{"app":"my-app"}},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"1","memory":"128Mi"},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}]},"status":{"phase":"Pending"}}
+stupefied_germain Exited:137
+-----------
+[httpclient] [Watch] unmarshal: /api/v1/pods/test5 {"metadata":{"name":"test5","uid":"9b5b9322-c629-4cf6-a65d-066727f3d928","generation":1,"creationTimestamp":"2023-05-25T13:50:42Z","labels":{"app":"my-app"}},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"1","memory":"128Mi"},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node3"},"status":{"phase":"Pending"}} MODIFIED
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/test5
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"test5","uid":"9b5b9322-c629-4cf6-a65d-066727f3d928","generation":1,"creationTimestamp":"2023-05-25T13:50:42Z","labels":{"app":"my-app"}},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"1","memory":"128Mi"},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node3"},"status":{"phase":"Pending"}}
+Image doesn't exist: registry.cn-hangzhou.aliyuncs.com/google_containers/pause:3.6
+Image doesn't exist: nginx:latest
+stupefied_germain Exited:137
+-----------
+[kubelet] [UpdatePod] [SendHttpRequest] [CheckHttpStatus]  Response Status: 200 OK
+test5-pause 13c40fea8c34d1b5a77b15828164ce16cd3114ab09b7f7f6c1a5389d2cf09e1f
+test5-my-container 156ab977e130b38f10c77d55302987f31e914daff4fd1c7e91cd3506a3f19d37
+net: 
+{
+  "Bridge": "",
+  "SandboxID": "f900ad6f20154de62765ac5ba55650de318d0d590692da523aeeb889cb827a94",
+  "HairpinMode": false,
+  "LinkLocalIPv6Address": "",
+  "LinkLocalIPv6PrefixLen": 0,
+  "Ports": {
+    "0/tcp": null
+  },
+  "SandboxKey": "/var/run/docker/netns/f900ad6f2015",
+  "SecondaryIPAddresses": null,
+  "SecondaryIPv6Addresses": null,
+  "EndpointID": "1853d293cc14b2053d544c0f6659dabedb05a6c75c1d35d72749c7c519bb6e16",
+  "Gateway": "10.0.8.1",
+  "GlobalIPv6Address": "",
+  "GlobalIPv6PrefixLen": 0,
+  "IPAddress": "10.0.8.2",
+  "IPPrefixLen": 24,
+  "IPv6Gateway": "",
+  "MacAddress": "02:42:0a:00:08:02",
+  "Networks": {
+    "bridge": {
+      "IPAMConfig": null,
+      "Links": null,
+      "Aliases": null,
+      "NetworkID": "ac59c2c91997026da6b4f66e82a0a33e3560641d4ddd339e0e8b2d17991d0924",
+      "EndpointID": "1853d293cc14b2053d544c0f6659dabedb05a6c75c1d35d72749c7c519bb6e16",
+      "Gateway": "10.0.8.1",
+      "IPAddress": "10.0.8.2",
+      "IPPrefixLen": 24,
+      "IPv6Gateway": "",
+      "GlobalIPv6Address": "",
+      "GlobalIPv6PrefixLen": 0,
+      "MacAddress": "02:42:0a:00:08:02",
+      "DriverOpts": null
+    }
+  }
+}
+-----------
+[httpclient] [Watch] unmarshal: /api/v1/pods/test5 {"metadata":{"name":"test5","uid":"9b5b9322-c629-4cf6-a65d-066727f3d928","generation":1,"creationTimestamp":"2023-05-25T13:50:42Z","labels":{"app":"my-app"}},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"test5-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"1","memory":"128Mi"},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node3"},"status":{"phase":"Running","podIP":"10.0.8.2"}} MODIFIED
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/test5
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"test5","uid":"9b5b9322-c629-4cf6-a65d-066727f3d928","generation":1,"creationTimestamp":"2023-05-25T13:50:42Z","labels":{"app":"my-app"}},"spec":{"volumes":[{"name":"my-volume","hostPath":""}],"containers":[{"name":"test5-my-container","image":"nginx:latest","command":["nginx","-g","daemon off;"],"entryPoint":null,"ports":[{"Protocol":"","PortNumber":""}],"limitResource":{"cpu":"1","memory":"128Mi"},"tty":false,"volumeMounts":[{"name":"my-volume","mountPath":"/usr/share/nginx/html"}]}],"nodeName":"node3"},"status":{"phase":"Running","podIP":"10.0.8.2"}}
+[kubelet] [UpdatePod]  phase is not satisfied: Running
+test5-my-container not found.
+test5-pause not found.
+stupefied_germain Exited:137
+-----------

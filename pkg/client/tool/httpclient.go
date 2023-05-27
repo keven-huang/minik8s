@@ -36,7 +36,7 @@ type ListRes struct {
 }
 
 func List(resource string) []ListRes {
-	url := "http://127.0.0.1:8080" + resource + "?all=true"
+	url := apiconfig.Server_URL + resource + "?all=true"
 	resp, err := http.Get(url)
 	if err != nil {
 		// handle error
@@ -62,7 +62,7 @@ func Watch(resourses string) WatchInterface {
 	watcher.resultChan = make(chan Event)
 	reader := func(wc chan<- Event) {
 		fmt.Println("[httpclient] [Watch] start watch")
-		url := "http://127.0.0.1:8080/watch" + resourses + "?prefix=true"
+		url := apiconfig.Server_URL + "/watch" + resourses + "?prefix=true"
 		resp, err := http.Get(url)
 		if err != nil {
 			// handle error
@@ -170,6 +170,7 @@ func UpdatePod(pod *core.Pod) error {
 
 func AddNode(node *core.Node) error {
 	url := apiconfig.Server_URL + apiconfig.NODE_PATH
+	fmt.Println("[http]: ", url)
 	data, err := json.Marshal(node)
 	if err != nil {
 		return err
@@ -249,27 +250,36 @@ func GetJobFile(JobName string) core.JobUpload {
 }
 
 // Get Pod
-// TODO 讨论确定一下具体写法, api路径等
 
 func GetPod(name string) (*core.Pod, error) {
 	prefix := "[tool][GetPod]"
 	fmt.Println(prefix + "key:" + name)
-	url := apiconfig.Server_URL + apiconfig.POD_PATH + name
+	url := apiconfig.Server_URL + apiconfig.POD_PATH + "?Name=" + name
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	buf := make([]byte, 40960)
-	res := core.Pod{}
-	n, err := resp.Body.Read(buf)
-	if n != 0 || err != io.EOF {
-		err = json.Unmarshal([]byte(buf[:n]), &res)
-		if err != nil {
-			return nil, err
-		}
+	reader := resp.Body
+	data, err := io.ReadAll(reader)
+	fmt.Println("[httpclient][get pod]", string(data))
+	var res []ListRes
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		fmt.Println("[httpclient][get pod]", err)
+		return &core.Pod{}, err
 	}
-	return &res, nil
+	for _, val := range res {
+		fmt.Println("[httpclient][get pod]", res)
+		pod := core.Pod{}
+		err := json.Unmarshal([]byte(val.Value), &pod)
+		if err != nil {
+			fmt.Println("[httpclient][get pod]", err)
+			return &core.Pod{}, err
+		}
+		return &pod, nil
+	}
+	return &core.Pod{}, fmt.Errorf("no such pod")
 }
 
 func GetTypeName(event Event) string {

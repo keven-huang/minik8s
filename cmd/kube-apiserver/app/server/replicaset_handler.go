@@ -12,6 +12,7 @@ import (
 	"minik8s/pkg/kube-apiserver/etcd"
 	"minik8s/pkg/util/random"
 	"net/http"
+	"strconv"
 )
 
 func AddReplicaSet(c *gin.Context, s *Server) {
@@ -53,6 +54,32 @@ func UpdateReplicaSet(c *gin.Context, s *Server) {
 		log.Println("[ERROR] ", prefix, err)
 		return
 	}
+
+	if c.Query("replicas") != "" {
+		res, err := s.Etcdstore.GetExact(apiconfig.REPLICASET_PATH + "/" + r.Name)
+		if err != nil {
+			log.Println("[ERROR] ", prefix, err)
+			return
+		}
+		if len(res) != 1 {
+			fmt.Println("[ERROR] ", prefix, "len(res) != 1")
+			return
+		}
+		err = json.Unmarshal([]byte(res[0].Value), &r)
+		if err != nil {
+			log.Println("[ERROR] ", prefix, err)
+			return
+		}
+		str := c.Query("replicas")
+		num, err := strconv.ParseInt(str, 10, 32)
+		if err != nil {
+			log.Println("[ERROR] ", prefix, err)
+			return
+		}
+		*r.Spec.Replicas = int32(num)
+		fmt.Println("[INFO] ", prefix, "Replicas:", *r.Spec.Replicas)
+	}
+
 	key := c.Request.URL.Path + "/" + r.Name
 
 	body, _ := json.Marshal(r)
@@ -100,10 +127,7 @@ func GetReplicaSet(c *gin.Context, s *Server) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "get ReplicaSet successfully.",
-		"Results": res,
-	})
+	c.JSON(http.StatusOK, res)
 }
 
 func DeleteReplicaSet(c *gin.Context, s *Server) {

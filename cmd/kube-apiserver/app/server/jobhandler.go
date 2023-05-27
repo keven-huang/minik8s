@@ -8,6 +8,7 @@ import (
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/pkg/api/core"
 	"minik8s/pkg/kube-apiserver/etcd"
+	"minik8s/pkg/util/random"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -22,8 +23,8 @@ func AddJob(c *gin.Context, s *Server) {
 		log.Println(err)
 		return
 	}
+	job.UID = random.GenerateUUID()
 	key := c.Request.URL.Path + "/" + job.Name
-	fmt.Println(key)
 	res, _ := s.Etcdstore.Get(key)
 	if len(res) > 0 {
 		c.JSON(http.StatusBadRequest, gin.H{

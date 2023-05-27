@@ -90,10 +90,7 @@ func GetPod(c *gin.Context, s *Server) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "get pod successfully.",
-		"Results": res,
-	})
+	c.JSON(http.StatusOK, res)
 }
 
 func DeletePod(c *gin.Context, s *Server) {
@@ -144,6 +141,14 @@ func UpdatePod(c *gin.Context, s *Server) {
 		return
 	}
 	key := c.Request.URL.Path + "/" + pod.Name
+
+	res, err := s.Etcdstore.Get(key)
+	if len(res) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Pod Not Found.",
+		})
+		return
+	}
 
 	body, _ := json.Marshal(pod)
 	err = s.Etcdstore.Put(key, string(body))

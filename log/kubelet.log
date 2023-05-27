@@ -1,59 +1,208 @@
+[http]:  http://127.0.0.1:8080/api/v1/nodes
 [httpclient] [AddNode] [CheckHttpStatus]  Response Status: 200 OK
 [httpclient] [List]  []
 [httpclient] [Watch] start watch
-[httpclient] [Watch] unmarshal: /api/v1/pods/cuda {"metadata":{"name":"cuda","generation":1,"creationTimestamp":"2023-05-22T14:11:32Z"},"spec":{"volumes":[{"name":"job-volume","hostPath":"/home/job"}],"containers":[{"name":"gpu","image":"gpu-jobs-image","command":["--jobname=cuda","--outfile=cuda","--errfile=cuda"],"entryPoint":["./gpuserver"],"ports":null,"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"job-volume","mountPath":"/home/job"}]}],"gpu":true,"gpuJobName":"cuda"},"status":{"phase":"Pending"}} ADDED
+cuda-pause not found.
+infallible_snyder Exited:0
+docker_myapp_1 Exited:1
+docker_Etcd_1 not found.
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+romantic_galileo Exited:137
+jovial_lamarr Exited:0
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+cuda-pause not found.
+infallible_snyder Exited:0
+docker_myapp_1 Exited:1
+docker_Etcd_1 not found.
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+romantic_galileo Exited:137
+jovial_lamarr Exited:0
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+cuda-pause not found.
+infallible_snyder Exited:0
+docker_myapp_1 Exited:1
+docker_Etcd_1 not found.
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+romantic_galileo Exited:137
+jovial_lamarr Exited:0
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+cuda-pause not found.
+infallible_snyder Exited:0
+docker_myapp_1 Exited:1
+docker_Etcd_1 not found.
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+romantic_galileo Exited:137
+jovial_lamarr Exited:0
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+[httpclient] [Watch] unmarshal: /api/v1/pods/cuda {"metadata":{"name":"cuda","uid":"1330a840-3a45-4735-8e6c-f88029263cb9","generation":1,"creationTimestamp":"2023-05-27T05:19:31Z"},"spec":{"volumes":[{"name":"job-volume","hostPath":"/home/job"}],"containers":[{"name":"gpu","image":"gpu-jobs-image","command":["--jobname=cuda","--outfile=cuda","--errfile=cuda"],"entryPoint":["./gpuserver"],"ports":null,"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"job-volume","mountPath":"/home/job"}]}],"gpu":true,"gpuJobName":"cuda"},"status":{"phase":"Pending"}} ADDED
 [kubelet] [CreatePod]  event.Type:  Add
 [kubelet] [CreatePod]  event.Key:  /api/v1/pods/cuda
-[kubelet] [CreatePod]  event.Val:  {"metadata":{"name":"cuda","generation":1,"creationTimestamp":"2023-05-22T14:11:32Z"},"spec":{"volumes":[{"name":"job-volume","hostPath":"/home/job"}],"containers":[{"name":"gpu","image":"gpu-jobs-image","command":["--jobname=cuda","--outfile=cuda","--errfile=cuda"],"entryPoint":["./gpuserver"],"ports":null,"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"job-volume","mountPath":"/home/job"}]}],"gpu":true,"gpuJobName":"cuda"},"status":{"phase":"Pending"}}
-[httpclient] [Watch] unmarshal: /api/v1/pods/cuda {"metadata":{"name":"cuda","generation":1,"creationTimestamp":"2023-05-22T14:11:32Z"},"spec":{"volumes":[{"name":"job-volume","hostPath":"/home/job"}],"containers":[{"name":"gpu","image":"gpu-jobs-image","command":["--jobname=cuda","--outfile=cuda","--errfile=cuda"],"entryPoint":["./gpuserver"],"ports":null,"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"job-volume","mountPath":"/home/job"}]}],"nodeName":"node1","gpu":true,"gpuJobName":"cuda"},"status":{"phase":"Pending"}} MODIFIED
+[kubelet] [CreatePod]  event.Val:  {"metadata":{"name":"cuda","uid":"1330a840-3a45-4735-8e6c-f88029263cb9","generation":1,"creationTimestamp":"2023-05-27T05:19:31Z"},"spec":{"volumes":[{"name":"job-volume","hostPath":"/home/job"}],"containers":[{"name":"gpu","image":"gpu-jobs-image","command":["--jobname=cuda","--outfile=cuda","--errfile=cuda"],"entryPoint":["./gpuserver"],"ports":null,"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"job-volume","mountPath":"/home/job"}]}],"gpu":true,"gpuJobName":"cuda"},"status":{"phase":"Pending"}}
+[httpclient] [Watch] unmarshal: /api/v1/pods/cuda {"metadata":{"name":"cuda","uid":"1330a840-3a45-4735-8e6c-f88029263cb9","generation":1,"creationTimestamp":"2023-05-27T05:19:31Z"},"spec":{"volumes":[{"name":"job-volume","hostPath":"/home/job"}],"containers":[{"name":"gpu","image":"gpu-jobs-image","command":["--jobname=cuda","--outfile=cuda","--errfile=cuda"],"entryPoint":["./gpuserver"],"ports":null,"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"job-volume","mountPath":"/home/job"}]}],"nodeName":"node1","gpu":true,"gpuJobName":"cuda"},"status":{"phase":"Pending"}} MODIFIED
 [kubelet] [UpdatePod]  event.Type:  Modify
 [kubelet] [UpdatePod]  event.Key:  /api/v1/pods/cuda
-[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"cuda","generation":1,"creationTimestamp":"2023-05-22T14:11:32Z"},"spec":{"volumes":[{"name":"job-volume","hostPath":"/home/job"}],"containers":[{"name":"gpu","image":"gpu-jobs-image","command":["--jobname=cuda","--outfile=cuda","--errfile=cuda"],"entryPoint":["./gpuserver"],"ports":null,"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"job-volume","mountPath":"/home/job"}]}],"nodeName":"node1","gpu":true,"gpuJobName":"cuda"},"status":{"phase":"Pending"}}
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"cuda","uid":"1330a840-3a45-4735-8e6c-f88029263cb9","generation":1,"creationTimestamp":"2023-05-27T05:19:31Z"},"spec":{"volumes":[{"name":"job-volume","hostPath":"/home/job"}],"containers":[{"name":"gpu","image":"gpu-jobs-image","command":["--jobname=cuda","--outfile=cuda","--errfile=cuda"],"entryPoint":["./gpuserver"],"ports":null,"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"job-volume","mountPath":"/home/job"}]}],"nodeName":"node1","gpu":true,"gpuJobName":"cuda"},"status":{"phase":"Pending"}}
 [kubelet] [UpdatePod]  get gpufiles
 [httpclient][GetJobFile] {"jobname":"cuda","slurm":"IyEvYmluL2Jhc2gKI1NCQVRDSCAtLWpvYi1uYW1lPWN1ZGEKI1NCQVRDSCAtLXBhcnRpdGlvbj1kZ3gyCiNTQkFUQ0ggLS1jcHVzLXBlci10YXNrPTEKI1NCQVRDSCAtLW5vZGVzPTEKI1NCQVRDSCAtLW50YXNrcy1wZXItbm9kZT0xCiNTQkFUQ0ggLS1vdXRwdXQ9Y3VkYS5vdXQKI1NCQVRDSCAtLWVycm9yPWN1ZGEuZXJyCiNTQkFUQ0ggLS1tYWlsLXR5cGU9ZW5kCiNTQkFUQ0ggLS1tYWlsLXVzZXI9am1odWFuZ18yMDIwQHNqdHUuZWR1LmNuCiNTQkFUQ0ggLS1ncmVzPWdwdToxCnVsaW1pdCAtcyB1bmxpbWl0ZWQKdWxpbWl0IC1sIHVubGltaXRlZAptb2R1bGUgbG9hZCBnY2MvOC4zLjAgY3VkYS8xMC4xLjI0My1nY2MtOC4zLjAKbnZjYyBjdWRhLmN1IC1vIGpvYiAtbGN1YmxhcwouL2pvYg==","program":"I2luY2x1ZGUgPHN0ZGlvLmg+CiNpbmNsdWRlIDxzdGRsaWIuaD4KI2luY2x1ZGUgPG1hdGguaD4KI2luY2x1ZGUgPGN1ZGFfcnVudGltZS5oPgojaW5jbHVkZSAiY3VibGFzX3YyLmgiCiNkZWZpbmUgTSA2CiNkZWZpbmUgTiA1CiNkZWZpbmUgSURYMkMoaSxqLGxkKSAoKChqKSoobGQpKSsoaSkpCgpzdGF0aWMgX19pbmxpbmVfXyB2b2lkIG1vZGlmeSAoY3VibGFzSGFuZGxlX3QgaGFuZGxlLCBmbG9hdCAqbSwgaW50IGxkbSwgaW50IG4sIGludCBwLCBpbnQgcSwgZmxvYXQgYWxwaGEsIGZsb2F0IGJldGEpewogICAgY3VibGFzU3NjYWwgKGhhbmRsZSwgbi1wLCAmYWxwaGEsICZtW0lEWDJDKHAscSxsZG0pXSwgbGRtKTsKICAgIGN1Ymxhc1NzY2FsIChoYW5kbGUsIGxkbS1wLCAmYmV0YSwgJm1bSURYMkMocCxxLGxkbSldLCAxKTsKfQoKaW50IG1haW4gKHZvaWQpewogICAgY3VkYUVycm9yX3QgY3VkYVN0YXQ7CiAgICBjdWJsYXNTdGF0dXNfdCBzdGF0OwogICAgY3VibGFzSGFuZGxlX3QgaGFuZGxlOwogICAgaW50IGksIGo7CiAgICBmbG9hdCogZGV2UHRyQTsKICAgIGZsb2F0KiBhID0gMDsKICAgIGEgPSAoZmxvYXQgKiltYWxsb2MgKE0gKiBOICogc2l6ZW9mICgqYSkpOwogICAgaWYgKCFhKSB7CiAgICAgICAgcHJpbnRmICgiaG9zdCBtZW1vcnkgYWxsb2NhdGlvbiBmYWlsZWQiKTsKICAgICAgICByZXR1cm4gRVhJVF9GQUlMVVJFOwogICAgfQogICAgZm9yIChqID0gMDsgaiA8IE47IGorKykgewogICAgICAgIGZvciAoaSA9IDA7IGkgPCBNOyBpKyspIHsKICAgICAgICAgICAgYVtJRFgyQyhpLGosTSldID0gKGZsb2F0KShpICogTSArIGogKyAxKTsKICAgICAgICB9CiAgICB9CiAgICBjdWRhU3RhdCA9IGN1ZGFNYWxsb2MgKCh2b2lkKiopJmRldlB0ckEsIE0qTipzaXplb2YoKmEpKTsKICAgIGlmIChjdWRhU3RhdCAhPSBjdWRhU3VjY2VzcykgewogICAgICAgIHByaW50ZiAoImRldmljZSBtZW1vcnkgYWxsb2NhdGlvbiBmYWlsZWQiKTsKICAgICAgICByZXR1cm4gRVhJVF9GQUlMVVJFOwogICAgfQogICAgc3RhdCA9IGN1Ymxhc0NyZWF0ZSgmaGFuZGxlKTsKICAgIGlmIChzdGF0ICE9IENVQkxBU19TVEFUVVNfU1VDQ0VTUykgewogICAgICAgIHByaW50ZiAoIkNVQkxBUyBpbml0aWFsaXphdGlvbiBmYWlsZWRcbiIpOwogICAgICAgIHJldHVybiBFWElUX0ZBSUxVUkU7CiAgICB9CiAgICBzdGF0ID0gY3VibGFzU2V0TWF0cml4IChNLCBOLCBzaXplb2YoKmEpLCBhLCBNLCBkZXZQdHJBLCBNKTsKICAgIGlmIChzdGF0ICE9IENVQkxBU19TVEFUVVNfU1VDQ0VTUykgewogICAgICAgIHByaW50ZiAoImRhdGEgZG93bmxvYWQgZmFpbGVkIik7CiAgICAgICAgY3VkYUZyZWUgKGRldlB0ckEpOwogICAgICAgIGN1Ymxhc0Rlc3Ryb3koaGFuZGxlKTsKICAgICAgICByZXR1cm4gRVhJVF9GQUlMVVJFOwogICAgfQogICAgbW9kaWZ5IChoYW5kbGUsIGRldlB0ckEsIE0sIE4sIDEsIDIsIDE2LjBmLCAxMi4wZik7CiAgICBzdGF0ID0gY3VibGFzR2V0TWF0cml4IChNLCBOLCBzaXplb2YoKmEpLCBkZXZQdHJBLCBNLCBhLCBNKTsKICAgIGlmIChzdGF0ICE9IENVQkxBU19TVEFUVVNfU1VDQ0VTUykgewogICAgICAgIHByaW50ZiAoImRhdGEgdXBsb2FkIGZhaWxlZCIpOwogICAgICAgIGN1ZGFGcmVlIChkZXZQdHJBKTsKICAgICAgICBjdWJsYXNEZXN0cm95KGhhbmRsZSk7CiAgICAgICAgcmV0dXJuIEVYSVRfRkFJTFVSRTsKICAgIH0KICAgIGN1ZGFGcmVlIChkZXZQdHJBKTsKICAgIGN1Ymxhc0Rlc3Ryb3koaGFuZGxlKTsKICAgIGZvciAoaiA9IDA7IGogPCBOOyBqKyspIHsKICAgICAgICBmb3IgKGkgPSAwOyBpIDwgTTsgaSsrKSB7CiAgICAgICAgICAgIHByaW50ZiAoIiU3LjBmIiwgYVtJRFgyQyhpLGosTSldKTsKICAgICAgICB9CiAgICAgICAgcHJpbnRmICgiXG4iKTsKICAgIH0KICAgIGZyZWUoYSk7CiAgICByZXR1cm4gRVhJVF9TVUNDRVNTOwp9"}
+cuda-gpu not found.
+cuda-pause not found.
+infallible_snyder Exited:0
+docker_myapp_1 Exited:1
+docker_Etcd_1 not found.
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+romantic_galileo Exited:137
+jovial_lamarr Exited:0
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
 [kubelet] [UpdatePod] [SendHttpRequest] [CheckHttpStatus]  Response Status: 200 OK
-cuda-pause 46441e1cbc3c5c77a76afd3e20fc057634fb8c72890611b62c37ee208e150e1e
-cuda-gpu b49ae2bda67db1dbd0c392f7ec06c39ff84ad19f84675bebb35201a1e37d9de4
+[httpclient] [Watch] unmarshal: /api/v1/pods/cuda {"metadata":{"name":"cuda","uid":"1330a840-3a45-4735-8e6c-f88029263cb9","generation":1,"creationTimestamp":"2023-05-27T05:19:31Z"},"spec":{"volumes":[{"name":"job-volume","hostPath":"/home/job"}],"containers":[{"name":"cuda-gpu","image":"gpu-jobs-image","command":["--jobname=cuda","--outfile=cuda","--errfile=cuda"],"entryPoint":["./gpuserver"],"ports":null,"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"job-volume","mountPath":"/home/job"}]}],"nodeName":"node1","gpu":true,"gpuJobName":"cuda"},"status":{"phase":"Running","podIP":"10.0.13.2"}} MODIFIED
+cuda-pause b3052bf5147f21c476e4fdbaac99a11c5e0febea60ed73a741c7621aa8327cfb
+cuda-gpu a26a6c1d53a8cbeda47c5195ede8152de5fe7ef9790254bf23376f7c98cc173d
 net: 
 {
   "Bridge": "",
-  "SandboxID": "70113a3e1a0da79d5117a34a56d6af101fefaec9d84dc7c17596de0ecd103514",
+  "SandboxID": "4fb7335ef0704499238110657e772658fe0e878f8cb14ad9b9a36a139945912f",
   "HairpinMode": false,
   "LinkLocalIPv6Address": "",
   "LinkLocalIPv6PrefixLen": 0,
   "Ports": {},
-  "SandboxKey": "/var/run/docker/netns/70113a3e1a0d",
+  "SandboxKey": "/var/run/docker/netns/4fb7335ef070",
   "SecondaryIPAddresses": null,
   "SecondaryIPv6Addresses": null,
-  "EndpointID": "8fb9756aee6126af43b04d43a74e93dc9f082b3a8ac6df08a7d960f044a70d8e",
+  "EndpointID": "40d2e9147a7ebacea0d3b326cd60037b23b4836fe78ec7942b85c3a18728f4f9",
   "Gateway": "10.0.13.1",
   "GlobalIPv6Address": "",
   "GlobalIPv6PrefixLen": 0,
-  "IPAddress": "10.0.13.4",
+  "IPAddress": "10.0.13.2",
   "IPPrefixLen": 24,
   "IPv6Gateway": "",
-  "MacAddress": "02:42:0a:00:0d:04",
+  "MacAddress": "02:42:0a:00:0d:02",
   "Networks": {
     "bridge": {
       "IPAMConfig": null,
       "Links": null,
       "Aliases": null,
-      "NetworkID": "fd43e5e6509d6b8099546fc5954a27f7cff890a8edefea89bc5f4a00eda493f8",
-      "EndpointID": "8fb9756aee6126af43b04d43a74e93dc9f082b3a8ac6df08a7d960f044a70d8e",
+      "NetworkID": "021e5e8dc479794cffb415f24065f539ef90741f81ab75935d1b01d7f962f1e8",
+      "EndpointID": "40d2e9147a7ebacea0d3b326cd60037b23b4836fe78ec7942b85c3a18728f4f9",
       "Gateway": "10.0.13.1",
-      "IPAddress": "10.0.13.4",
+      "IPAddress": "10.0.13.2",
       "IPPrefixLen": 24,
       "IPv6Gateway": "",
       "GlobalIPv6Address": "",
       "GlobalIPv6PrefixLen": 0,
-      "MacAddress": "02:42:0a:00:0d:04",
+      "MacAddress": "02:42:0a:00:0d:02",
       "DriverOpts": null
     }
   }
 }
 -----------
-[httpclient] [Watch] unmarshal: /api/v1/pods/cuda {"metadata":{"name":"cuda","generation":1,"creationTimestamp":"2023-05-22T14:11:32Z"},"spec":{"volumes":[{"name":"job-volume","hostPath":"/home/job"}],"containers":[{"name":"cuda-gpu","image":"gpu-jobs-image","command":["--jobname=cuda","--outfile=cuda","--errfile=cuda"],"entryPoint":["./gpuserver"],"ports":null,"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"job-volume","mountPath":"/home/job"}]}],"nodeName":"node1","gpu":true,"gpuJobName":"cuda"},"status":{"phase":"Running","podIP":"10.0.13.4"}} MODIFIED
 [kubelet] [UpdatePod]  event.Type:  Modify
 [kubelet] [UpdatePod]  event.Key:  /api/v1/pods/cuda
-[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"cuda","generation":1,"creationTimestamp":"2023-05-22T14:11:32Z"},"spec":{"volumes":[{"name":"job-volume","hostPath":"/home/job"}],"containers":[{"name":"cuda-gpu","image":"gpu-jobs-image","command":["--jobname=cuda","--outfile=cuda","--errfile=cuda"],"entryPoint":["./gpuserver"],"ports":null,"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"job-volume","mountPath":"/home/job"}]}],"nodeName":"node1","gpu":true,"gpuJobName":"cuda"},"status":{"phase":"Running","podIP":"10.0.13.4"}}
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"cuda","uid":"1330a840-3a45-4735-8e6c-f88029263cb9","generation":1,"creationTimestamp":"2023-05-27T05:19:31Z"},"spec":{"volumes":[{"name":"job-volume","hostPath":"/home/job"}],"containers":[{"name":"cuda-gpu","image":"gpu-jobs-image","command":["--jobname=cuda","--outfile=cuda","--errfile=cuda"],"entryPoint":["./gpuserver"],"ports":null,"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"job-volume","mountPath":"/home/job"}]}],"nodeName":"node1","gpu":true,"gpuJobName":"cuda"},"status":{"phase":"Running","podIP":"10.0.13.2"}}
 [kubelet] [UpdatePod]  phase is not satisfied: Running
+cuda-gpu not found.
+cuda-pause not found.
+infallible_snyder Exited:0
+docker_myapp_1 Exited:1
+docker_Etcd_1 not found.
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+romantic_galileo Exited:137
+jovial_lamarr Exited:0
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+cuda-gpu Exited:0
+pod: cuda  container: cuda-gpu  Exited With 0
+[kubelet] [Listener][SendHttpRequest] [CheckHttpStatus]  Response Status: 200 OK
+cuda-gpu update status to Succeeded.
+cuda-pause not found.
+infallible_snyder Exited:0
+docker_myapp_1 Exited:1
+docker_Etcd_1 not found.
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+romantic_galileo Exited:137
+jovial_lamarr Exited:0
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+[httpclient] [Watch] unmarshal: /api/v1/pods/cuda {"metadata":{"name":"cuda","uid":"1330a840-3a45-4735-8e6c-f88029263cb9","generation":1,"creationTimestamp":"2023-05-27T05:19:31Z"},"spec":{"volumes":[{"name":"job-volume","hostPath":"/home/job"}],"containers":[{"name":"cuda-gpu","image":"gpu-jobs-image","command":["--jobname=cuda","--outfile=cuda","--errfile=cuda"],"entryPoint":["./gpuserver"],"ports":null,"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"job-volume","mountPath":"/home/job"}]}],"nodeName":"node1","gpu":true,"gpuJobName":"cuda"},"status":{"phase":"Succeeded","podIP":"10.0.13.2"}} MODIFIED
+[kubelet] [UpdatePod]  event.Type:  Modify
+[kubelet] [UpdatePod]  event.Key:  /api/v1/pods/cuda
+[kubelet] [UpdatePod]  event.Val:  {"metadata":{"name":"cuda","uid":"1330a840-3a45-4735-8e6c-f88029263cb9","generation":1,"creationTimestamp":"2023-05-27T05:19:31Z"},"spec":{"volumes":[{"name":"job-volume","hostPath":"/home/job"}],"containers":[{"name":"cuda-gpu","image":"gpu-jobs-image","command":["--jobname=cuda","--outfile=cuda","--errfile=cuda"],"entryPoint":["./gpuserver"],"ports":null,"limitResource":{"cpu":"","memory":""},"tty":false,"volumeMounts":[{"name":"job-volume","mountPath":"/home/job"}]}],"nodeName":"node1","gpu":true,"gpuJobName":"cuda"},"status":{"phase":"Succeeded","podIP":"10.0.13.2"}}
+[kubelet] [UpdatePod]  phase is not satisfied: Succeeded
+cuda-gpu Exited:0
+cuda-pause not found.
+infallible_snyder Exited:0
+docker_myapp_1 Exited:1
+docker_Etcd_1 not found.
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+romantic_galileo Exited:137
+jovial_lamarr Exited:0
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
+cuda-gpu Exited:0
+cuda-pause not found.
+infallible_snyder Exited:0
+docker_myapp_1 Exited:1
+docker_Etcd_1 not found.
+cadvisor not found.
+grafana not found.
+node_exporter not found.
+prometheus not found.
+gpu Exited:137
+romantic_galileo Exited:137
+jovial_lamarr Exited:0
+angry_yonath Exited:137
+ubuntu_mnt_01 not found.
+ubuntu-test Exited:0
+-----------
