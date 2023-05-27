@@ -12,6 +12,14 @@ construct:
 	/usr/local/go/bin/go build -o ./bin/kubeproxy ./cmd/kube-proxy/kubeproxy.go
 	/usr/local/go/bin/go build -o ./bin/kubeservice ./cmd/kube-service/kubeservice.go
 
+build:
+	/usr/local/go/bin/go build -o ./bin/kube-apiserver ./cmd/kube-apiserver/kube-apiserver.go
+	/usr/local/go/bin/go build -o ./bin/kube-scheduler ./cmd/kube-scheduler/kube-scheduler.go
+	/usr/local/go/bin/go build -o ./bin/kubelet ./cmd/kubelet/kubelet.go
+	/usr/local/go/bin/go build -o ./bin/kube-controller-manager ./cmd/kube-controller-manager/kube-controller-manager.go
+	/usr/local/go/bin/go build -o ./bin/kubeproxy ./cmd/kube-proxy/kubeproxy.go
+	/usr/local/go/bin/go build -o ./bin/kubeservice ./cmd/kube-service/kubeservice.go
+
 run:
 	./bin/kube-apiserver > log/apiserver.log &
 	sleep 5
