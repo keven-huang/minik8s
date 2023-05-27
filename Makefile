@@ -1,10 +1,13 @@
 clean:
 	etcdctl del "/api" --prefix
 	rm -rf ./bin
+	rm -rf /root/nginx
+	rm ./iptable_ori
 
 construct:
 	mkdir -p /root/nginx
 	mkdir -p bin
+	iptables-save > ./iptable_ori
 	/usr/local/go/bin/go build -o ./bin/kube-apiserver ./cmd/kube-apiserver/kube-apiserver.go
 	/usr/local/go/bin/go build -o ./bin/kube-scheduler ./cmd/kube-scheduler/kube-scheduler.go
 	/usr/local/go/bin/go build -o ./bin/kubelet ./cmd/kubelet/kubelet.go
@@ -37,7 +40,7 @@ m3:
 stop:
 	./scripts/linux/stop.sh
 	sleep 2
-	iptables-restore < iptable_ori
+	iptables-restore < ./iptable_ori
 	sudo docker ps -aq --filter "name=^coreDNS" | xargs -r docker stop
 	sudo docker ps -aq --filter "name=^coreDNS" | xargs -r docker rm
 
