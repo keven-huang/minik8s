@@ -122,7 +122,7 @@ func (o *GetOptions) RunGetPod(cmd *cobra.Command, args []string) error {
 	table := uitable.New()
 	table.MaxColWidth = 100
 	table.RightAlign(10)
-	table.AddRow("NAME", "STATUS", "Owner", "CreationTimestamp")
+	table.AddRow("NAME", "NODE", "STATUS", "Owner", "CreationTimestamp")
 	for _, val := range res {
 		pod := core.Pod{}
 		err := json.Unmarshal([]byte(val.Value), &pod)
@@ -138,6 +138,7 @@ func (o *GetOptions) RunGetPod(cmd *cobra.Command, args []string) error {
 		}
 
 		table.AddRow(color.RedString(pod.Name),
+			color.WhiteString(pod.Spec.NodeName),
 			color.BlueString(string(pod.Status.Phase)),
 			color.GreenString(owner),
 			color.YellowString(pod.CreationTimestamp.Format(time.UnixDate)))
@@ -252,4 +253,3 @@ func (o *GetOptions) RunGetJob(cmd *cobra.Command, args []string) error {
 
 	return nil
 }
-
