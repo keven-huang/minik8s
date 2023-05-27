@@ -25,7 +25,7 @@ test:
   script:
     - make stop
     - make clean
-    - sudo make build
+    - sudo make construct
     - sudo make run
     - sudo /usr/local/go/bin/go test ./... -v
     - make stop
