@@ -45,49 +45,51 @@ func NewServiceManager() *ServiceManager {
 	// 初始化 DNSInformer
 	res.DNSInformer = informer.NewInformer(apiconfig.DNS_PATH)
 
-	// 设置watch add service event 的回调函数
-	res.ServiceInformer.AddEventHandler(tool.Added, func(event tool.Event) {
-		fmt.Println("[kube-service][manage][addServiceHandler]:" + event.Key)
-		newService := &service.Service{}
-		err := json.Unmarshal([]byte(event.Val), newService)
-		if err != nil {
-			fmt.Println(err.Error())
-			return
-		}
-		lastService, ok := res.ServiceMapping[newService.ServiceMeta.Name]
-		if !ok { // 新建
-			res.ServiceMapping[newService.ServiceMeta.Name] = CreateService(newService)
-		} else { // 删除老的，创建新的
-			lastService.Delete()                                    // delete service
-			delete(res.ServiceMapping, newService.ServiceMeta.Name) // delete from map
-			res.ServiceMapping[newService.ServiceMeta.Name] = CreateService(newService)
-		}
-	})
-	// 设置watch delete event的回调
-	res.ServiceInformer.AddEventHandler(tool.Deleted, func(event tool.Event) {
-		// delete by name
-		prefix := "[kube-service][manager][deleteServiceHandler]"
-		fmt.Println(prefix + event.Key)
-		strs := strings.Split(event.Key, "/")
-		var name string
-		name = strs[4]
-		fmt.Println(prefix + name)
-		lastService, ok := res.ServiceMapping[name]
-		if !ok {
-			fmt.Println(prefix + "fail to find service " + name)
-			return
-		} else {
-			lastService.Delete()             // delete service
-			delete(res.ServiceMapping, name) // delete from map
-		}
-	})
+	res.ServiceInformer.AddEventHandler(tool.Added, res.UpdateServiceHandler)
+	res.ServiceInformer.AddEventHandler(tool.Modified, res.UpdateServiceHandler)
+	res.ServiceInformer.AddEventHandler(tool.Deleted, res.DeleteServiceHandler)
 
-	// TODO DNS-informer
 	res.DNSInformer.AddEventHandler(tool.Added, res.DNSUpdateHandler)
 	res.DNSInformer.AddEventHandler(tool.Modified, res.DNSUpdateHandler)
 	res.DNSInformer.AddEventHandler(tool.Deleted, res.DNSDeleteHandler)
 
 	return res
+}
+
+func (sm *ServiceManager) UpdateServiceHandler(event tool.Event) {
+	fmt.Println("[kube-service][manage][addServiceHandler]:" + event.Key)
+	newService := &service.Service{}
+	err := json.Unmarshal([]byte(event.Val), newService)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	lastService, ok := sm.ServiceMapping[newService.ServiceMeta.Name]
+	if !ok { // 新建
+		sm.ServiceMapping[newService.ServiceMeta.Name] = CreateService(newService)
+	} else { // 删除老的，创建新的
+		lastService.Delete()                                   // delete service
+		delete(sm.ServiceMapping, newService.ServiceMeta.Name) // delete from map
+		sm.ServiceMapping[newService.ServiceMeta.Name] = CreateService(newService)
+	}
+}
+
+func (sm *ServiceManager) DeleteServiceHandler(event tool.Event) {
+	// delete by name
+	prefix := "[kube-service][manager][deleteServiceHandler]"
+	fmt.Println(prefix + event.Key)
+	strs := strings.Split(event.Key, "/")
+	var name string
+	name = strs[4]
+	fmt.Println(prefix + name)
+	lastService, ok := sm.ServiceMapping[name]
+	if !ok {
+		fmt.Println(prefix + "fail to find service " + name)
+		return
+	} else {
+		lastService.Delete()            // delete service
+		delete(sm.ServiceMapping, name) // delete from map
+	}
 }
 
 func (sm *ServiceManager) DNSUpdateHandler(event tool.Event) {

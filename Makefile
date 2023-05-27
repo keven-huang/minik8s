@@ -1,6 +1,7 @@
 clean:
 	etcdctl del "/api" --prefix
-	rm -rf ./bin 2>/dev/null || true
+	#rm -rf ./bin 2>/dev/null || true
+	pwd
 	rm -rf /root/nginx 2>/dev/null || true
 	rm ./iptable_ori 2>/dev/null || true
 
