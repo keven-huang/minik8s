@@ -9,7 +9,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
+
 	"minik8s/pkg/api/core"
 	"minik8s/pkg/kubelet/config"
 
@@ -21,8 +21,6 @@ import (
 	"github.com/docker/go-connections/nat"
 	"io"
 	kube_proxy "minik8s/configs"
-	"minik8s/pkg/api/core"
-	"minik8s/pkg/kubelet/config"
 )
 
 func GetNewClient() (*client.Client, error) {

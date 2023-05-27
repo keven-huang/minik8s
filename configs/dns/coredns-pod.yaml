@@ -2,8 +2,8 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: coreDNS
-labels:
-  app: coreDNS
+  labels:
+    app: coreDNS
 spec:
   nodeName: "node1"
   containers:

@@ -40,7 +40,7 @@ func (rs *RuntimeService) findPods(isCreate bool) error {
 		isChosed := true
 		if rs.ServiceConfig.ServiceSpec.Selector != nil {
 			for k, v := range rs.ServiceConfig.ServiceSpec.Selector {
-				value, ok := pod.Labels[k]
+				value, ok := pod.ObjectMeta.Labels[k]
 				fmt.Println(prefix + "expect k=" + k + " v=" + v + "av=" + value)
 				if !ok || v != value {
 					isChosed = false
@@ -128,14 +128,15 @@ func (rs *RuntimeService) Run(event <-chan string) {
 				flag := false
 				for _, pod := range rs.Pods {
 					// 应该调用restClient，根据pod的名字查询当前pod的状态
-					curPod, err := tool.GetPod(pod.Name)
-					if err != nil {
+					_, err := tool.GetPod(pod.Name)
+					if err != nil { // pod生命周期结束，需要重新选择
+						//pod.Status.Phase = core.PodSucceeded
+						flag = true
 						continue
 					}
-					if curPod == nil { // pod生命周期结束，需要重新选择
-						pod.Status.Phase = core.PodSucceeded
-						flag = true
-					}
+					//if curPod == nil {
+					//
+					//}
 				}
 				if flag { //
 					fmt.Println("[service][run]: refind pods")

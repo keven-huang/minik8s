@@ -2,8 +2,8 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: dns-example-pod2
-labels:
-  app: dns-example-pod2
+  labels:
+    app: dns-example-pod2
 spec:
   nodeName: "node1"
   containers:

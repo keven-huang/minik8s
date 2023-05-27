@@ -99,7 +99,7 @@ func (o *CreateOptions) RunCreate(cmd *cobra.Command, args []string) error {
 		err = o.RunCreateService(cmd, args, yamlFile)
 	case "HorizontalPodAutoscaler":
 		err = o.RunCreateHorizontalPodAutoscaler(cmd, args, yamlFile)
-	case "dns":
+	case "DNS":
 		err = o.RunCreateDNS(cmd, args, yamlFile)
 	}
 
@@ -243,7 +243,6 @@ func CreateReplicaSet(r *core.ReplicaSet) error {
 
 	return nil
 }
-
 
 func CreatePod(pod *core.Pod) error {
 	// 序列化

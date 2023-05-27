@@ -85,7 +85,6 @@ func (k *Kubelet) UpdatePod(event tool.Event) {
 		pod.Spec.Containers[i].Name = pod.Name + "-" + v.Name
 	}
 
-
 	// 判断创建pod是否是gpu类型
 	if pod.Spec.GPUJob == true {
 		// 获取gpu运行文件至job目录
@@ -107,7 +106,7 @@ func (k *Kubelet) UpdatePod(event tool.Event) {
 	}
 	if err1 != nil {
 		fmt.Println(err1)
-
+	}
 	// 创建成功 修改Status
 	pod.Status.Phase = core.PodRunning
 

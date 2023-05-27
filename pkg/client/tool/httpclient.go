@@ -10,7 +10,6 @@ import (
 	"minik8s/pkg/service"
 	myJson "minik8s/pkg/util/json"
 	"minik8s/pkg/util/log"
-	"minik8s/pkg/util/web"
 	"net/http"
 	"time"
 )
@@ -169,6 +168,21 @@ func UpdatePod(pod *core.Pod) error {
 	return nil
 }
 
+func DeletePod(PodName string) error {
+	url := apiconfig.Server_URL + apiconfig.POD_PATH + "?" + "PodName=" + PodName
+	req, err := http.NewRequest("DELETE", url, nil)
+	if err != nil {
+		return err
+	}
+
+	// 发送请求
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	defer resp.Body.Close()
+	err = log.CheckHttpStatus("[httpclient] [DeletePod] ", resp)
+	return nil
+}
+
 func AddNode(node *core.Node) error {
 	url := apiconfig.Server_URL + apiconfig.NODE_PATH
 	fmt.Println("[http]: ", url)
@@ -220,7 +234,6 @@ func GetService(name string) (*service.Service, error) {
 	}
 	return nil, nil
 }
-
 
 func UpdateService(service *service.Service) error {
 	url := apiconfig.Server_URL + apiconfig.SERVICE_PATH
@@ -309,7 +322,10 @@ func GetPod(name string) (*core.Pod, error) {
 	defer resp.Body.Close()
 	reader := resp.Body
 	data, err := io.ReadAll(reader)
-	fmt.Println("[httpclient][get pod]", string(data))
+	if err != nil {
+		return &core.Pod{}, err
+	}
+	//fmt.Println("[httpclient][get pod]", string(data))
 	var res []ListRes
 	err = json.Unmarshal(data, &res)
 	if err != nil {
@@ -317,13 +333,14 @@ func GetPod(name string) (*core.Pod, error) {
 		return &core.Pod{}, err
 	}
 	for _, val := range res {
-		fmt.Println("[httpclient][get pod]", res)
+		//fmt.Println("[httpclient][get pod]", res)
 		pod := core.Pod{}
 		err := json.Unmarshal([]byte(val.Value), &pod)
 		if err != nil {
 			fmt.Println("[httpclient][get pod]", err)
 			return &core.Pod{}, err
 		}
+		return &pod, nil
 	}
 	return &core.Pod{}, fmt.Errorf("no such pod")
 }
