@@ -34,7 +34,7 @@ const (
 
 func (s *Server) JobUpload() error {
 	//scp upload program
-	homePath := apiconfig.JOB_FILE_DIR_PATH + "/"
+	homePath := apiconfig.JOB_FILE_DIR_PATH + "/" + s.jobName + "/"
 	// homePath := "./"
 	cudafile := s.jobName + ".cu"
 	n, err := s.ssh_cli.UploadFile(homePath+cudafile, Path+cudafile)
@@ -94,8 +94,8 @@ func (s *Server) GetJobStatus() bool {
 }
 
 func (s *Server) JobDownload() error {
-	homePath := apiconfig.JOB_FILE_DIR_PATH + "/"
-	// homePath := "./"
+	homePath := apiconfig.JOB_FILE_DIR_PATH + "/" + s.jobName + "/"
+	// homePath := "./" + s.jobName + "/"
 	n, err := s.ssh_cli.DownloadFile(Path+s.OutFile+".out", homePath+s.OutFile+".out")
 	if err != nil {
 		return err

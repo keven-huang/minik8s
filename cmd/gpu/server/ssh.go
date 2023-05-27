@@ -5,6 +5,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/pkg/sftp"
@@ -113,6 +114,12 @@ func (c Cli) DownloadFile(remoteFile, localFile string) (int, error) {
 		return -1, fmt.Errorf("sftp client open file error: %w", err)
 	}
 	defer source.Close()
+
+	err = os.MkdirAll(filepath.Dir(localFile), os.ModePerm)
+	if err != nil {
+		fmt.Println("无法创建文件夹:", err)
+		return -1, err
+	}
 
 	target, err := os.OpenFile(localFile, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
