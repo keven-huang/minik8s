@@ -27,10 +27,17 @@ func NewScheduler() *Scheduler {
 
 func (s *Scheduler) Register() {
 	s.PodInformer.AddEventHandler(tool.Added, s.AddPod)
+	s.NodeInformer.AddEventHandler(tool.Added, s.AddNode)
+}
+
+func (s *Scheduler) AddNode(event tool.Event) {
+	fmt.Println("[scheduler] [AddNode]")
+	s.NodeInformer.Set(event.Key, event.Val)
 }
 
 func (s *Scheduler) AddPod(event tool.Event) {
 	fmt.Println("[scheduler] [AddPod] add pod")
+	s.PodInformer.Set(event.Key, event.Val)
 	pod := &core.Pod{}
 	err := json.Unmarshal([]byte(event.Val), &pod)
 	if err != nil {
@@ -80,6 +87,7 @@ func (s *Scheduler) GetNode() []core.Node {
 
 func (s *Scheduler) Run() {
 	go s.PodInformer.Run()
+	go s.NodeInformer.Run()
 	go s.worker()
 	select {}
 }

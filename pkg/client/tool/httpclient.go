@@ -8,6 +8,7 @@ import (
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/pkg/api/core"
 	"minik8s/pkg/service"
+	myJson "minik8s/pkg/util/json"
 	"minik8s/pkg/util/log"
 	"minik8s/pkg/util/web"
 	"net/http"
@@ -36,7 +37,7 @@ type ListRes struct {
 }
 
 func List(resource string) []ListRes {
-	url := "http://127.0.0.1:8080" + resource + "?all=true"
+	url := apiconfig.Server_URL + resource + "?all=true"
 	resp, err := http.Get(url)
 	if err != nil {
 		// handle error
@@ -62,7 +63,7 @@ func Watch(resourses string) WatchInterface {
 	watcher.resultChan = make(chan Event)
 	reader := func(wc chan<- Event) {
 		fmt.Println("[httpclient] [Watch] start watch")
-		url := "http://127.0.0.1:8080/watch" + resourses + "?prefix=true"
+		url := apiconfig.Server_URL + "/watch" + resourses + "?prefix=true"
 		resp, err := http.Get(url)
 		if err != nil {
 			// handle error
@@ -75,13 +76,19 @@ func Watch(resourses string) WatchInterface {
 			n, err := resp.Body.Read(buf)
 			if n != 0 || err != io.EOF {
 				event := Event{}
-				err = json.Unmarshal([]byte(buf[:n]), &event)
-				if err != nil {
-					continue
+				strings := myJson.ExtractNestedContent(string(buf[:n]))
+				for _, s := range strings {
+					if len(s) > 0 {
+						err = json.Unmarshal([]byte(s), &event)
+						if err != nil {
+							fmt.Println("[httpclient] [Watch] unmarshal:", err)
+							continue
+						}
+						fmt.Println("[httpclient] [Watch] unmarshal:", event.Key, event.Val, event.Type)
+						// send event to watcher.resultChan
+						wc <- event
+					}
 				}
-				fmt.Println("[httpclient] [Watch] unmarshal:", event.Key, event.Val, event.Type)
-				// send event to watcher.resultChan
-				wc <- event
 			} else {
 				fmt.Println("[httpclient] [Watch] break")
 				break
@@ -116,6 +123,32 @@ func Watch(resourses string) WatchInterface {
 	return watcher
 }
 
+func AddPod(pod *core.Pod) error {
+	url := apiconfig.Server_URL + apiconfig.POD_PATH
+	data, err := json.Marshal(pod)
+	if err != nil {
+		fmt.Println("failed to marshal person:", err)
+		return err
+	}
+	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(data))
+	if err != nil {
+		return err
+	}
+	fmt.Println("[http][AddPod]", string(data))
+	client := http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode == 200 {
+		fmt.Println("add pod success")
+	} else {
+		return fmt.Errorf("add pod failed")
+	}
+	return nil
+}
+
 func UpdatePod(pod *core.Pod) error {
 	url := apiconfig.Server_URL + apiconfig.POD_PATH
 	data, err := json.Marshal(pod)
@@ -136,43 +169,9 @@ func UpdatePod(pod *core.Pod) error {
 	return nil
 }
 
-// copy from create.go
-// may be deprecated after merge into dev
-func AddPod(pod *core.Pod) error {
-	data, err := json.Marshal(pod)
-	if err != nil {
-		fmt.Println("[kubectl] [create] [RunCreatePod] failed to marshal:", err)
-	} else {
-		//fmt.Println("[kubectl] [create] [RunCreatePod]\n", string(data))
-	}
-	err = web.SendHttpRequest("PUT", apiconfig.Server_URL+apiconfig.POD_PATH,
-		web.WithPrefix("[kubectl] [create] [RunCreate] "),
-		web.WithBody(bytes.NewBuffer(data)),
-		web.WithLog(true))
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func DeletePod(PodName string) error {
-	url := apiconfig.Server_URL + apiconfig.POD_PATH + "?" + "PodName=" + PodName
-	req, err := http.NewRequest("DELETE", url, nil)
-	if err != nil {
-		return err
-	}
-
-	// 发送请求
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	defer resp.Body.Close()
-	err = log.CheckHttpStatus("[httpclient] [DeletePod] ", resp)
-	return nil
-}
-
 func AddNode(node *core.Node) error {
 	url := apiconfig.Server_URL + apiconfig.NODE_PATH
+	fmt.Println("[http]: ", url)
 	data, err := json.Marshal(node)
 	if err != nil {
 		return err
@@ -222,6 +221,7 @@ func GetService(name string) (*service.Service, error) {
 	return nil, nil
 }
 
+
 func UpdateService(service *service.Service) error {
 	url := apiconfig.Server_URL + apiconfig.SERVICE_PATH
 	fmt.Println("[tool][updateservice]: url=" + url)
@@ -270,38 +270,62 @@ func DeleteService(service *service.Service) error {
 	return nil
 }
 
+func GetJobFile(JobName string) core.JobUpload {
+	url := apiconfig.Server_URL + apiconfig.JOB_FILE_PATH + "?JobName=" + JobName
+	resp, err := http.Get(url)
+	if err != nil {
+		fmt.Println("[httpclient] [GetJobFile] ", "Get Job error", err)
+		return core.JobUpload{}
+	}
+	defer resp.Body.Close()
+	reader := resp.Body
+	data, err := io.ReadAll(reader)
+	if err != nil {
+		fmt.Println("[httpclient] [GetJobFile] ", err)
+		return core.JobUpload{}
+	}
+	var json_data string
+	err = json.Unmarshal([]byte(data), &json_data)
+	fmt.Println("[httpclient][GetJobFile]", json_data)
+	job := core.JobUpload{}
+	err = json.Unmarshal([]byte(json_data), &job)
+	if err != nil {
+		fmt.Println("[httpclient] [GetJobFile] ", err)
+		return core.JobUpload{}
+	}
+	return job
+}
+
 // Get Pod
-// TODO 讨论确定一下具体写法, api路径等
 
 func GetPod(name string) (*core.Pod, error) {
 	prefix := "[tool][GetPod]"
-	//fmt.Println(prefix + "key:" + name)
-	url := apiconfig.Server_URL + apiconfig.POD_PATH + "?" + "Name=" + name
+	fmt.Println(prefix + "key:" + name)
+	url := apiconfig.Server_URL + apiconfig.POD_PATH + "?Name=" + name
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	buf := make([]byte, 40960)
-	//res := core.Pod{}
+	reader := resp.Body
+	data, err := io.ReadAll(reader)
+	fmt.Println("[httpclient][get pod]", string(data))
 	var res []ListRes
-	n, err := resp.Body.Read(buf)
-	if n != 0 || err != io.EOF {
-		err = json.Unmarshal([]byte(buf[:n]), &res)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		fmt.Println("[httpclient][get pod]", err)
+		return &core.Pod{}, err
+	}
+	for _, val := range res {
+		fmt.Println("[httpclient][get pod]", res)
+		pod := core.Pod{}
+		err := json.Unmarshal([]byte(val.Value), &pod)
 		if err != nil {
-			fmt.Println(prefix + err.Error())
-			return nil, nil
+			fmt.Println("[httpclient][get pod]", err)
+			return &core.Pod{}, err
 		}
 	}
-	pod := core.Pod{}
-	if len(res) > 0 {
-		err = json.Unmarshal([]byte(res[0].Value), &pod)
-		if err != nil {
-			return nil, err
-		}
-		return &pod, nil
-	}
-	return nil, nil
+	return &core.Pod{}, fmt.Errorf("no such pod")
 }
 
 func GetTypeName(event Event) string {

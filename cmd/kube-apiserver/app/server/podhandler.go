@@ -56,7 +56,8 @@ func AddPod(c *gin.Context, s *Server) {
 
 // GetPod Body传入Pod.Name
 func GetPod(c *gin.Context, s *Server) {
-	fmt.Println("[api-server] [podHandler] [GetPod]")
+	prefix := "[api-server] [podHandler] [GetPod]"
+	fmt.Println(prefix)
 	if c.Query("all") == "true" {
 		// delete the keys
 		res, err := s.Etcdstore.GetWithPrefix(apiconfig.POD_PATH)
@@ -93,7 +94,8 @@ func GetPod(c *gin.Context, s *Server) {
 }
 
 func DeletePod(c *gin.Context, s *Server) {
-	fmt.Println("In DeletePod")
+	prefix := "[api-server] [podHandler] [DeletePod]"
+	fmt.Println(prefix)
 	err := c.Request.ParseForm()
 	if err != nil {
 		return
@@ -139,6 +141,14 @@ func UpdatePod(c *gin.Context, s *Server) {
 		return
 	}
 	key := c.Request.URL.Path + "/" + pod.Name
+
+	res, err := s.Etcdstore.Get(key)
+	if len(res) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Pod Not Found.",
+		})
+		return
+	}
 
 	body, _ := json.Marshal(pod)
 	err = s.Etcdstore.Put(key, string(body))

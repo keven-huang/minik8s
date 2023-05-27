@@ -37,6 +37,17 @@ var HandlerTable = []Handler{
 	{Type: "POST", Path: apiconfig.DNS_PATH, Eventhandler: UpdateDNS},
 	{Type: "DELETE", Path: apiconfig.DNS_PATH, Eventhandler: DeleteDNS},
 	// ReplicaSet
+	{Type: "GET", Path: apiconfig.REPLICASET_PATH, Eventhandler: GetReplicaSet},
 	{Type: "PUT", Path: apiconfig.REPLICASET_PATH, Eventhandler: AddReplicaSet},
+	{Type: "POST", Path: apiconfig.REPLICASET_PATH, Eventhandler: UpdateReplicaSet},
+	{Type: "DELETE", Path: apiconfig.REPLICASET_PATH, Eventhandler: DeleteReplicaSet},
+	//job
+	{Type: "POST", Path: apiconfig.JOB_PATH, Eventhandler: AddJob},
+	{Type: "GET", Path: apiconfig.JOB_PATH, Eventhandler: GetJob},
+	{Type: "POST", Path: apiconfig.JOB_FILE_PATH, Eventhandler: AddJobFile},
+	{Type: "GET", Path: apiconfig.JOB_FILE_PATH, Eventhandler: GetJobFile},
+	//hpa
+	{Type: "PUT", Path: apiconfig.HPA_PATH, Eventhandler: AddHPA},
+	{Type: "DELETE", Path: apiconfig.HPA_PATH, Eventhandler: DeleteHPA},
 	// watch
 	{Type: "GET", Path: "/watch/*resource", Eventhandler: Watch}}

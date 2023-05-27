@@ -222,6 +222,10 @@ type PodSpec struct {
 	// requirements.
 	// +optional
 	NodeName string `json:"nodeName,omitempty" protobuf:"bytes,10,opt,name=nodeName"`
+	// whether pod is to support GPU job
+	// +optional
+	GPUJob     bool   `json:"gpu,omitempty" protobuf:"bytes,11,opt,name=gpu"`
+	GPUJobName string `json:"gpuJobName,omitempty" protobuf:"bytes,12,opt,name=gpuJobName"`
 }
 
 // Pod is a collection of containers that can run on a host. This resource is created
@@ -231,12 +235,12 @@ type Pod struct {
 	// Standard object's metadata.
 	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
 	// +optional
-	metav1.ObjectMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
+	metav1.ObjectMeta `json:"metadata" yaml:"metadata"`
 
 	// Specification of the desired behavior of the pod.
 	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
 	// +optional
-	Spec PodSpec `json:"spec,omitempty" protobuf:"bytes,2,opt,name=spec"`
+	Spec PodSpec `json:"spec,omitempty" yaml:"spec,omitempty"`
 
 	// Most recently observed status of the pod.
 	// This data may not be up to date.
@@ -245,8 +249,6 @@ type Pod struct {
 	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
 	// +optional
 	Status PodStatus `json:"status,omitempty" protobuf:"bytes,3,opt,name=status"`
-
-	Labels map[string]string `json:"labels"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -343,6 +345,7 @@ type Node struct {
 
 // NodeSpec describes the attributes that a node is created with.
 type NodeSpec struct {
+	NodeIP string `json:"nodeIP" yaml:"nodeIP"`
 	// PodCIDR represents the pod IP range assigned to the node.
 	// +optional
 	PodCIDR string `json:"podCIDR,omitempty" protobuf:"bytes,1,opt,name=podCIDR"`
@@ -416,12 +419,12 @@ type ReplicaSet struct {
 	// Standard object's metadata.
 	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
 	// +optional
-	metav1.ObjectMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
+	metav1.ObjectMeta `json:"metadata,omitempty" yaml:"metadata" protobuf:"bytes,1,opt,name=metadata"`
 
 	// Spec defines the specification of the desired behavior of the ReplicaSet.
 	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
 	// +optional
-	Spec ReplicaSetSpec `json:"spec,omitempty" protobuf:"bytes,2,opt,name=spec"`
+	Spec ReplicaSetSpec `json:"spec,omitempty" yaml:"spec" protobuf:"bytes,2,opt,name=spec"`
 
 	// Status is the most recently observed status of the ReplicaSet.
 	// This data may be out of date by some window of time.
@@ -429,7 +432,7 @@ type ReplicaSet struct {
 	// Read-only.
 	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
 	// +optional
-	Status ReplicaSetStatus `json:"status,omitempty" protobuf:"bytes,3,opt,name=status"`
+	Status ReplicaSetStatus `json:"status,omitempty" yaml:"status" protobuf:"bytes,3,opt,name=status"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -454,7 +457,7 @@ type ReplicaSetSpec struct {
 	// Defaults to 1.
 	// More info: https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/#what-is-a-replicationcontroller
 	// +optional
-	Replicas *int32 `json:"replicas,omitempty" protobuf:"varint,1,opt,name=replicas"`
+	Replicas *int32 `json:"replicas,omitempty" yaml:"replicas" protobuf:"varint,1,opt,name=replicas"`
 
 	// Minimum number of seconds for which a newly created pod should be ready
 	// without any of its container crashing, for it to be considered available.
@@ -466,13 +469,13 @@ type ReplicaSetSpec struct {
 	// Label keys and values that must match in order to be controlled by this replica set.
 	// It must match the pod template's labels.
 	// More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors
-	Selector *metav1.LabelSelector `json:"selector" protobuf:"bytes,2,opt,name=selector"`
+	Selector *metav1.LabelSelector `json:"selector" yaml:"selector" protobuf:"bytes,2,opt,name=selector"`
 
 	// Template is the object that describes the pod that will be created if
 	// insufficient replicas are detected.
 	// More info: https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller#pod-template
 	// +optional
-	Template PodTemplateSpec `json:"template,omitempty" protobuf:"bytes,3,opt,name=template"`
+	Template PodTemplateSpec `json:"template,omitempty" yaml:"template" protobuf:"bytes,3,opt,name=template"`
 }
 
 // PodTemplateSpec describes the data a pod should have when created from a template
@@ -480,12 +483,12 @@ type PodTemplateSpec struct {
 	// Standard object's metadata.
 	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
 	// +optional
-	metav1.ObjectMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
+	metav1.ObjectMeta `json:"metadata,omitempty"  yaml:"metadata" protobuf:"bytes,1,opt,name=metadata"`
 
 	// Specification of the desired behavior of the pod.
 	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
 	// +optional
-	Spec PodSpec `json:"spec,omitempty" protobuf:"bytes,2,opt,name=spec"`
+	Spec PodSpec `json:"spec,omitempty"  yaml:"spec" protobuf:"bytes,2,opt,name=spec"`
 }
 
 // ReplicaSetStatus represents the current status of a ReplicaSet.
@@ -543,6 +546,42 @@ type ReplicaSetCondition struct {
 	// +optional
 	Message string `json:"message,omitempty" protobuf:"bytes,5,opt,name=message"`
 }
+
+type HPA struct {
+	metav1.TypeMeta   `json:",inline" yaml:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Spec              HPASpec `json:"spec,omitempty" yaml:"spec,omitempty"`
+}
+
+type HPASpec struct {
+	ScaleTargetRef HPARef       `json:"scaleTargetRef" yaml:"scaleTargetRef"`
+	MinReplicas    int32        `json:"minReplicas,omitempty" yaml:"minReplicas,omitempty"`
+	MaxReplicas    int32        `json:"maxReplicas" yaml:"maxReplicas"`
+	PeriodSeconds  int32        `json:"periodSeconds,omitempty" yaml:"periodSeconds,omitempty"`
+	Metrics        []MetricSpec `json:"metrics,omitempty" yaml:"metrics,omitempty"`
+}
+
+type HPARef struct {
+	Kind string `json:"kind" yaml:"kind"`
+	Name string `json:"name" yaml:"name"`
+}
+
+type MetricSpec struct {
+	Name   string       `json:"name" yaml:"name"`
+	Target MetricTarget `json:"target" yaml:"target"`
+}
+
+type MetricTarget struct {
+	Type  MetricType `json:"type" yaml:"type"`
+	Value int32      `json:"value" yaml:"value"`
+}
+
+type MetricType string
+
+const (
+	MetricTypeUtilization MetricType = "Utilization"
+	MetricTypeAvgValue    MetricType = "averageValue"
+)
 
 type DNS struct {
 	Metadata metav1.ObjectMeta `json:"metadata" yaml:"metadata"`

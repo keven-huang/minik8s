@@ -25,13 +25,14 @@ func NewCmdDelete() *cobra.Command {
 	o := NewDeleteOptions()
 
 	cmd := &cobra.Command{
-		Use:   "delete (TYPE [NAME | -all])",
+		Use:   "delete TYPE [NAME | -all]",
 		Short: "Delete a resource from stdin",
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			err := o.RunDelete(cmd, args)
 			if err != nil {
-				return
+				return err
 			}
+			return nil
 		},
 	}
 
@@ -41,10 +42,10 @@ func NewCmdDelete() *cobra.Command {
 	return cmd
 }
 
-// RunDelete
+// RunDelete performs the creation
 func (o *DeleteOptions) RunDelete(cmd *cobra.Command, args []string) error {
 	if len(args) < 1 {
-		fmt.Println("[kubectl] [Delete] [RunDelete] must have TYPE.")
+		fmt.Println("[kubectl] [delete] [RunDelete] must have TYPE.")
 		return nil
 	}
 
@@ -53,13 +54,17 @@ func (o *DeleteOptions) RunDelete(cmd *cobra.Command, args []string) error {
 		{
 			return o.RunDeletePod(cmd, args)
 		}
-	//case "replicaset":
-	//	{
-	//		return o.RunDeleteReplicaSet(cmd, args)
-	//	}
+	case "replicaset":
+		{
+			return o.RunDeleteReplicaSet(cmd, args)
+		}
 	case "service":
 		{
 			return o.RunDeleteService(cmd, args)
+		}
+	case "hpa":
+		{
+			return o.RunDeleteHPA(cmd, args)
 		}
 	case "dns":
 		{
@@ -67,19 +72,15 @@ func (o *DeleteOptions) RunDelete(cmd *cobra.Command, args []string) error {
 		}
 	default:
 		{
-			fmt.Printf("[kubectl] [Delete] [RunDelete] %s is not supported.\n", args[0])
+			fmt.Printf("[kubectl] [delete] [RunDelete] %s is not supported.\n", args[0])
 			return nil
 		}
 	}
+
 }
 
 func (o *DeleteOptions) RunDeletePod(cmd *cobra.Command, args []string) error {
-	// 创建 PUT 请求
-	if len(args) < 1 || args[0] != "pod" {
-		fmt.Println("only support pod.")
-		return nil
-	}
-
+	prefix := "[kubectl] [delete] [RunDeletePod] "
 	values := url.Values{}
 	if o.DeleteAll {
 		values.Add("all", "true")
@@ -90,7 +91,7 @@ func (o *DeleteOptions) RunDeletePod(cmd *cobra.Command, args []string) error {
 	}
 
 	err := web.SendHttpRequest("DELETE", apiconfig.Server_URL+apiconfig.POD_PATH+"?"+values.Encode(),
-		web.WithPrefix("[kubectl] [delete] [DeletePod] "),
+		web.WithPrefix(prefix),
 		web.WithLog(true))
 	if err != nil {
 		return err
@@ -100,13 +101,29 @@ func (o *DeleteOptions) RunDeletePod(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func (o *DeleteOptions) RunDeleteService(cmd *cobra.Command, args []string) error {
-	// 创建 PUT 请求
-	if len(args) < 1 || args[0] != "service" {
-		fmt.Println("only support service.")
-		return nil
+func (o *DeleteOptions) RunDeleteReplicaSet(cmd *cobra.Command, args []string) error {
+	prefix := "[kubectl] [delete] [RunDelete] "
+	values := url.Values{}
+	if o.DeleteAll {
+		values.Add("all", "true")
+	}
+	if len(args) > 1 {
+		values.Add("Name", args[1])
+		//body = bytes.NewBuffer([]byte(args[1]))
 	}
 
+	err := web.SendHttpRequest("DELETE", apiconfig.Server_URL+apiconfig.REPLICASET_PATH+"?"+values.Encode(),
+		web.WithPrefix(prefix),
+		web.WithLog(true))
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Delete ReplicaSet successfully")
+	return nil
+}
+
+func (o *DeleteOptions) RunDeleteService(cmd *cobra.Command, args []string) error {
 	values := url.Values{}
 	if o.DeleteAll {
 		values.Add("all", "true")
@@ -154,33 +171,23 @@ func (o *DeleteOptions) RunDeleteDNS(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-//
-//// RunDelete performs the creation
-//func (o *DeleteOptions) RunDelete(cmd *cobra.Command, args []string) error {
-//	// Send a POST request to kube-apiserver to delete the pod
-//	// 创建 PUT 请求
-//	if len(args) < 1 || args[0] != "pod" {
-//		fmt.Println("only support pod.")
-//		return nil
-//	}
-//
-//	values := url.Values{}
-//	if o.DeleteAll {
-//		values.Add("all", "true")
-//	}
-//	if len(args) > 1 {
-//		values.Add("PodName", args[1])
-//		//body = bytes.NewBuffer([]byte(args[1]))
-//	}
-//
-//	err := web.SendHttpRequest("DELETE", apiconfig.Server_URL+apiconfig.POD_PATH+"?"+values.Encode(),
-//		web.WithPrefix("[kubectl] [delete] [RunDelete] "),
-//		web.WithLog(true))
-//	if err != nil {
-//		return err
-//	}
-//
-//	fmt.Println("pod Delete successfully")
-//	return nil
-//
-//}
+func (o *DeleteOptions) RunDeleteHPA(cmd *cobra.Command, args []string) error {
+	values := url.Values{}
+	if o.DeleteAll {
+		values.Add("all", "true")
+	}
+	if len(args) > 1 {
+		values.Add("HPAName", args[1])
+		//body = bytes.NewBuffer([]byte(args[1]))
+	}
+
+	err := web.SendHttpRequest("DELETE", apiconfig.Server_URL+apiconfig.HPA_PATH+"?"+values.Encode(),
+		web.WithPrefix("[kubectl] [delete] [DeleteHPA] "),
+		web.WithLog(true))
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("hpa Delete successfully")
+	return nil
+}
