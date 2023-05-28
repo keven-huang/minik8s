@@ -1,5 +1,5 @@
 # my_module.py
-def my_function(event: dict, context: dict)->dict:
+def calc(event: dict, context: dict)->dict:
     operator = context.get('operator')
     x = context.get('x')
     y = context.get('y')

@@ -9,6 +9,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 
 	"minik8s/pkg/api/core"
 	"minik8s/pkg/kubelet/config"
@@ -574,4 +575,41 @@ func GetDockerStats(name string) (types.ContainerStats, error) {
 		}
 	}
 	return types.ContainerStats{}, fmt.Errorf("no such container")
+}
+
+func ImageBuild(filename string, image string) error {
+	ctx := context.Background()
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		panic(err)
+	}
+
+	// 打开 Dockerfile 文件
+	dockerfile, err := os.Open(filename)
+	if err != nil {
+		panic(err)
+	}
+	defer dockerfile.Close()
+
+	// 准备构建参数
+	buildOptions := types.ImageBuildOptions{
+		Dockerfile: "Dockerfile",
+		Tags:       []string{image},
+	}
+
+	// 发起构建请求
+	buildResponse, err := cli.ImageBuild(ctx, dockerfile, buildOptions)
+	if err != nil {
+		panic(err)
+	}
+	defer buildResponse.Body.Close()
+
+	// 读取构建日志并输出到控制台
+	_, err = io.Copy(os.Stdout, buildResponse.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Docker build completed.")
+	return nil
 }

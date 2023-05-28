@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/pkg/api/core"
+	"minik8s/pkg/kubelet/dockerClient"
 	"minik8s/pkg/service"
 	"minik8s/pkg/util/web"
 	"net/http"
@@ -101,6 +102,8 @@ func (o *CreateOptions) RunCreate(cmd *cobra.Command, args []string) error {
 		err = o.RunCreateHorizontalPodAutoscaler(cmd, args, yamlFile)
 	case "DNS":
 		err = o.RunCreateDNS(cmd, args, yamlFile)
+	case "Funtion":
+		err = o.RunCreateFunction(cmd, args, yamlFile)
 	}
 
 	if err != nil {
@@ -199,6 +202,29 @@ func (o *CreateOptions) RunCreateHorizontalPodAutoscaler(cmd *cobra.Command, arg
 
 	err = CreateHPA(hpa)
 	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *CreateOptions) RunCreateFunction(cmd *cobra.Command, args []string, yamlFile []byte) error {
+	function := &core.Function{}
+	err := yaml.Unmarshal(yamlFile, function)
+	if err != nil {
+		return err
+	}
+
+	err = CreateFunction(function)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func CreateFunction(function *core.Function) error {
+	err := dockerClient.ImageBuild(function.Spec.FileDirectory+"/Dockerfile", "my_module:"+function.Name)
+	if err != nil {
+		fmt.Println("[kubectl] [create] [RunCreateFunction] failed to build image:", err)
 		return err
 	}
 	return nil
