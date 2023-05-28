@@ -22,13 +22,15 @@ import (
 
 // CreateOptions is the commandline options for 'create' sub command
 type CreateOptions struct {
-	Filename string
+	Filename  string
+	Directory string
 }
 
 // NewCreateOptions returns an initialized CreateOptions instance
 func NewCreateOptions() *CreateOptions {
 	return &CreateOptions{
-		Filename: "",
+		Filename:  "",
+		Directory: "",
 	}
 }
 
@@ -37,7 +39,7 @@ func NewCmdCreate() *cobra.Command {
 	o := NewCreateOptions()
 
 	cmd := &cobra.Command{
-		Use:   "create [-f FILENAME]",
+		Use:   "create [-f FILENAME] [-d DIRECTORY]",
 		Short: "Create a resource from a file or from stdin",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if o.Filename == "" {
@@ -55,6 +57,7 @@ func NewCmdCreate() *cobra.Command {
 
 	usage := "to use to create the resource"
 	cmd.Flags().StringVarP(&o.Filename, "filename", "f", "", "filename "+usage)
+	cmd.Flags().StringVarP(&o.Directory, "directory", "d", "", "directory "+usage)
 
 	return cmd
 }
@@ -213,6 +216,8 @@ func (o *CreateOptions) RunCreateFunction(cmd *cobra.Command, args []string, yam
 	if err != nil {
 		return err
 	}
+
+	function.Spec.FileDirectory = o.Directory
 
 	err = CreateFunction(function)
 	if err != nil {

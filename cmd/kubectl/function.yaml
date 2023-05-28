@@ -3,5 +3,4 @@ kind: Function
 metadata:
   name: calc
 spec:
-  fileDirectory: "./serverless_math"
   image: "my_module:calc"
