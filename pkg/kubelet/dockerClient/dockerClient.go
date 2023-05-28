@@ -581,13 +581,15 @@ func ImageBuild(filename string, image string) error {
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
-		panic(err)
+		fmt.Println("Docker client init failed.", err)
+		return err
 	}
 
 	// 打开 Dockerfile 文件
 	dockerfile, err := os.Open(filename)
 	if err != nil {
-		panic(err)
+		fmt.Println("Dockerfile open failed.", err)
+		return err
 	}
 	defer dockerfile.Close()
 
@@ -600,7 +602,8 @@ func ImageBuild(filename string, image string) error {
 	// 发起构建请求
 	buildResponse, err := cli.ImageBuild(ctx, dockerfile, buildOptions)
 	if err != nil {
-		panic(err)
+		fmt.Println("Docker build failed.", err)
+		return err
 	}
 	defer buildResponse.Body.Close()
 
