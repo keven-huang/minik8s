@@ -27,7 +27,6 @@ build:
 
 run:
 	mkdir -p /root/nginx
-	iptables-save > ./iptable_ori
 	/usr/local/go/bin/go run ./cmd/kube-apiserver/kube-apiserver.go > log/apiserver.log &
 	sleep 5
 	/usr/local/go/bin/go run ./cmd/kube-scheduler/kube-scheduler.go > log/scheduler.log &
@@ -44,9 +43,7 @@ m3:
 stop:
 	./scripts/linux/stop.sh
 	sleep 2
-ifeq (iptable_ori, $(wildcard iptable_ori))
-	iptables-restore < iptable_ori
-endif
+	iptables-restore < /root/iptable_ori
 	docker ps -aq --filter "name=^coreDNS" | xargs -r docker stop
 	docker ps -aq --filter "name=^coreDNS" | xargs -r docker rm
 	docker volume rm volume-coredns 2>/dev/null || true
