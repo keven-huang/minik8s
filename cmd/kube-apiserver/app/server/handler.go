@@ -31,6 +31,11 @@ var HandlerTable = []Handler{
 	{Type: "PUT", Path: apiconfig.SERVICE_PATH, Eventhandler: UpdateService},
 	{Type: "POST", Path: apiconfig.SERVICE_PATH, Eventhandler: UpdateService},
 	{Type: "DELETE", Path: apiconfig.SERVICE_PATH, Eventhandler: DeleteService},
+	// dns
+	{Type: "GET", Path: apiconfig.DNS_PATH, Eventhandler: GetDNS},
+	{Type: "PUT", Path: apiconfig.DNS_PATH, Eventhandler: UpdateDNS},
+	{Type: "POST", Path: apiconfig.DNS_PATH, Eventhandler: UpdateDNS},
+	{Type: "DELETE", Path: apiconfig.DNS_PATH, Eventhandler: DeleteDNS},
 	// ReplicaSet
 	{Type: "GET", Path: apiconfig.REPLICASET_PATH, Eventhandler: GetReplicaSet},
 	{Type: "PUT", Path: apiconfig.REPLICASET_PATH, Eventhandler: AddReplicaSet},

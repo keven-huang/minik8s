@@ -1,6 +1,9 @@
 package kube_proxy
 
-import "minik8s/pkg/client/informer"
+import (
+	"minik8s/pkg/api/core"
+	"minik8s/pkg/client/informer"
+)
 
 // PodChain pod chain, 一条链对应一个pod
 type PodChain struct {
@@ -62,9 +65,17 @@ type DNatRule struct {
 	FatherChain string
 }
 
+type DNSManager struct {
+	Key2Dns     map[string]*core.DNS // mapping from "event.key" -> dns struct
+	DNSInformer informer.Informer    // informer for listening dns
+	isDead      bool                 // flag for manager to stop
+}
+
 type KubeProxy struct {
 	ServiceInformer informer.Informer
 	// serviceName+Port -> SvcChain
 	ServiceName2SvcChain map[string]map[string]*SvcChain
 	stopChan             <-chan bool
+	// dns
+	DNSManager *DNSManager
 }

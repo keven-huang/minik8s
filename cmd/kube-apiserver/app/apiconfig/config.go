@@ -14,6 +14,8 @@ const DEPLOYMENT_PATH = "/api/v1/deployments"
 const JOB_PATH = "/api/v1/jobs"
 const JOB_FILE_PATH = "/api/v1/jobfile"
 const HPA_PATH = "/api/v1/hpa"
+const DNS_PATH = "/api/v1/dns"
 
 // dir PATH
 const JOB_FILE_DIR_PATH = "/home/job"
+

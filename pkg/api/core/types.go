@@ -46,8 +46,8 @@ type VolumeMount struct {
 }
 
 type Port struct {
-	Protocol   string // tcp, udp
-	PortNumber string // number
+	Protocol   string `json:"protocol" yaml:"protocol"`           // tcp, udp
+	PortNumber string `json:"containerPort" yaml:"containerPort"` // number
 }
 
 type Limit struct {
@@ -582,3 +582,28 @@ const (
 	MetricTypeUtilization MetricType = "Utilization"
 	MetricTypeAvgValue    MetricType = "averageValue"
 )
+
+type DNS struct {
+	Metadata metav1.ObjectMeta `json:"metadata" yaml:"metadata"`
+	Spec     DNSSpec           `json:"spec" yaml:"spec"`
+	Status   string            `yaml:"status" json:"status"`
+}
+
+const (
+	FileCreatedStatus    string = "FileCreatedStatus"
+	ServiceCreatedStatus string = "ServiceCreatedStatus"
+	DeletedStatus        string = "DeletedStatus"
+)
+
+type DNSSpec struct {
+	Host      string `yaml:"host" json:"host"`           // host name, domain name
+	GatewayIp string `yaml:"gatewayIp" json:"gatewayIp"` // gatway ip, it's nginx serviceIp
+	Paths     []Path `json:"paths" yaml:"paths"`
+}
+
+type Path struct {
+	Name    string `json:"name" yaml:"name"`       // path
+	Service string `yaml:"service" json:"service"` // service Name
+	Ip      string `json:"ip" yaml:"ip"`           // actual serviceIp
+	Port    string `yaml:"port" json:"port"`       // service's port
+}

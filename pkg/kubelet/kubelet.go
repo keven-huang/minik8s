@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/docker/docker/api/types"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
+	kube_proxy "minik8s/configs"
 	"minik8s/pkg/api/core"
 	"minik8s/pkg/client/informer"
 	"minik8s/pkg/client/tool"
@@ -94,12 +96,17 @@ func (k *Kubelet) UpdatePod(event tool.Event) {
 		}
 	}
 
-	metaData, netSetting, err := dockerClient.CreatePod(*pod)
-	if err != nil {
-		fmt.Println(prefix, err)
-		return
+	var metaData []core.ContainerMeta
+	var netSetting *types.NetworkSettings
+	var err1 error
+	if pod.ObjectMeta.Name == kube_proxy.CoreDNSPodName {
+		metaData, netSetting, err1 = dockerClient.CreateCoreDNSPod(*pod)
+	} else {
+		metaData, netSetting, err1 = dockerClient.CreatePod(*pod)
 	}
-
+	if err1 != nil {
+		fmt.Println(err1)
+	}
 	// 创建成功 修改Status
 	pod.Status.Phase = core.PodRunning
 

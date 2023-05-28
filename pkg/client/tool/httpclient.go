@@ -168,6 +168,21 @@ func UpdatePod(pod *core.Pod) error {
 	return nil
 }
 
+func DeletePod(PodName string) error {
+	url := apiconfig.Server_URL + apiconfig.POD_PATH + "?" + "PodName=" + PodName
+	req, err := http.NewRequest("DELETE", url, nil)
+	if err != nil {
+		return err
+	}
+
+	// 发送请求
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	defer resp.Body.Close()
+	err = log.CheckHttpStatus("[httpclient] [DeletePod] ", resp)
+	return nil
+}
+
 func AddNode(node *core.Node) error {
 	url := apiconfig.Server_URL + apiconfig.NODE_PATH
 	fmt.Println("[http]: ", url)
@@ -190,6 +205,35 @@ func AddNode(node *core.Node) error {
 	}
 	return nil
 }
+func GetService(name string) (*service.Service, error) {
+	prefix := "[tool][GetService]"
+	fmt.Println(prefix + "key:" + name)
+	url := apiconfig.Server_URL + apiconfig.SERVICE_PATH + "?" + "Name=" + name
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	buf := make([]byte, 40960)
+	var res []ListRes
+	n, err := resp.Body.Read(buf)
+	if n != 0 || err != io.EOF {
+		err = json.Unmarshal([]byte(buf[:n]), &res)
+		if err != nil {
+			fmt.Println(prefix + err.Error())
+			return nil, nil
+		}
+	}
+	s := service.Service{}
+	if len(res) > 0 {
+		err = json.Unmarshal([]byte(res[0].Value), &s)
+		if err != nil {
+			return nil, err
+		}
+		return &s, nil
+	}
+	return nil, nil
+}
 
 func UpdateService(service *service.Service) error {
 	url := apiconfig.Server_URL + apiconfig.SERVICE_PATH
@@ -207,9 +251,25 @@ func UpdateService(service *service.Service) error {
 	return nil
 }
 
+func UpdateDNS(dns *core.DNS) error {
+	url := apiconfig.Server_URL + apiconfig.DNS_PATH
+	fmt.Println("[tool][updateDNS]: url=" + url)
+	data, err := json.Marshal(dns)
+	if err != nil {
+		return err
+	}
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	fmt.Println("Response Status:", resp.Status)
+	return nil
+}
+
 // TODO 讨论确定一下api-sver的rest-api用法
 func DeleteService(service *service.Service) error {
-	url := apiconfig.Server_URL + apiconfig.SERVICE_PATH + "/" + service.ServiceSpec.Name
+	url := apiconfig.Server_URL + apiconfig.SERVICE_PATH + "?ServiceName=" + service.ServiceMeta.Name
 	fmt.Println("[tool][deleteService]: url=" + url)
 	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
@@ -262,7 +322,10 @@ func GetPod(name string) (*core.Pod, error) {
 	defer resp.Body.Close()
 	reader := resp.Body
 	data, err := io.ReadAll(reader)
-	fmt.Println("[httpclient][get pod]", string(data))
+	if err != nil {
+		return &core.Pod{}, err
+	}
+	//fmt.Println("[httpclient][get pod]", string(data))
 	var res []ListRes
 	err = json.Unmarshal(data, &res)
 	if err != nil {
@@ -270,7 +333,7 @@ func GetPod(name string) (*core.Pod, error) {
 		return &core.Pod{}, err
 	}
 	for _, val := range res {
-		fmt.Println("[httpclient][get pod]", res)
+		//fmt.Println("[httpclient][get pod]", res)
 		pod := core.Pod{}
 		err := json.Unmarshal([]byte(val.Value), &pod)
 		if err != nil {

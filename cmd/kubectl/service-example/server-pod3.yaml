@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: tinyserver2
-labels:
-  app: tinyserver
+  name: tinyserver3
+  labels:
+    app: tinyserver
 spec:
   nodeName: "node1"
   containers:
@@ -13,8 +13,8 @@ spec:
         - name: http
           containerPort: 80
       volumeMounts:
-        - name: volume05
+        - name: volume06
           mountPath: /usr/share/nginx/html
   volumes:
-    - name: volume05
-      hostPath: /home/webs/web1
+    - name: volume06
+      hostPath: /home/webs/web2

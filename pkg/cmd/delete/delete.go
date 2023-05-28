@@ -66,6 +66,10 @@ func (o *DeleteOptions) RunDelete(cmd *cobra.Command, args []string) error {
 		{
 			return o.RunDeleteHPA(cmd, args)
 		}
+	case "dns":
+		{
+			return o.RunDeleteDNS(cmd, args)
+		}
 	default:
 		{
 			fmt.Printf("[kubectl] [delete] [RunDelete] %s is not supported.\n", args[0])
@@ -136,7 +140,34 @@ func (o *DeleteOptions) RunDeleteService(cmd *cobra.Command, args []string) erro
 		return err
 	}
 
-	fmt.Println("service Delete successfully")
+	fmt.Println("[kubectl] send service Delete request successfully")
+	return nil
+}
+
+func (o *DeleteOptions) RunDeleteDNS(cmd *cobra.Command, args []string) error {
+	// 创建 PUT 请求
+	if len(args) < 1 || args[0] != "dns" {
+		fmt.Println("only support dns.")
+		return nil
+	}
+
+	values := url.Values{}
+	if o.DeleteAll {
+		values.Add("all", "true")
+	}
+	if len(args) > 1 {
+		values.Add("DnsConfigName", args[1])
+		//body = bytes.NewBuffer([]byte(args[1]))
+	}
+
+	err := web.SendHttpRequest("DELETE", apiconfig.Server_URL+apiconfig.DNS_PATH+"?"+values.Encode(),
+		web.WithPrefix("[kubectl] [delete] [DeleteDNS] "),
+		web.WithLog(true))
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("[kubectl] send DNS Delete request successfully")
 	return nil
 }
 

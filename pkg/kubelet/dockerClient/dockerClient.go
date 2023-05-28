@@ -9,7 +9,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
+
 	"minik8s/pkg/api/core"
 	"minik8s/pkg/kubelet/config"
 
@@ -19,6 +19,8 @@ import (
 	"github.com/docker/docker/api/types/volume"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
+	"io"
+	kube_proxy "minik8s/configs"
 )
 
 func GetNewClient() (*client.Client, error) {
@@ -217,6 +219,7 @@ func GetContainerInfo(id string) (types.ContainerJSON, error) {
 	return info, nil
 }
 
+// TODO 如果已经存在volume，如何处理？
 func CreateVolume(name string, hostpath *string) (volume.Volume, error) {
 	cli, err := GetNewClient()
 	if err != nil {
@@ -255,6 +258,7 @@ func GetNetworkSettings(id string) (*types.NetworkSettings, error) {
 	return res.NetworkSettings, nil
 }
 
+// CreateContainer deprecated
 func CreateContainer(con core.Container) (container.CreateResponse, error) {
 	cli, err := GetNewClient()
 	if err != nil {
@@ -279,6 +283,7 @@ func CreateContainer(con core.Container) (container.CreateResponse, error) {
 		&container.Config{Image: con.Image, Entrypoint: con.EntryPoint, Tty: con.Tty},
 		&container.HostConfig{
 			Mounts: mountsInfo,
+			DNS:    []string{config.DnsAddress},
 		}, nil, nil, con.Name)
 	return resp, err
 }
@@ -322,11 +327,101 @@ func CreatePauseContainer(name string, ports []core.Port) (container.CreateRespo
 		ExposedPorts: portSet,
 	}, &container.HostConfig{
 		IpcMode: container.IPCModeShareable,
-		//DNS:     []string{config.DnsAddress},
+		DNS:     []string{config.DnsAddress},
 	}, nil, nil, name)
 	return response, err
 }
 
+func CreateCoreDNSPod(pod core.Pod) ([]core.ContainerMeta, *types.NetworkSettings, error) {
+	containers := pod.Spec.Containers
+
+	cli, err := GetNewClient()
+	if err != nil {
+		return nil, nil, err
+	}
+	var totalPorts []core.Port
+	var res []core.ContainerMeta
+	var images []string
+	var names []string
+	for _, v := range containers {
+		names = append(names, v.Name)
+		images = append(images, v.Image)
+		for _, port := range v.Ports {
+			totalPorts = append(totalPorts, port)
+		}
+	}
+	// 首先删除之前同名的container
+	err = DeleteContainers(names)
+	if err != nil {
+		return nil, nil, err
+	}
+	// 拉取镜像列表
+	err = PullImages(images)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// 创建Volumes并mount hostpath
+	for _, vo := range pod.Spec.Volumes {
+		if vo.HostPath != "" { // mountHost
+			_, err := CreateVolume(vo.Name, &vo.HostPath)
+			if err != nil {
+				fmt.Println(err.Error())
+				return nil, nil, err
+			}
+		} else { // not mountHost
+			_, err := CreateVolume(vo.Name, nil)
+			if err != nil {
+				fmt.Println(err.Error())
+				return nil, nil, err
+			}
+		}
+	}
+	var onlyID string
+	for _, v := range containers {
+		// 配置容器的挂载
+		var mountsInfo []mount.Mount
+		if v.VolumeMounts != nil {
+			for _, volume := range v.VolumeMounts {
+				mountsInfo = append(mountsInfo, mount.Mount{
+					Type:   mount.TypeVolume,
+					Source: volume.Name,
+					Target: volume.MountPath,
+				})
+			}
+		}
+		// 创建容器
+		resp, err := cli.ContainerCreate(context.Background(), &container.Config{
+			Image:      v.Image,
+			Entrypoint: v.EntryPoint,
+			Cmd:        v.Command,
+			Tty:        v.Tty,
+			//Env:        []string{"PATH=$PATH:/bin:/tmp/host_path"},
+		}, &container.HostConfig{
+			Mounts: mountsInfo,
+		}, nil, nil, v.Name)
+		onlyID = resp.ID
+		if err != nil {
+			return nil, nil, err
+		}
+		res = append(res, core.ContainerMeta{Name: v.Name, Id: resp.ID})
+	}
+
+	// 启动
+	for _, v := range res {
+		err := cli.ContainerStart(context.Background(), v.Id, types.ContainerStartOptions{})
+		if err != nil {
+			return nil, nil, err
+		}
+	}
+	netSetting, err := GetNetworkSettings(onlyID)
+	if err != nil {
+		return nil, nil, err
+	}
+	return res, netSetting, nil
+}
+
+// createNormalPod, not coreDNS pod
 func CreatePod(pod core.Pod) ([]core.ContainerMeta, *types.NetworkSettings, error) {
 	containers := pod.Spec.Containers
 
@@ -433,12 +528,14 @@ func CreatePod(pod core.Pod) ([]core.ContainerMeta, *types.NetworkSettings, erro
 func DeletePod(pod core.Pod) error {
 	containers := pod.Spec.Containers
 
-	names := []string{config.PAUSE_NAME}
+	var names []string
 	curPauseName := pod.Name + "-" + config.PAUSE_NAME
 	for _, v := range containers {
 		names = append(names, v.Name)
 	}
-	names = append(names, curPauseName)
+	if pod.ObjectMeta.Name != kube_proxy.CoreDNSPodName {
+		names = append(names, curPauseName)
+	}
 	err := DeleteContainers(names)
 	return err
 }

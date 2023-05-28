@@ -175,7 +175,7 @@ func NewSvcChain(name string, table string, father string, ip string, port strin
 		panic(err.Error())
 	}
 	err = ipt.NewChain(table, res.Name)
-	total := len(pods)
+	total := 1
 	res.Name2Chain = make(map[string]*PodChain)
 	for _, val := range pods {
 		curChain := NewPodChain(protocol, *val, table, res.Name, total, ip, port)
@@ -183,7 +183,7 @@ func NewSvcChain(name string, table string, father string, ip string, port strin
 		if err != nil {
 			panic(err.Error())
 		}
-		total--
+		total++
 		res.Name2Chain[val.Name] = curChain
 	}
 	AddReturnToNAT(res.Name, "nat")
@@ -218,7 +218,8 @@ func (chain *PodChain) ApplyChain() error {
 	if err != nil {
 		return err
 	}
-	err = ipt.Append(chain.Table, chain.FatherChain, chain.Spec...)
+	//err = ipt.Append(chain.Table, chain.FatherChain, chain.Spec...)
+	err = ipt.Insert(chain.Table, chain.FatherChain, 1, chain.Spec...)
 	return err
 }
 
@@ -314,13 +315,13 @@ func (chain *SvcChain) UpdateChain(newPods []*PodInfo) {
 			panic(err.Error())
 		}
 	}
-	total := len(newPods)
+	total := 1
 	for _, pod := range newPods {
 		podChain, ok := shouldRemain[pod.Name]
 		if ok {
 			podChain.RoundRabinNumber = total // update
 			podChain.toSpec()
-			err = ipt.Append(podChain.Table, podChain.FatherChain, podChain.Spec...)
+			err = ipt.Insert(podChain.Table, podChain.FatherChain, 1, podChain.Spec...)
 			if err != nil {
 				panic(err.Error())
 			}
@@ -333,7 +334,7 @@ func (chain *SvcChain) UpdateChain(newPods []*PodInfo) {
 			}
 			chain.Name2Chain[pod.Name] = podChain
 		}
-		total--
+		total++
 	}
 }
 
@@ -343,9 +344,11 @@ func Init() {
 	// first, check exist
 	exist, err := ipt.ChainExists("nat", "SERVICE")
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
+		return
 	}
 	if exist {
+		fmt.Println("[Chain][Init] service inited before, return")
 		return
 	}
 	err = ipt.NewChain("nat", "SERVICE")

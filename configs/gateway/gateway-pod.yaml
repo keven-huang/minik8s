@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: toBeReplaced
+  labels:
+    dnsName: toBeReplaced
+spec:
+  volumes:
+    - name: config
+      hostPath: toBeReplaced
+  containers:
+    - name: gatewayContainerToBeReplaced
+      image: nginx
+      ports:
+        - containerPort: "80"
+          protocol: tcp
+      volumeMounts:
+        - name: config
+          mountPath: /etc/nginx

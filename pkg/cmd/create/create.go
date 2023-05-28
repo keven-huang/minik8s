@@ -99,6 +99,8 @@ func (o *CreateOptions) RunCreate(cmd *cobra.Command, args []string) error {
 		err = o.RunCreateService(cmd, args, yamlFile)
 	case "HorizontalPodAutoscaler":
 		err = o.RunCreateHorizontalPodAutoscaler(cmd, args, yamlFile)
+	case "DNS":
+		err = o.RunCreateDNS(cmd, args, yamlFile)
 	}
 
 	if err != nil {
@@ -147,6 +149,30 @@ func (o *CreateOptions) RunCreateJob(cmd *cobra.Command, args []string, yamlFile
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (o *CreateOptions) RunCreateDNS(cmd *cobra.Command, args []string, yamlFile []byte) error {
+
+	r := &core.DNS{}
+	err := yaml.Unmarshal(yamlFile, r)
+	if err != nil {
+		return err
+	}
+	data, err := json.Marshal(r)
+	if err != nil {
+		fmt.Println("[kubectl] [create] [RunCreateDNS] failed to marshal:", err)
+	} else {
+		//fmt.Println("[kubectl] [create] [RunCreateReplicaSet] ", string(data))
+	}
+	err = web.SendHttpRequest("PUT", apiconfig.Server_URL+apiconfig.DNS_PATH,
+		web.WithPrefix("[kubectl] [create] [RunCreatesDNS] "),
+		web.WithBody(bytes.NewBuffer(data)),
+		web.WithLog(true))
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
