@@ -1,6 +1,9 @@
 FROM python:3.10-alpine
 MAINTAINER LuHaoqi <LuHaoqi123@sjtu.edu.cn>
 
+# 修改成国内源
+RUN set -eux && sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
+
 # 更新操作系统和安装依赖
 RUN apk update && apk upgrade && \
     apk add --no-cache bash
