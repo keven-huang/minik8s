@@ -1,5 +1,5 @@
 FROM ubuntu
-MAINTAINER xxx <user@example.org>
+MAINTAINER LuHaoqi <LuHaoqi123@sjtu.edu.cn>
 
 # update ubuntu repository
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y update
