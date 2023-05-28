@@ -102,7 +102,7 @@ func (o *CreateOptions) RunCreate(cmd *cobra.Command, args []string) error {
 		err = o.RunCreateHorizontalPodAutoscaler(cmd, args, yamlFile)
 	case "DNS":
 		err = o.RunCreateDNS(cmd, args, yamlFile)
-	case "Funtion":
+	case "Function":
 		err = o.RunCreateFunction(cmd, args, yamlFile)
 	}
 
