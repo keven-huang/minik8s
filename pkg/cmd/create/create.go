@@ -222,7 +222,7 @@ func (o *CreateOptions) RunCreateFunction(cmd *cobra.Command, args []string, yam
 }
 
 func CreateFunction(function *core.Function) error {
-	err := dockerClient.ImageBuild(function.Spec.FileDirectory+"/Dockerfile", "my_module:"+function.Name)
+	err := dockerClient.ImageBuild(function.Spec.FileDirectory, "my_module:"+function.Name)
 	if err != nil {
 		fmt.Println("[kubectl] [create] [RunCreateFunction] failed to build image:", err)
 		return err

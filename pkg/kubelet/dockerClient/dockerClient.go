@@ -9,8 +9,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
-
+	"github.com/docker/docker/pkg/archive"
+	"github.com/mitchellh/go-homedir"
 	"minik8s/pkg/api/core"
 	"minik8s/pkg/kubelet/config"
 
@@ -577,21 +577,20 @@ func GetDockerStats(name string) (types.ContainerStats, error) {
 	return types.ContainerStats{}, fmt.Errorf("no such container")
 }
 
-func ImageBuild(filename string, image string) error {
+func GetContext(filePath string) io.Reader {
+	// Use homedir.Expand to resolve paths like '~/repos/myrepo'
+	filePath, _ = homedir.Expand(filePath)
+	ctx, _ := archive.TarWithOptions(filePath, &archive.TarOptions{})
+	return ctx
+}
+
+func ImageBuild(buildPath string, image string) error {
 	ctx := context.Background()
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	cli, err := GetNewClient()
 	if err != nil {
 		fmt.Println("Docker client init failed.", err)
 		return err
 	}
-
-	// 打开 Dockerfile 文件
-	dockerfile, err := os.Open(filename)
-	if err != nil {
-		fmt.Println("Dockerfile open failed.", err)
-		return err
-	}
-	defer dockerfile.Close()
 
 	// 准备构建参数
 	buildOptions := types.ImageBuildOptions{
@@ -600,7 +599,7 @@ func ImageBuild(filename string, image string) error {
 	}
 
 	// 发起构建请求
-	buildResponse, err := cli.ImageBuild(ctx, dockerfile, buildOptions)
+	buildResponse, err := cli.ImageBuild(ctx, GetContext(buildPath), buildOptions)
 	if err != nil {
 		fmt.Println("Docker build failed.", err)
 		return err
