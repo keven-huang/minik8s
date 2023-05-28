@@ -606,8 +606,14 @@ func ImageBuild(buildPath string, image string) error {
 	}
 	defer buildResponse.Body.Close()
 
-	// 读取构建日志并输出到控制台
-	fmt.Println("Docker build log:", buildResponse.Body)
+	bodyBytes, err := io.ReadAll(buildResponse.Body)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+
+	bodyString := string(bodyBytes)
+	fmt.Println(bodyString)
 
 	fmt.Println("Docker build completed.")
 	return nil
