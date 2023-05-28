@@ -2,89 +2,17 @@ package kube_proxy
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"io"
-	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/configs"
 	"minik8s/pkg/api/core"
-	"minik8s/pkg/client/informer"
-	"minik8s/pkg/client/tool"
 	"minik8s/pkg/kubelet/dockerClient"
 	"os"
 	"os/exec"
 	"strings"
 )
 
-func NewDnsManager() *DNSManager {
-	res := &DNSManager{}
-	res.Key2Dns = make(map[string]*core.DNS)
-	res.isDead = false
-	res.DNSInformer = informer.NewInformer(apiconfig.DNS_PATH) // register the dns resource
-	res.Register()                                             // register handler
-	return res
-}
-
-func (DNSManager *DNSManager) UpdateDNSHandler(event tool.Event) {
-	prefix := "[DNSManager][UpdateDns]"
-	//fmt.Println(prefix + "key:" + event.Key)
-	dns := &core.DNS{}
-	err := json.Unmarshal([]byte(event.Val), dns)
-	if err != nil {
-		fmt.Println(prefix + err.Error())
-		return
-	}
-	switch dns.Status {
-	case "": // first create
-		{
-			fmt.Println(prefix + "first create")
-			DNSManager.Key2Dns[event.Key] = dns
-			DNSManager.mkDir(dns.Metadata.Name)
-			// write nginx
-			DNSManager.writeNginx(dns)
-			dns.Status = core.FileCreatedStatus
-			err := tool.UpdateDNS(dns) // updateETCD, trigger listener in Service manager
-			if err != nil {
-				fmt.Println(prefix + err.Error())
-				return
-			}
-			break
-		}
-	case core.ServiceCreatedStatus:
-		{
-			fmt.Println(prefix + "created nginx")
-			DNSManager.Key2Dns[event.Key] = dns
-			DNSManager.writeNginx(dns)
-			DNSManager.reloadNginx(dns)
-			DNSManager.writeCoreDNS()
-			reloadCoreDNS()
-			break
-		}
-	}
-}
-
-// TODO why it's useless?
-func (DNSManager *DNSManager) DeleteDNSHandler(event tool.Event) {
-	prefix := "[DNSManager][DeleteDNSHandler]"
-	fmt.Println(prefix + "key: " + event.Key)
-	dns, ok := DNSManager.Key2Dns[event.Key]
-	if !ok {
-		return
-	} else {
-		delete(DNSManager.Key2Dns, event.Key)
-		DNSManager.writeCoreDNS()
-		reloadCoreDNS()
-		DNSManager.deleteDir(dns.Metadata.Name)
-	}
-}
-
-func (DNSManager *DNSManager) Register() {
-	DNSManager.DNSInformer.AddEventHandler(tool.Added, DNSManager.UpdateDNSHandler)
-	DNSManager.DNSInformer.AddEventHandler(tool.Modified, DNSManager.UpdateDNSHandler)
-	DNSManager.DNSInformer.AddEventHandler(tool.Deleted, DNSManager.DeleteDNSHandler)
-}
-
-func (DNSManager *DNSManager) writeNginx(dns *core.DNS) {
+func (proxy *KubeProxy) writeNginx(dns *core.DNS) {
 	prefix := "[DNSManager][WriteNginx]"
 	fmt.Println(prefix + "in")
 	var data []string
@@ -96,7 +24,7 @@ func (DNSManager *DNSManager) writeNginx(dns *core.DNS) {
 	data = append(data, "http {")
 	data = append(data, "    server {", "        listen 80;")
 	//data = append(data, fmt.Sprintf("        server_name %s;", dns.Spec.Host)) // it can be deleted maybe
-	data = append(data, DNSManager.generateConfig(dns)...)
+	data = append(data, proxy.generateConfig(dns)...)
 	data = append(data, "    }")
 	data = append(data, "}")
 	file, err := os.OpenFile(configs.NginxPrefix+"/"+dns.Metadata.Name+"/"+"nginx.conf", os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0666)
@@ -119,7 +47,7 @@ func (DNSManager *DNSManager) writeNginx(dns *core.DNS) {
 }
 
 // 生成nginx配置
-func (DNSManager *DNSManager) generateConfig(dns *core.DNS) []string {
+func (proxy *KubeProxy) generateConfig(dns *core.DNS) []string {
 	var res []string
 	for _, v := range dns.Spec.Paths {
 		res = append(res, fmt.Sprintf("        location %s {", v.Name))
@@ -131,7 +59,7 @@ func (DNSManager *DNSManager) generateConfig(dns *core.DNS) []string {
 	return res
 }
 
-func (DNSManager *DNSManager) mkDir(Dns string) {
+func (proxy *KubeProxy) mkDir(Dns string) {
 	prefix := "[DNSManager][mkDir]"
 	fmt.Println(prefix + "in")
 	args := fmt.Sprintf("%s", configs.NginxPrefix+"/"+Dns)
@@ -144,7 +72,7 @@ func (DNSManager *DNSManager) mkDir(Dns string) {
 	}
 }
 
-func (DNSManager *DNSManager) deleteDir(Dns string) {
+func (proxy *KubeProxy) deleteDir(Dns string) {
 	prefix := "[DNSManager][deleteDir]"
 	fmt.Println(prefix + "in")
 	args := fmt.Sprintf("-rf %s", configs.NginxPrefix+"/"+Dns)
@@ -159,9 +87,10 @@ func (DNSManager *DNSManager) deleteDir(Dns string) {
 // update dns entry based on key2DNs
 // mapping from domainName -> gateway
 // the gateway is a nginx
-func (DNSManager *DNSManager) writeCoreDNS() {
+func (proxy *KubeProxy) writeCoreDNS() {
 	prefix := "[DNSManager][WriteCoreDNS]"
-	fmt.Println(prefix + "in")
+	wd, err := os.Getwd()
+	fmt.Println(prefix + "in:" + wd)
 	file, err := os.OpenFile(configs.CoreDnsPath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0666)
 	defer file.Close()
 	if err != nil {
@@ -169,7 +98,7 @@ func (DNSManager *DNSManager) writeCoreDNS() {
 		return
 	}
 	writer := bufio.NewWriter(file)
-	for _, v := range DNSManager.Key2Dns {
+	for _, v := range proxy.Key2Dns {
 		if v.Status == core.ServiceCreatedStatus {
 			cur := v.Spec.GatewayIp + " " + v.Spec.Host
 			_, err := fmt.Fprintln(writer, cur)
@@ -187,7 +116,7 @@ func (DNSManager *DNSManager) writeCoreDNS() {
 	return
 }
 
-func reloadCoreDNS() {
+func (proxy *KubeProxy) reloadCoreDNS() {
 	prefix := "[DNSManager][reloadCoreDNS]"
 	fmt.Println(prefix + "in")
 	cons, err := dockerClient.GetAllContainers()
@@ -205,17 +134,18 @@ func reloadCoreDNS() {
 	// reload corresponding container
 	for _, id := range ids {
 		fmt.Println(prefix + "reloading..")
-		args := fmt.Sprintf("exec %s /coredns -conf /etc/coredns/Corefile", id)
+		args := fmt.Sprintf("exec -d %s /coredns -conf /etc/coredns/Corefile", id)
 		res, err := execCommand("docker", args)
 		if err != nil {
 			fmt.Println(prefix + err.Error())
 		} else {
+			fmt.Println(prefix + "return value:")
 			fmt.Println(res)
 		}
 	}
 }
 
-func (DNSManager *DNSManager) reloadNginx(dns *core.DNS) {
+func (proxy *KubeProxy) reloadNginx(dns *core.DNS) {
 	prefix := "[DNSManager][reloadNginx]"
 	fmt.Println(prefix + "in")
 	cons, err := dockerClient.GetAllContainers()

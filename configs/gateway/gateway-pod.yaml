@@ -6,7 +6,7 @@ metadata:
     dnsName: toBeReplaced
 spec:
   volumes:
-    - name: config
+    - name: toBeReplaced
       hostPath: toBeReplaced
   containers:
     - name: gatewayContainerToBeReplaced
@@ -15,5 +15,5 @@ spec:
         - containerPort: "80"
           protocol: tcp
       volumeMounts:
-        - name: config
+        - name: toBeReplaced
           mountPath: /etc/nginx

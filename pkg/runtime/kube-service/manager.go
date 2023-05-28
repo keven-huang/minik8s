@@ -3,6 +3,7 @@ package kube_service
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/fatih/color"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	kube_proxy "minik8s/configs"
 	"minik8s/pkg/api/core"
@@ -152,12 +153,13 @@ func (sm *ServiceManager) DNSUpdateHandler(event tool.Event) {
 
 func (sm *ServiceManager) DNSDeleteHandler(event tool.Event) {
 	prefix := "[ServiceManager][DNSDeleteHandler]"
-	fmt.Println(prefix + "key:" + event.Key)
+	fmt.Println(color.RedString(prefix + "key:" + event.Key))
 	dns, ok := sm.dnsCache[event.Key]
 	if !ok {
 		fmt.Println(prefix + "not found such service!")
 		return
 	} else {
+		time.Sleep(2 * time.Second)
 		err := tool.DeleteService(GetGatewayServiceSingleton(dns))
 		if err != nil {
 			fmt.Println(prefix + err.Error())
@@ -165,6 +167,7 @@ func (sm *ServiceManager) DNSDeleteHandler(event tool.Event) {
 		}
 		time.Sleep(5 * time.Second)
 		err = tool.DeletePod(kube_proxy.GatewayPodPrefix + dns.Metadata.Name)
+		time.Sleep(2 * time.Second)
 		if err != nil {
 			fmt.Println(prefix + err.Error())
 			return
@@ -196,7 +199,7 @@ func InitCoreDNS() {
 			fmt.Println(prefix + err.Error())
 			return
 		}
-		time.Sleep(10 * time.Second)
+		time.Sleep(5 * time.Second)
 		// create coreDNS service
 		err = tool.UpdateService(GetCoreDNSServiceSingleton())
 		time.Sleep(10 * time.Second)
