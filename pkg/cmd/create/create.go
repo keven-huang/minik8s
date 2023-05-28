@@ -101,6 +101,8 @@ func (o *CreateOptions) RunCreate(cmd *cobra.Command, args []string) error {
 		err = o.RunCreateHorizontalPodAutoscaler(cmd, args, yamlFile)
 	case "DNS":
 		err = o.RunCreateDNS(cmd, args, yamlFile)
+	case "Workflow":
+		err = o.RunCreateWorkflow(cmd, args, yamlFile)
 	}
 
 	if err != nil {
@@ -198,6 +200,19 @@ func (o *CreateOptions) RunCreateHorizontalPodAutoscaler(cmd *cobra.Command, arg
 	}
 
 	err = CreateHPA(hpa)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *CreateOptions) RunCreateWorkflow(cmd *cobra.Command, args []string, yamlFile []byte) error {
+	workflow := &core.Workflow{}
+	err := yaml.Unmarshal(yamlFile, workflow)
+	if err != nil {
+		return err
+	}
+	err = CreateWorkflow(workflow)
 	if err != nil {
 		return err
 	}
@@ -326,6 +341,23 @@ func CreateHPA(hpa *core.HPA) error {
 	}
 	err = web.SendHttpRequest("PUT", apiconfig.Server_URL+apiconfig.HPA_PATH,
 		web.WithPrefix("[kubectl] [create] [RunCreateHPA] "),
+		web.WithBody(bytes.NewBuffer(data)),
+		web.WithLog(true))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func CreateWorkflow(workflow *core.Workflow) error {
+	data, err := json.Marshal(workflow)
+	if err != nil {
+		fmt.Println("[kubectl] [create] [RunCreateWorkflow] failed to marshal:", err)
+	} else {
+		fmt.Println("[kubectl] [create] [RunCreateWorkflow] ", string(data))
+	}
+	err = web.SendHttpRequest("PUT", apiconfig.Server_URL+apiconfig.WORKFLOW_PATH,
+		web.WithPrefix("[kubectl] [create] [RunCreateWorkflow] "),
 		web.WithBody(bytes.NewBuffer(data)),
 		web.WithLog(true))
 	if err != nil {

@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Workflow
+metadata:
+  name: my-workflow
+spec:
+  - state:
+    Name: StartState 
+    Type: Input
+    InputData: ./input.param
+    Next: branchstate
+  - state: 
+      Name: branchstate
+      Type: Choice
+      Choices:
+        - Condition: a > 10
+          Next: Function1
+        - Condition: a <=10
+          Next: Function2
+  - state:
+      Name: Function1
+      Type: Task
+      Resource : function1
+      Next: Function3
+  -  state:
+      Name: Function2
+      Type: Task
+      Resource: function2
+      Next: Function3
+  - state:
+      Name: Function3
+      Type: Task
+      Resource: function3
+      End : true
+  

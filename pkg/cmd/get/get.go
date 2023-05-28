@@ -3,9 +3,6 @@ package get
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/fatih/color"
-	"github.com/gosuri/uitable"
-	"github.com/spf13/cobra"
 	"log"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/pkg/api/core"
@@ -14,6 +11,10 @@ import (
 	"net/url"
 	"strconv"
 	"time"
+
+	"github.com/fatih/color"
+	"github.com/gosuri/uitable"
+	"github.com/spf13/cobra"
 )
 
 // GetOptions is the commandline options for 'get' sub command
@@ -76,6 +77,10 @@ func (o *GetOptions) RunGet(cmd *cobra.Command, args []string) error {
 	case "job":
 		{
 			return o.RunGetJob(cmd, args)
+		}
+	case "workflow":
+		{
+			return o.RunGetWorkflow(cmd, args)
 		}
 	default:
 		{
@@ -248,6 +253,57 @@ func (o *GetOptions) RunGetJob(cmd *cobra.Command, args []string) error {
 		fmt.Println("job:", job)
 		table.AddRow(color.RedString(job.JobName),
 			color.BlueString(string(job.Status)))
+	}
+	fmt.Println(table)
+
+	return nil
+}
+
+func (o *GetOptions) RunGetWorkflow(cmd *cobra.Command, args []string) error {
+	prefix := "[kubectl] [get] [RunGetWorkflow] "
+	values := url.Values{}
+	if o.GetAll {
+		values.Add("all", "true")
+	}
+
+	values.Add("prefix", "true")
+	if len(args) > 1 {
+		values.Add("Name", args[1])
+		//body = bytes.NewBuffer([]byte(args[1]))
+	}
+
+	bodyBytes := make([]byte, 0)
+	fmt.Println("ask cmd:", apiconfig.Server_URL+apiconfig.WORKFLOW_PATH+"?"+values.Encode())
+	err := web.SendHttpRequest("GET", apiconfig.Server_URL+apiconfig.WORKFLOW_PATH+"?"+values.Encode(),
+		web.WithPrefix(prefix),
+		web.WithLog(false),
+		web.WithBodyBytes(&bodyBytes))
+	if err != nil {
+		return err
+	}
+	var res []etcd.ListRes
+	err = json.Unmarshal(bodyBytes, &res)
+	if err != nil {
+		log.Println(prefix, err)
+		return err
+	}
+	fmt.Println(prefix, "Workflow Get successfully. Here are the results:")
+	fmt.Println("total number:", len(res))
+
+	table := uitable.New()
+	table.MaxColWidth = 100
+	table.RightAlign(10)
+	table.AddRow("NAME", "RESULT")
+	for _, val := range res {
+		w := core.Workflow{}
+		err := json.Unmarshal([]byte(val.Value), &w)
+		if err != nil {
+			log.Println(prefix, err)
+			return err
+		}
+		fmt.Println("workflow:", w)
+		table.AddRow(color.RedString(w.Name),
+			color.BlueString(string(w.Spec.Result)))
 	}
 	fmt.Println(table)
 

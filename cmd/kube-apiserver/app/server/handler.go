@@ -49,5 +49,9 @@ var HandlerTable = []Handler{
 	//hpa
 	{Type: "PUT", Path: apiconfig.HPA_PATH, Eventhandler: AddHPA},
 	{Type: "DELETE", Path: apiconfig.HPA_PATH, Eventhandler: DeleteHPA},
+	// workflow
+	{Type: "GET", Path: apiconfig.WORKFLOW_PATH, Eventhandler: GetWorkflow},
+	{Type: "PUT", Path: apiconfig.WORKFLOW_PATH, Eventhandler: AddWorkflow},
+	{Type: "DELETE", Path: apiconfig.WORKFLOW_PATH, Eventhandler: DeleteWorkflow},
 	// watch
 	{Type: "GET", Path: "/watch/*resource", Eventhandler: Watch}}
