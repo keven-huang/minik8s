@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
+	"minik8s/pkg/api/core"
 	"minik8s/pkg/client/informer"
 	"minik8s/pkg/client/tool"
 	"minik8s/pkg/service"
@@ -14,7 +15,8 @@ func NewKubeProxy() *KubeProxy {
 	res := &KubeProxy{}
 	res.ServiceInformer = informer.NewInformer(apiconfig.SERVICE_PATH)
 	res.ServiceName2SvcChain = make(map[string]map[string]*SvcChain)
-	res.DNSManager = NewDnsManager()
+	res.Key2Dns = make(map[string]*core.DNS)
+	res.dnsInformer = informer.NewInformer(apiconfig.DNS_PATH)
 	return res
 }
 
@@ -100,10 +102,67 @@ func (proxy *KubeProxy) Register() {
 	proxy.ServiceInformer.AddEventHandler(tool.Added, proxy.updateRuntimeServiceHandler)
 	proxy.ServiceInformer.AddEventHandler(tool.Modified, proxy.updateRuntimeServiceHandler)
 	proxy.ServiceInformer.AddEventHandler(tool.Deleted, proxy.deleteRuntimeServiceHandler)
+
+	//proxy.dnsInformer.AddEventHandler(tool.Deleted, proxy.deleteDDHandler)
+	proxy.dnsInformer.AddEventHandler(tool.Added, proxy.UpdateDNSHandler)
+	proxy.dnsInformer.AddEventHandler(tool.Modified, proxy.UpdateDNSHandler)
+	proxy.dnsInformer.AddEventHandler(tool.Deleted, proxy.DnsDeleteHandler)
+
 }
 
+func (proxy *KubeProxy) DnsDeleteHandler(event tool.Event) {
+	prefix := "[kubeproxy][DnsDeleteHandler]"
+	fmt.Println(prefix + "key: " + event.Key)
+	dns, ok := proxy.Key2Dns[event.Key]
+	if !ok {
+		return
+	} else {
+		delete(proxy.Key2Dns, event.Key)
+		proxy.writeCoreDNS()
+		proxy.reloadCoreDNS()
+		proxy.deleteDir(dns.Metadata.Name)
+	}
+}
+
+func (proxy *KubeProxy) UpdateDNSHandler(event tool.Event) {
+	prefix := "[kubeproxy][UpdateDns]"
+	//fmt.Println(prefix + "key:" + event.Key)
+	dns := &core.DNS{}
+	err := json.Unmarshal([]byte(event.Val), dns)
+	if err != nil {
+		fmt.Println(prefix + err.Error())
+		return
+	}
+	switch dns.Status {
+	case "": // first create
+		{
+			fmt.Println(prefix + "first create")
+			proxy.Key2Dns[event.Key] = dns
+			proxy.mkDir(dns.Metadata.Name)
+			// write nginx
+			proxy.writeNginx(dns)
+			dns.Status = core.FileCreatedStatus
+			err := tool.UpdateDNS(dns) // updateETCD, trigger listener in Service manager
+			if err != nil {
+				fmt.Println(prefix + err.Error())
+				return
+			}
+			break
+		}
+	case core.ServiceCreatedStatus:
+		{
+			fmt.Println(prefix + "created nginx")
+			proxy.Key2Dns[event.Key] = dns
+			proxy.writeNginx(dns)
+			proxy.reloadNginx(dns)
+			proxy.writeCoreDNS()
+			proxy.reloadCoreDNS()
+			break
+		}
+	}
+}
 func (proxy *KubeProxy) Run() {
-	Init()                                // init chains....
-	go proxy.ServiceInformer.Run()        // start the service watch
-	go proxy.DNSManager.DNSInformer.Run() // start the dns watch
+	Init()                         // init chains....
+	go proxy.ServiceInformer.Run() // start the service watch
+	go proxy.dnsInformer.Run()     // start the dns watch
 }

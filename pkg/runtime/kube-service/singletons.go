@@ -86,7 +86,10 @@ func GetGatewayPodSingleton(name string) *core.Pod {
 	}
 	tmpSpec := gatewayPod.Spec // deep copy
 	resPod.Spec = tmpSpec
+	// TODO support many volumes
+	resPod.Spec.Volumes[0].Name = kube_proxy.GatewayVolumePrefix + name
 	resPod.Spec.Volumes[0].HostPath = kube_proxy.NginxPrefix + "/" + name
+	resPod.Spec.Containers[0].VolumeMounts[0].Name = kube_proxy.GatewayVolumePrefix + name
 	resPod.Spec.Containers[0].Name = kube_proxy.GatewayContainerPrefix + name
 	resPod.ObjectMeta.Name = kube_proxy.GatewayPodPrefix + name
 	//resPod.Name = kube_proxy.GatewayPodPrefix + name

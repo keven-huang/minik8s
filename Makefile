@@ -47,6 +47,7 @@ ifeq (iptable_ori, $(wildcard iptable_ori))
 endif
 	docker ps -aq --filter "name=^coreDNS" | xargs -r docker stop
 	docker ps -aq --filter "name=^coreDNS" | xargs -r docker rm
+	docker volume rm volume-coredns 2>/dev/null || true
 
 kill:
 	sudo docker ps -aq --filter "name=^my-replicaset|^test" | xargs -r docker stop
@@ -63,6 +64,8 @@ testsvc:
 	curl 11.1.1.1
 	curl 11.1.1.1
 	curl 11.1.1.1
+	./binx/kubectl get service webservice
+	sleep 3
 	./binx/kubectl create -f ./cmd/kubectl/service-example/server-pod3.yaml
 	sleep 10
 	curl 11.1.1.1
@@ -71,7 +74,8 @@ testsvc:
 	curl 11.1.1.1
 	curl 11.1.1.1
 	curl 11.1.1.1
-
+	./binx/kubectl get service webservice
+	sleep 3
 delsvc:
 	./binx/kubectl delete service webservice
 	sleep 5
@@ -95,7 +99,16 @@ testdns:
 	sleep 30
 	./binx/kubectl create -f ./cmd/kubectl/dns-example/user-pod.yaml
 	sleep 10
+	./binx/kubectl get dns testDns
+	sleep 5
+	./binx/kubectl get service service1
+	sleep 3
+	./binx/kubectl get service service2
+	sleep 3
 	docker logs user1-server
+	sleep 1
+	curl hanjinbo.com/path1
+	curl hanjinbo.com/path2
 
 deltestdns:
 	./binx/kubectl delete dns testDns
@@ -109,3 +122,6 @@ deltestdns:
 	./binx/kubectl delete pod dns-example-pod2
 	sleep 2
 	./binx/kubectl delete pod user1
+	sleep 3
+	docker volume ls -q --filter "name=^gatewayvolume" | xargs -r docker volume rm || true
+	docker volume rm volume04 volume05 volume-usr || true
