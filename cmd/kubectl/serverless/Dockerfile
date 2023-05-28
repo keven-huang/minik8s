@@ -9,10 +9,10 @@ RUN apk update && apk upgrade && \
     apk add --no-cache bash
 
 # install python requirements
-RUN pip install flask importlib requests request
+RUN pip3 install flask importlib requests request -i http://mirrors.cloud.aliyuncs.com/pypi/simple/ --trusted-host mirrors.cloud.aliyuncs.com --default-timeout=60
 
 # 如果用户需要安装额外的库，那么还需要提供requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt -i http://mirrors.cloud.aliyuncs.com/pypi/simple/ --trusted-host mirrors.cloud.aliyuncs.com --default-timeout=60
 
 # 把两个文件添加到image中，这样就不需要挂载了
 COPY ./serverless_server.py serverless_server.py
