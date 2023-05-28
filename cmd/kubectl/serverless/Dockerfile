@@ -23,4 +23,4 @@ COPY ./serverless_server.py serverless_server.py
 COPY ./my_module.py my_module.py
 
 # define command for this image
-CMD ["python3","/serverless_server.py"]
+CMD ["python3","serverless_server.py"]
