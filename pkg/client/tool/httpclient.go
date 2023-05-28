@@ -59,7 +59,7 @@ func List(resource string) []ListRes {
 
 func Watch(resourses string) WatchInterface {
 	watcher := &watcher{}
-	watcher.resultChan = make(chan Event)
+	watcher.resultChan = make(chan Event, 1000)
 	reader := func(wc chan<- Event) {
 		fmt.Println("[httpclient] [Watch] start watch")
 		url := apiconfig.Server_URL + "/watch" + resourses + "?prefix=true"
@@ -84,7 +84,6 @@ func Watch(resourses string) WatchInterface {
 							continue
 						}
 						fmt.Println("[httpclient] [Watch] unmarshal:", event.Key, event.Val, event.Type)
-						// send event to watcher.resultChan
 						wc <- event
 					}
 				}

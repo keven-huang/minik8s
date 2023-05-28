@@ -65,11 +65,11 @@ type DNatRule struct {
 	FatherChain string
 }
 
-type DNSManager struct {
-	Key2Dns     map[string]*core.DNS // mapping from "event.key" -> dns struct
-	DNSInformer informer.Informer    // informer for listening dns
-	isDead      bool                 // flag for manager to stop
-}
+//type DNSManager struct {
+//	Key2Dns     map[string]*core.DNS // mapping from "event.key" -> dns struct
+//	DNSInformer informer.Informer    // informer for listening dns
+//	isDead      bool                 // flag for manager to stop
+//}
 
 type KubeProxy struct {
 	ServiceInformer informer.Informer
@@ -77,5 +77,6 @@ type KubeProxy struct {
 	ServiceName2SvcChain map[string]map[string]*SvcChain
 	stopChan             <-chan bool
 	// dns
-	DNSManager *DNSManager
+	dnsInformer informer.Informer
+	Key2Dns     map[string]*core.DNS // mapping from "event.key" -> dns struct
 }

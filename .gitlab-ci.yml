@@ -5,17 +5,17 @@ stages:
 cache:
   key: ${CI_BUILD_REF_NAME}
   paths:
-    - /bin/
+    - /home/bin/
 
 build:
   stage: build
   script:
-    - sudo /usr/local/go/bin/go build -o /bin/kube-apiserver ./cmd/kube-apiserver/kube-apiserver.go
-    - sudo /usr/local/go/bin/go build -o /bin/kube-scheduler ./cmd/kube-scheduler/kube-scheduler.go
-    - sudo /usr/local/go/bin/go build -o /bin/kubelet ./cmd/kubelet/kubelet.go
-    - sudo /usr/local/go/bin/go build -o /bin/kube-controller-manager ./cmd/kube-controller-manager/kube-controller-manager.go
-    - sudo /usr/local/go/bin/go build -o /bin/kubeservice ./cmd/kube-service/kubeservice.go
-    - sudo /usr/local/go/bin/go build -o /bin/kubeproxy ./cmd/kube-proxy/kubeproxy.go
+    - sudo /usr/local/go/bin/go build -o /home/bin/kube-apiserver ./cmd/kube-apiserver/kube-apiserver.go
+    - sudo /usr/local/go/bin/go build -o /home/bin/kube-scheduler ./cmd/kube-scheduler/kube-scheduler.go
+    - sudo /usr/local/go/bin/go build -o /home/bin/kubelet ./cmd/kubelet/kubelet.go
+    - sudo /usr/local/go/bin/go build -o /home/bin/kube-controller-manager ./cmd/kube-controller-manager/kube-controller-manager.go
+    - sudo /usr/local/go/bin/go build -o /home/bin/kubeservice ./cmd/kube-service/kubeservice.go
+    - sudo /usr/local/go/bin/go build -o /home/bin/kubeproxy ./cmd/kube-proxy/kubeproxy.go
   tags:
     - testing
 
@@ -25,7 +25,6 @@ test:
   script:
     - sudo make stop
     - sudo make clean
-    - sudo make construct
     - sudo make run
     - sudo /usr/local/go/bin/go test ./... -v
     - sudo make stop
