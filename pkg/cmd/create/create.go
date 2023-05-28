@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/pkg/api/core"
+	"minik8s/pkg/kubelet/dockerClient"
 	"minik8s/pkg/service"
 	"minik8s/pkg/util/web"
 	"net/http"
@@ -21,13 +22,15 @@ import (
 
 // CreateOptions is the commandline options for 'create' sub command
 type CreateOptions struct {
-	Filename string
+	Filename  string
+	Directory string
 }
 
 // NewCreateOptions returns an initialized CreateOptions instance
 func NewCreateOptions() *CreateOptions {
 	return &CreateOptions{
-		Filename: "",
+		Filename:  "",
+		Directory: "",
 	}
 }
 
@@ -36,7 +39,7 @@ func NewCmdCreate() *cobra.Command {
 	o := NewCreateOptions()
 
 	cmd := &cobra.Command{
-		Use:   "create [-f FILENAME]",
+		Use:   "create [-f FILENAME] [-d DIRECTORY]",
 		Short: "Create a resource from a file or from stdin",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if o.Filename == "" {
@@ -54,6 +57,7 @@ func NewCmdCreate() *cobra.Command {
 
 	usage := "to use to create the resource"
 	cmd.Flags().StringVarP(&o.Filename, "filename", "f", "", "filename "+usage)
+	cmd.Flags().StringVarP(&o.Directory, "directory", "d", "", "directory "+usage)
 
 	return cmd
 }
@@ -103,6 +107,8 @@ func (o *CreateOptions) RunCreate(cmd *cobra.Command, args []string) error {
 		err = o.RunCreateDNS(cmd, args, yamlFile)
 	case "Workflow":
 		err = o.RunCreateWorkflow(cmd, args, yamlFile)
+	case "Function":
+		err = o.RunCreateFunction(cmd, args, yamlFile)
 	}
 
 	if err != nil {
@@ -214,6 +220,30 @@ func (o *CreateOptions) RunCreateWorkflow(cmd *cobra.Command, args []string, yam
 	}
 	err = CreateWorkflow(workflow)
 	if err != nil {
+		return err
+	}
+}
+
+func (o *CreateOptions) RunCreateFunction(cmd *cobra.Command, args []string, yamlFile []byte) error {
+	function := &core.Function{}
+	err := yaml.Unmarshal(yamlFile, function)
+	if err != nil {
+		return err
+	}
+
+	function.Spec.FileDirectory = o.Directory
+
+	err = CreateFunction(function)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func CreateFunction(function *core.Function) error {
+	err := dockerClient.ImageBuild(function.Spec.FileDirectory, "my_module:"+function.Name)
+	if err != nil {
+		fmt.Println("[kubectl] [create] [RunCreateFunction] failed to build image:", err)
 		return err
 	}
 	return nil

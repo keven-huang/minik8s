@@ -9,7 +9,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-
+	"github.com/docker/docker/pkg/archive"
+	"github.com/mitchellh/go-homedir"
 	"minik8s/pkg/api/core"
 	"minik8s/pkg/kubelet/config"
 
@@ -574,4 +575,46 @@ func GetDockerStats(name string) (types.ContainerStats, error) {
 		}
 	}
 	return types.ContainerStats{}, fmt.Errorf("no such container")
+}
+
+func GetContext(filePath string) io.Reader {
+	// Use homedir.Expand to resolve paths like '~/repos/myrepo'
+	filePath, _ = homedir.Expand(filePath)
+	ctx, _ := archive.TarWithOptions(filePath, &archive.TarOptions{})
+	return ctx
+}
+
+func ImageBuild(buildPath string, image string) error {
+	ctx := context.Background()
+	cli, err := GetNewClient()
+	if err != nil {
+		fmt.Println("Docker client init failed.", err)
+		return err
+	}
+
+	// 准备构建参数
+	buildOptions := types.ImageBuildOptions{
+		Dockerfile: "Dockerfile",
+		Tags:       []string{image},
+	}
+
+	// 发起构建请求
+	buildResponse, err := cli.ImageBuild(ctx, GetContext(buildPath), buildOptions)
+	if err != nil {
+		fmt.Println("Docker build failed.", err)
+		return err
+	}
+	defer buildResponse.Body.Close()
+
+	bodyBytes, err := io.ReadAll(buildResponse.Body)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+
+	bodyString := string(bodyBytes)
+	fmt.Println(bodyString)
+
+	fmt.Println("Docker build completed.")
+	return nil
 }
