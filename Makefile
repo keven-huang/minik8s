@@ -7,6 +7,7 @@ clean:
 
 # deprecated
 construct:
+	mkdir -p bin
 	/usr/local/go/bin/go build -o ./binx/kube-apiserver ./cmd/kube-apiserver/kube-apiserver.go
 	/usr/local/go/bin/go build -o ./binx/kube-scheduler ./cmd/kube-scheduler/kube-scheduler.go
 	/usr/local/go/bin/go build -o ./binx/kubelet ./cmd/kubelet/kubelet.go
@@ -26,7 +27,6 @@ build:
 
 run:
 	mkdir -p /root/nginx
-	mkdir -p bin
 	iptables-save > ./iptable_ori
 	./binx/kube-apiserver > log/apiserver.log &
 	sleep 5

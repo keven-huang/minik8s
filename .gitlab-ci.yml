@@ -10,12 +10,12 @@ cache:
 build:
   stage: build
   script:
-    - sudo /usr/local/go/bin/go build -o ./bin/kube-apiserver ./cmd/kube-apiserver/kube-apiserver.go
-    - sudo /usr/local/go/bin/go build -o ./bin/kube-scheduler ./cmd/kube-scheduler/kube-scheduler.go
-    - sudo /usr/local/go/bin/go build -o ./bin/kubelet ./cmd/kubelet/kubelet.go
-    - sudo /usr/local/go/bin/go build -o ./bin/kube-controller-manager ./cmd/kube-controller-manager/kube-controller-manager.go
-    - sudo /usr/local/go/bin/go build -o ./bin/kubeservice ./cmd/kube-service/kubeservice.go
-    - sudo /usr/local/go/bin/go build -o ./bin/kubeproxy ./cmd/kube-proxy/kubeproxy.go
+    - sudo /usr/local/go/bin/go build -o ./binx/kube-apiserver ./cmd/kube-apiserver/kube-apiserver.go
+    - sudo /usr/local/go/bin/go build -o ./binx/kube-scheduler ./cmd/kube-scheduler/kube-scheduler.go
+    - sudo /usr/local/go/bin/go build -o ./binx/kubelet ./cmd/kubelet/kubelet.go
+    - sudo /usr/local/go/bin/go build -o ./binx/kube-controller-manager ./cmd/kube-controller-manager/kube-controller-manager.go
+    - sudo /usr/local/go/bin/go build -o ./binx/kubeservice ./cmd/kube-service/kubeservice.go
+    - sudo /usr/local/go/bin/go build -o ./binx/kubeproxy ./cmd/kube-proxy/kubeproxy.go
   tags:
     - testing
 
