@@ -8,13 +8,8 @@ spec:
   nodeName: "node1"
   containers:
     - name: server
-      image: chasingdreams/tinyweb:2
+      image: chasingdreams/tinyweb:3
       ports:
         - name: http
           containerPort: 80
-      volumeMounts:
-        - name: volume04
-          mountPath: /usr/share/nginx/html
-  volumes:
-    - name: volume04
-      hostPath: /home/webs/web0
+

@@ -52,7 +52,6 @@ kill:
 	sudo docker ps -aq --filter "name=^my-replicaset|^test" | xargs -r docker stop
 	sudo docker ps -aq --filter "name=^my-replicaset|^test" | xargs -r docker rm
 
-# need webs in /home/webs
 testsvc:
 	./binx/kubectl create -f ./cmd/kubectl/service-example/server-pod.yaml
 	sleep 5
@@ -71,6 +70,7 @@ testsvc:
 	curl 11.1.1.1
 	curl 11.1.1.1
 	curl 11.1.1.1
+	curl 11.1.1.1
 
 delsvc:
 	./binx/kubectl delete service webservice
@@ -81,7 +81,7 @@ delsvc:
 	sleep 2
 	./binx/kubectl delete pod tinyserver3
 
-# need project in /home/minik8s
+# need project in /home/minik8s, webs in /home/webs
 testdns:
 	./binx/kubectl create -f ./cmd/kubectl/dns-example/server-pod1.yaml
 	sleep 5
