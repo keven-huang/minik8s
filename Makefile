@@ -5,9 +5,8 @@ clean:
 	rm -rf /root/nginx 2>/dev/null || true
 	rm ./iptable_ori 2>/dev/null || true
 
+# deprecated
 construct:
-	mkdir -p /root/nginx
-	mkdir -p bin
 	/usr/local/go/bin/go build -o ./binx/kube-apiserver ./cmd/kube-apiserver/kube-apiserver.go
 	/usr/local/go/bin/go build -o ./binx/kube-scheduler ./cmd/kube-scheduler/kube-scheduler.go
 	/usr/local/go/bin/go build -o ./binx/kubelet ./cmd/kubelet/kubelet.go
@@ -16,6 +15,7 @@ construct:
 	/usr/local/go/bin/go build -o ./binx/kubeservice ./cmd/kube-service/kubeservice.go
 	/usr/local/go/bin/go build -o ./binx/kubectl ./cmd/kubectl/kubectl.go
 
+# deprecated
 build:
 	/usr/local/go/bin/go build -o ./binx/kube-apiserver ./cmd/kube-apiserver/kube-apiserver.go
 	/usr/local/go/bin/go build -o ./binx/kube-scheduler ./cmd/kube-scheduler/kube-scheduler.go
@@ -25,6 +25,8 @@ build:
 	/usr/local/go/bin/go build -o ./binx/kubeservice ./cmd/kube-service/kubeservice.go
 
 run:
+	mkdir -p /root/nginx
+	mkdir -p bin
 	iptables-save > ./iptable_ori
 	./binx/kube-apiserver > log/apiserver.log &
 	sleep 5
