@@ -32,8 +32,10 @@ func AddWorkflow(c *gin.Context, s *Server) {
 		})
 		return
 	}
-
-	dag, err := w.Workflow2DAG()
+	ServerGetFunc := func(name string) (core.Function, error) {
+		return GetFunc(s, name)
+	}
+	dag, err := w.Workflow2DAG(ServerGetFunc)
 	dag.Name = w.Name
 
 	dag.UID = random.GenerateUUID()
@@ -131,4 +133,22 @@ func DeleteWorkflow(c *gin.Context, s *Server) {
 		"message":       "delete Workflow success",
 		"deletePodName": Name,
 	})
+}
+
+func GetFunc(s *Server, resource string) (core.Function, error) {
+	prefix := "[api-server] [WorkflowHandler] [GetFunc]"
+	fmt.Println(prefix)
+	key := apiconfig.FUNCTION_PATH + "/" + resource
+	res, err := s.Etcdstore.GetExact(key)
+	if err != nil {
+		log.Println(err)
+		return core.Function{}, err
+	}
+	f := core.Function{}
+	err = json.Unmarshal([]byte(res[0].Value), &f)
+	if err != nil {
+		log.Println(err)
+		return core.Function{}, err
+	}
+	return f, nil
 }

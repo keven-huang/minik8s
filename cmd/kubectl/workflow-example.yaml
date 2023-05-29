@@ -11,9 +11,17 @@ spec:
     - Name: branchstate
       Type: Choice
       Choices:
-        - Condition: a > 10
+        - Condition:
+            Type: Numeric
+            Variable: a
+            Operator: ">"
+            Value: 10
           Next: Function1
-        - Condition: a <=10
+        - Condition:
+            Type: Numeric
+            Variable: a
+            Operator: "<="
+            Value: 10
           Next: Function2
     - Name: Function1
       Type: Task
