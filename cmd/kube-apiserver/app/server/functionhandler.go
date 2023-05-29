@@ -201,7 +201,7 @@ func InvokeFunction(c *gin.Context, s *Server) {
 		podIP = pod.Status.PodIP
 	}
 
-	req, err := http.NewRequest("POST", "http://"+podIP+":8888", c.Request.Body)
+	req, err := http.NewRequest("POST", "http://"+podIP+":8888/function/my_module/"+function_name, c.Request.Body)
 	if err != nil {
 		fmt.Println("[InvokeFunction] ", "Error creating request:", err)
 		return
