@@ -222,6 +222,7 @@ func (o *CreateOptions) RunCreateWorkflow(cmd *cobra.Command, args []string, yam
 	if err != nil {
 		return err
 	}
+	return nil
 }
 
 func (o *CreateOptions) RunCreateFunction(cmd *cobra.Command, args []string, yamlFile []byte) error {
