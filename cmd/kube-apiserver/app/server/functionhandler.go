@@ -112,6 +112,23 @@ func scheduler(s *Server, func_name string) (*core.Pod, error) {
 
 func InvokeFunction(c *gin.Context, s *Server) {
 	function_name := c.Param("function_name")[1:]
+
+	x, err := s.Etcdstore.GetExact(apiconfig.FUNCTION_PATH + "/" + function_name)
+	if err != nil {
+		fmt.Println("[InvokeFunction] ", "Error getting function:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error getting function.",
+		})
+		return
+	}
+	if len(x) == 0 {
+		fmt.Println("[InvokeFunction] ", "Function not found.")
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "Function not found.",
+		})
+		return
+	}
+
 	pod_name := "function-" + function_name + "-" + random.GenerateRandomString(5)
 
 	pod, err := scheduler(s, function_name)
@@ -141,6 +158,9 @@ func InvokeFunction(c *gin.Context, s *Server) {
 		err = create.CreatePod(pod)
 		if err != nil {
 			fmt.Println("[InvokeFunction] ", "Error creating pod:", err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "Error creating pod.",
+			})
 			return
 		}
 
@@ -148,6 +168,9 @@ func InvokeFunction(c *gin.Context, s *Server) {
 			r, err := s.Etcdstore.GetExact(apiconfig.POD_PATH + "/" + pod.Name)
 			if err != nil {
 				fmt.Println("[InvokeFunction] ", "Error getting pod:", err)
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"message": "Error getting pod.",
+				})
 				return
 			}
 			if len(r) > 0 {
@@ -157,7 +180,6 @@ func InvokeFunction(c *gin.Context, s *Server) {
 			}
 			time.Sleep(1 * time.Second)
 		}
-
 	} else {
 		podIP = pod.Status.PodIP
 	}
