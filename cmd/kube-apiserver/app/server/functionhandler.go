@@ -154,7 +154,7 @@ func InvokeFunction(c *gin.Context, s *Server) {
 			Spec: core.PodSpec{
 				Containers: []core.Container{
 					{
-						Name:  pod_name + "-container",
+						Name:  "container",
 						Image: "luhaoqi/my_module:" + function_name,
 					},
 				},
