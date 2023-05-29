@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/pkg/api/core"
-	"minik8s/pkg/kubelet/dockerClient"
 	"minik8s/pkg/service"
 	"minik8s/pkg/util/web"
 	"net/http"
@@ -242,9 +241,17 @@ func (o *CreateOptions) RunCreateFunction(cmd *cobra.Command, args []string, yam
 }
 
 func CreateFunction(function *core.Function) error {
-	err := dockerClient.ImageBuild(function.Spec.FileDirectory, "my_module:"+function.Name)
+	data, err := json.Marshal(function)
 	if err != nil {
-		fmt.Println("[kubectl] [create] [RunCreateFunction] failed to build image:", err)
+		fmt.Println("[kubectl] [create] [CreateFunction] failed to marshal:", err)
+	} else {
+		//fmt.Println("[kubectl] [create] [RunCreateReplicaSet] ", string(data))
+	}
+	err = web.SendHttpRequest("PUT", apiconfig.Server_URL+apiconfig.FUNCTION_PATH,
+		web.WithPrefix("[kubectl] [create] [CreateFunction] "),
+		web.WithBody(bytes.NewBuffer(data)),
+		web.WithLog(true))
+	if err != nil {
 		return err
 	}
 	return nil
@@ -253,12 +260,11 @@ func CreateFunction(function *core.Function) error {
 func CreateService(s *service.Service) error {
 	data, err := json.Marshal(s)
 	if err != nil {
-		fmt.Println("[kubectl] [create] [RunCreateService] failed to marshal:", err)
+		fmt.Println("[kubectl] [create] [CreateService] failed to marshal:", err)
 	} else {
-		//fmt.Println("[kubectl] [create] [RunCreateReplicaSet] ", string(data))
 	}
 	err = web.SendHttpRequest("PUT", apiconfig.Server_URL+apiconfig.SERVICE_PATH,
-		web.WithPrefix("[kubectl] [create] [RunCreatesService] "),
+		web.WithPrefix("[kubectl] [create] [CreatesService] "),
 		web.WithBody(bytes.NewBuffer(data)),
 		web.WithLog(true))
 	if err != nil {
