@@ -65,7 +65,7 @@ func (k *Kubelet) CreateFunction(event tool.Event) {
 		return
 	}
 
-	err = dockerClient.ImageBuild(function.Spec.FileDirectory, "my_module:"+function.Name)
+	err = dockerClient.ImageBuild(function.Spec.FileDirectory, "luhaoqi/my_module:"+function.Name)
 	if err != nil {
 		fmt.Println(prefix, "dockerClient.ImageBuild err: ", err)
 		return
@@ -88,7 +88,7 @@ func (k *Kubelet) UpdateFunction(event tool.Event) {
 
 	// 镜像会自动覆盖
 
-	err = dockerClient.ImageBuild(function.Spec.FileDirectory, "my_module:"+function.Name)
+	err = dockerClient.ImageBuild(function.Spec.FileDirectory, "luhaoqi/my_module:"+function.Name)
 	if err != nil {
 		fmt.Println(prefix, "dockerClient.ImageBuild err: ", err)
 		return
