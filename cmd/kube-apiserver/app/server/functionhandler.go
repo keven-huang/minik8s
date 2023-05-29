@@ -85,6 +85,12 @@ func scheduler(s *Server, func_name string) (*core.Pod, error) {
 			p = append(p, pod)
 		}
 	}
+
+	if len(p) == 0 {
+		fmt.Println("[ERROR] [scheduler] no pod instance")
+		return nil, nil
+	}
+
 	function := core.Function{}
 	r, err := s.Etcdstore.GetExact(apiconfig.FUNCTION_PATH + "/" + func_name)
 	if err != nil {
