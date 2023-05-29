@@ -324,6 +324,7 @@ func (k *Kubelet) Listener(needLog bool) {
 func (k *Kubelet) Run() {
 	go k.Monitor.Run()
 	go k.PodInformer.Run()
+	go k.FunctionInformer.Run()
 	go k.Listener(true)
 	select {}
 }
