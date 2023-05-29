@@ -15,6 +15,7 @@ import (
 	"minik8s/pkg/util/file"
 	"minik8s/pkg/util/web"
 	"regexp"
+	"strings"
 	"time"
 )
 
@@ -29,6 +30,14 @@ func NewKubelet(name string, nodeIp string, masterIp string) (*Kubelet, error) {
 	node.Name = name
 	node.Spec.NodeIP = nodeIp
 	apiconfig.Server_URL = masterIp
+	node.Labels = make(map[string]string)
+	tmp := strings.Trim(masterIp, "http://")
+	tmp = strings.Trim(tmp, ":8080")
+	if tmp == nodeIp { // master
+		node.Labels["kind"] = "Master"
+	} else {
+		node.Labels["kind"] = "Worker"
+	}
 	err := tool.AddNode(&node)
 	if err != nil {
 		return nil, err

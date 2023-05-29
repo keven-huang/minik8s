@@ -136,7 +136,7 @@ func (o *GetOptions) RunGetNode(cmd *cobra.Command, args []string) error {
 	table := uitable.New()
 	table.MaxColWidth = 100
 	table.RightAlign(10)
-	table.AddRow("NAME", "NODE_IP", "CREATE_TIME")
+	table.AddRow("NAME", "KIND", "NODE_IP", "CREATE_TIME")
 	for _, val := range res {
 		node := core.Node{}
 		err := json.Unmarshal([]byte(val.Value), &node)
@@ -145,6 +145,7 @@ func (o *GetOptions) RunGetNode(cmd *cobra.Command, args []string) error {
 			return err
 		}
 		table.AddRow(color.RedString(node.Name),
+			color.GreenString(node.Labels["kind"]),
 			color.BlueString(node.Spec.NodeIP),
 			color.YellowString(node.CreationTimestamp.Format(time.UnixDate)))
 	}
