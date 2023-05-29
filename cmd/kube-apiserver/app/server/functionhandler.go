@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -201,7 +202,12 @@ func InvokeFunction(c *gin.Context, s *Server) {
 		podIP = pod.Status.PodIP
 	}
 
-	req, err := http.NewRequest("POST", "http://"+podIP+":8888/function/my_module/"+function_name, c.Request.Body)
+	body, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		return
+	}
+	fmt.Println("[InvokeFunction] ", "PodIP:", podIP, "body:", string(body))
+	req, err := http.NewRequest("POST", "http://"+podIP+":8888/function/my_module/"+function_name, bytes.NewReader(body))
 	if err != nil {
 		fmt.Println("[InvokeFunction] ", "Error creating request:", err)
 		return
