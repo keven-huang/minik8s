@@ -5,7 +5,6 @@ metadata:
   labels:
     app: dns-example-pod2
 spec:
-  nodeName: "node1"
   containers:
     - name: server
       image: chasingdreams/tinyweb:2

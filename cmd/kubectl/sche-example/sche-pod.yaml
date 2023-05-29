@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: tinyserver2
+  name: sche-pod-1
   labels:
-    app: tinyserver
+    app: sche-pod-1
 spec:
   containers:
     - name: server

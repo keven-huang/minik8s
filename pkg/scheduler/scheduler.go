@@ -14,14 +14,21 @@ import (
 type Scheduler struct {
 	PodInformer  informer.Informer
 	NodeInformer informer.Informer
+	Strategy     string
 	queue        *q.ConcurrentQueue
 }
 
-func NewScheduler() *Scheduler {
+const (
+	RandomStrategy string = "RandomStrategy"
+	RRStrategy     string = "RRStrategy"
+)
+
+func NewScheduler(Strategy *string) *Scheduler {
 	return &Scheduler{
 		PodInformer:  informer.NewInformer(apiconfig.POD_PATH),
 		NodeInformer: informer.NewInformer(apiconfig.NODE_PATH),
 		queue:        q.NewConcurrentQueue(),
+		Strategy:     *Strategy,
 	}
 }
 
@@ -64,10 +71,17 @@ func (s *Scheduler) worker() {
 func (s *Scheduler) Schedule(pod *core.Pod) {
 	node := s.GetNode()
 	var nodeName string
-	nodeName = roundrobin_strategy(node)
+	if s.Strategy == RRStrategy {
+		nodeName = roundrobin_strategy(node)
+	} else {
+		nodeName = random_strategy(node)
+	}
 	pod.Spec.NodeName = nodeName
 	fmt.Println("[scheduler] [Schedule] schedule to node:", nodeName)
-	tool.UpdatePod(pod)
+	err := tool.UpdatePod(pod)
+	if err != nil {
+		return
+	}
 }
 
 func (s *Scheduler) GetNode() []core.Node {
