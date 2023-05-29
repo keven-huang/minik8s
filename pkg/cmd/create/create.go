@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/pkg/api/core"
+	"minik8s/pkg/kubelet/dockerClient"
 	"minik8s/pkg/service"
 	"minik8s/pkg/util/web"
 	"net/http"
@@ -241,6 +242,7 @@ func (o *CreateOptions) RunCreateFunction(cmd *cobra.Command, args []string, yam
 }
 
 func CreateFunction(function *core.Function) error {
+	prefix := "[kubectl] [create] [CreateFunction] "
 	data, err := json.Marshal(function)
 	if err != nil {
 		fmt.Println("[kubectl] [create] [CreateFunction] failed to marshal:", err)
@@ -254,6 +256,21 @@ func CreateFunction(function *core.Function) error {
 	if err != nil {
 		return err
 	}
+
+	image := "luhaoqi/my_module:" + function.Name
+
+	err = dockerClient.ImageBuild(function.Spec.FileDirectory, image)
+	if err != nil {
+		fmt.Println(prefix, "dockerClient.ImageBuild err: ", err)
+		return err
+	}
+
+	err = dockerClient.ImagePush(image)
+	if err != nil {
+		fmt.Println(prefix, "dockerClient.ImagePush err: ", err)
+		return err
+	}
+
 	return nil
 }
 

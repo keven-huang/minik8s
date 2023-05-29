@@ -58,18 +58,18 @@ func (k *Kubelet) CreateFunction(event tool.Event) {
 	fmt.Println(prefix, "event.Key: ", event.Key)
 	k.FunctionInformer.Set(event.Key, event.Val)
 
-	function := &core.Function{}
-	err := json.Unmarshal([]byte(event.Val), function)
-	if err != nil {
-		fmt.Println(prefix, "json.Unmarshal err: ", err)
-		return
-	}
-
-	err = dockerClient.ImageBuild(function.Spec.FileDirectory, "luhaoqi/my_module:"+function.Name)
-	if err != nil {
-		fmt.Println(prefix, "dockerClient.ImageBuild err: ", err)
-		return
-	}
+	//function := &core.Function{}
+	//err := json.Unmarshal([]byte(event.Val), function)
+	//if err != nil {
+	//	fmt.Println(prefix, "json.Unmarshal err: ", err)
+	//	return
+	//}
+	//
+	//err = dockerClient.ImageBuild(function.Spec.FileDirectory, "luhaoqi/my_module:"+function.Name)
+	//if err != nil {
+	//	fmt.Println(prefix, "dockerClient.ImageBuild err: ", err)
+	//	return
+	//}
 }
 
 func (k *Kubelet) UpdateFunction(event tool.Event) {

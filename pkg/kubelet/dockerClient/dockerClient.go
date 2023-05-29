@@ -7,21 +7,22 @@ package dockerClient
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/docker/docker/pkg/archive"
-	"github.com/mitchellh/go-homedir"
-	"minik8s/pkg/api/core"
-	"minik8s/pkg/kubelet/config"
-
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/api/types/volume"
 	"github.com/docker/docker/client"
+	"github.com/docker/docker/pkg/archive"
 	"github.com/docker/go-connections/nat"
+	"github.com/mitchellh/go-homedir"
 	"io"
 	kube_proxy "minik8s/configs"
+	"minik8s/pkg/api/core"
+	"minik8s/pkg/kubelet/config"
+	"os"
 )
 
 func GetNewClient() (*client.Client, error) {
@@ -616,6 +617,42 @@ func ImageBuild(buildPath string, image string) error {
 	fmt.Println(bodyString)
 
 	fmt.Println("Docker build completed.")
+	return nil
+}
+
+func ImagePush(image string) error {
+	ctx := context.Background()
+	cli, err := GetNewClient()
+	if err != nil {
+		fmt.Println("Docker client init failed.", err)
+		return err
+	}
+
+	var authConfig = types.AuthConfig{
+		Username: "luhaoqi",
+		Password: os.Getenv("DOCKER_TOKEN"),
+	}
+	authConfigBytes, _ := json.Marshal(authConfig)
+	authConfigEncoded := base64.URLEncoding.EncodeToString(authConfigBytes)
+
+	opts := types.ImagePushOptions{RegistryAuth: authConfigEncoded}
+
+	buildResponse, err := cli.ImagePush(ctx, image, opts)
+	if err != nil {
+		return err
+	}
+
+	defer buildResponse.Close()
+
+	bodyBytes, err := io.ReadAll(buildResponse)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+
+	bodyString := string(bodyBytes)
+	fmt.Println(bodyString)
+	fmt.Println("Docker push completed.")
 	return nil
 }
 
