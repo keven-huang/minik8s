@@ -620,4 +620,5 @@ type FunctionSpec struct {
 	Image         string `json:"image" yaml:"image"`
 	FileDirectory string `json:"fileDirectory" yaml:"fileDirectory"`
 	Pods          []Pod  `json:"pods" yaml:"pods"`
+	InvokeTimes   int    `json:"invokeTimes" yaml:"invokeTimes"`
 }

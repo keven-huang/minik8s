@@ -44,8 +44,9 @@ stop:
 	./scripts/linux/stop.sh
 	sleep 2
 	iptables-restore < /root/iptable_ori
-	docker ps -aq --filter "name=^coreDNS" | xargs -r docker stop
-	docker ps -aq --filter "name=^coreDNS" | xargs -r docker rm
+	docker ps -aq --filter "name=^coreDNS|^function-" | xargs -r docker stop
+	docker ps -aq --filter "name=^coreDNS|^function-" | xargs -r docker rm
+
 	docker volume rm volume-coredns 2>/dev/null || true
 
 kill:
