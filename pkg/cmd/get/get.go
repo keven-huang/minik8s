@@ -86,6 +86,10 @@ func (o *GetOptions) RunGet(cmd *cobra.Command, args []string) error {
 		{
 			return o.RunGetDns(cmd, args)
 		}
+	case "node":
+		{
+			return o.RunGetNode(cmd, args)
+		}
 	default:
 		{
 			fmt.Printf(prefix, "%s is not supported.\n", args[0])
@@ -93,6 +97,60 @@ func (o *GetOptions) RunGet(cmd *cobra.Command, args []string) error {
 		}
 	}
 
+}
+
+func (o *GetOptions) RunGetNode(cmd *cobra.Command, args []string) error {
+	prefix := "[kubectl] [get] [RunGetNode] "
+	values := url.Values{}
+	if o.GetAll {
+		values.Add("all", "true")
+	}
+	if len(args) == 1 {
+		values.Add("all", "true")
+	}
+	if len(args) > 1 {
+		values.Add("NodeName", args[1])
+		//body = bytes.NewBuffer([]byte(args[1]))
+	}
+
+	bodyBytes := make([]byte, 0)
+
+	err := web.SendHttpRequest("GET", apiconfig.Server_URL+apiconfig.NODE_PATH+"?"+values.Encode(),
+		web.WithPrefix(prefix),
+		web.WithLog(false),
+		web.WithBodyBytes(&bodyBytes))
+	if err != nil {
+		return err
+	}
+
+	var res []etcd.ListRes
+	err = json.Unmarshal(bodyBytes, &res)
+	if err != nil {
+		log.Println(prefix, err)
+		return err
+	}
+	fmt.Println(prefix, "Node Get successfully. Here are the results:")
+
+	fmt.Println("total number:", len(res))
+
+	table := uitable.New()
+	table.MaxColWidth = 100
+	table.RightAlign(10)
+	table.AddRow("NAME", "NODE_IP", "CREATE_TIME")
+	for _, val := range res {
+		node := core.Node{}
+		err := json.Unmarshal([]byte(val.Value), &node)
+		if err != nil {
+			log.Println(prefix, err)
+			return err
+		}
+		table.AddRow(color.RedString(node.Name),
+			color.BlueString(node.Spec.NodeIP),
+			color.YellowString(node.CreationTimestamp.Format(time.UnixDate)))
+	}
+	fmt.Println(table)
+
+	return nil
 }
 
 func (o *GetOptions) RunGetPod(cmd *cobra.Command, args []string) error {

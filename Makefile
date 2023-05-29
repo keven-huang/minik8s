@@ -144,3 +144,7 @@ deltestdns:
 	docker volume ls -q --filter "name=^gatewayvolume" | xargs -r docker volume rm || true
 	docker volume ls -q --filter "name=^volume0" | xargs -r docker volume rm || true
 	docker volume ls -q --filter "name=^volume-usr" | xargs -r docker volume rm || true
+
+testnode:
+	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go get node
+	

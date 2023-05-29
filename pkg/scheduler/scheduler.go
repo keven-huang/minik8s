@@ -35,11 +35,17 @@ func NewScheduler(Strategy *string) *Scheduler {
 func (s *Scheduler) Register() {
 	s.PodInformer.AddEventHandler(tool.Added, s.AddPod)
 	s.NodeInformer.AddEventHandler(tool.Added, s.AddNode)
+	s.NodeInformer.AddEventHandler(tool.Deleted, s.DeleteNode)
 }
 
 func (s *Scheduler) AddNode(event tool.Event) {
 	fmt.Println("[scheduler] [AddNode]")
 	s.NodeInformer.Set(event.Key, event.Val)
+}
+
+func (s *Scheduler) DeleteNode(event tool.Event) {
+	fmt.Println("[scheduler] [DeleteNode]")
+	s.NodeInformer.Delete(event.Key)
 }
 
 func (s *Scheduler) AddPod(event tool.Event) {
