@@ -224,5 +224,15 @@ func InvokeFunction(c *gin.Context, s *Server) {
 		return
 	}
 
-	c.JSON(http.StatusOK, resp.Body)
+	body, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return
+	}
+	fmt.Println("[InvokeFunction] ", "respond:", string(body))
+
+	// 设置响应头
+	c.Header("Content-Type", resp.Header.Get("Content-Type"))
+
+	// 返回响应体
+	c.Data(resp.StatusCode, resp.Header.Get("Content-Type"), body)
 }
