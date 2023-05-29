@@ -53,5 +53,9 @@ var HandlerTable = []Handler{
 	{Type: "GET", Path: apiconfig.WORKFLOW_PATH, Eventhandler: GetWorkflow},
 	{Type: "PUT", Path: apiconfig.WORKFLOW_PATH, Eventhandler: AddWorkflow},
 	{Type: "DELETE", Path: apiconfig.WORKFLOW_PATH, Eventhandler: DeleteWorkflow},
+	// function
+	{Type: "GET", Path: apiconfig.FUNCTION_PATH, Eventhandler: GetFunction},
+	{Type: "PUT", Path: apiconfig.FUNCTION_PATH, Eventhandler: AddFunction},
+	{Type: "DELETE", Path: apiconfig.FUNCTION_PATH, Eventhandler: DeleteFunction},
 	// watch
 	{Type: "GET", Path: "/watch/*resource", Eventhandler: Watch}}
