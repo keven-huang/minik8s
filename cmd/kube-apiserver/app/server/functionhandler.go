@@ -168,6 +168,9 @@ func InvokeFunction(c *gin.Context, s *Server) {
 		return
 	}
 
+	// 设置请求头的 Content-Type
+	req.Header.Set("Content-Type", "application/json")
+
 	// 发送请求
 	client := &http.Client{}
 	resp, err := client.Do(req)
