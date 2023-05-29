@@ -19,9 +19,10 @@ import (
 )
 
 type Kubelet struct {
-	Monitor     *monitor.Monitor
-	PodInformer informer.Informer
-	node        core.Node
+	Monitor          *monitor.Monitor
+	PodInformer      informer.Informer
+	FunctionInformer informer.Informer
+	node             core.Node
 }
 
 func NewKubelet(name string, nodeIp string, masterIp string) (*Kubelet, error) {
@@ -34,9 +35,10 @@ func NewKubelet(name string, nodeIp string, masterIp string) (*Kubelet, error) {
 		return nil, err
 	}
 	return &Kubelet{
-		Monitor:     monitor.NewMonitor(9400, &node),
-		PodInformer: informer.NewInformer(apiconfig.POD_PATH),
-		node:        node,
+		Monitor:          monitor.NewMonitor(9400, &node),
+		PodInformer:      informer.NewInformer(apiconfig.POD_PATH),
+		FunctionInformer: informer.NewInformer(apiconfig.FUNCTION_PATH),
+		node:             node,
 	}, nil
 }
 
@@ -44,6 +46,78 @@ func (k *Kubelet) Register() {
 	k.PodInformer.AddEventHandler(tool.Added, k.CreatePod)
 	k.PodInformer.AddEventHandler(tool.Modified, k.UpdatePod)
 	k.PodInformer.AddEventHandler(tool.Deleted, k.DeletePod)
+	k.FunctionInformer.AddEventHandler(tool.Added, k.CreateFunction)
+	k.FunctionInformer.AddEventHandler(tool.Modified, k.UpdateFunction)
+	k.FunctionInformer.AddEventHandler(tool.Deleted, k.DeleteFunction)
+}
+
+func (k *Kubelet) CreateFunction(event tool.Event) {
+	prefix := "[kubelet] [CreateFunction] "
+	// handle event
+	fmt.Println(prefix, "event.Type: ", tool.GetTypeName(event))
+	fmt.Println(prefix, "event.Key: ", event.Key)
+	k.FunctionInformer.Set(event.Key, event.Val)
+
+	//function := &core.Function{}
+	//err := json.Unmarshal([]byte(event.Val), function)
+	//if err != nil {
+	//	fmt.Println(prefix, "json.Unmarshal err: ", err)
+	//	return
+	//}
+	//
+	//err = dockerClient.ImageBuild(function.Spec.FileDirectory, "luhaoqi/my_module:"+function.Name)
+	//if err != nil {
+	//	fmt.Println(prefix, "dockerClient.ImageBuild err: ", err)
+	//	return
+	//}
+}
+
+func (k *Kubelet) UpdateFunction(event tool.Event) {
+	prefix := "[kubelet] [UpdateFunction] "
+	// handle event
+	fmt.Println(prefix, "event.Type: ", tool.GetTypeName(event))
+	fmt.Println(prefix, "event.Key: ", event.Key)
+	k.FunctionInformer.Set(event.Key, event.Val)
+
+	function := &core.Function{}
+	err := json.Unmarshal([]byte(event.Val), function)
+	if err != nil {
+		fmt.Println(prefix, "json.Unmarshal err: ", err)
+		return
+	}
+
+	// 镜像会自动覆盖
+
+	err = dockerClient.ImageBuild(function.Spec.FileDirectory, "luhaoqi/my_module:"+function.Name)
+	if err != nil {
+		fmt.Println(prefix, "dockerClient.ImageBuild err: ", err)
+		return
+	}
+
+	// TODO: 删除所有之前Function的容器
+}
+
+func (k *Kubelet) DeleteFunction(event tool.Event) {
+	prefix := "[kubelet] [DeleteFunction] "
+	// handle event
+	fmt.Println(prefix, "event.Type: ", tool.GetTypeName(event))
+	fmt.Println(prefix, "event.Key: ", event.Key)
+	val := k.FunctionInformer.Get(event.Key)
+	k.FunctionInformer.Delete(event.Key)
+
+	function := &core.Function{}
+	err := json.Unmarshal([]byte(val), function)
+	if err != nil {
+		fmt.Println(prefix, "json.Unmarshal err: ", err)
+		return
+	}
+
+	// TODO: image remove 目前还是空的
+	err = dockerClient.ImageRemove("my_module:" + function.Name)
+	if err != nil {
+		fmt.Println(prefix, "dockerClient.ImageRemove err: ", err)
+		return
+	}
 }
 
 func (k *Kubelet) CreatePod(event tool.Event) {
@@ -250,6 +324,7 @@ func (k *Kubelet) Listener(needLog bool) {
 func (k *Kubelet) Run() {
 	go k.Monitor.Run()
 	go k.PodInformer.Run()
+	go k.FunctionInformer.Run()
 	go k.Listener(true)
 	select {}
 }

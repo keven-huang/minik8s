@@ -242,23 +242,46 @@ func (o *CreateOptions) RunCreateFunction(cmd *cobra.Command, args []string, yam
 }
 
 func CreateFunction(function *core.Function) error {
-	err := dockerClient.ImageBuild(function.Spec.FileDirectory, "my_module:"+function.Name)
+	prefix := "[kubectl] [create] [CreateFunction] "
+	data, err := json.Marshal(function)
 	if err != nil {
-		fmt.Println("[kubectl] [create] [RunCreateFunction] failed to build image:", err)
+		fmt.Println("[kubectl] [create] [CreateFunction] failed to marshal:", err)
+	} else {
+		//fmt.Println("[kubectl] [create] [RunCreateReplicaSet] ", string(data))
+	}
+	err = web.SendHttpRequest("PUT", apiconfig.Server_URL+apiconfig.FUNCTION_PATH,
+		web.WithPrefix("[kubectl] [create] [CreateFunction] "),
+		web.WithBody(bytes.NewBuffer(data)),
+		web.WithLog(true))
+	if err != nil {
 		return err
 	}
+
+	image := "luhaoqi/my_module:" + function.Name
+
+	err = dockerClient.ImageBuild(function.Spec.FileDirectory, image)
+	if err != nil {
+		fmt.Println(prefix, "dockerClient.ImageBuild err: ", err)
+		return err
+	}
+
+	err = dockerClient.ImagePush(image)
+	if err != nil {
+		fmt.Println(prefix, "dockerClient.ImagePush err: ", err)
+		return err
+	}
+
 	return nil
 }
 
 func CreateService(s *service.Service) error {
 	data, err := json.Marshal(s)
 	if err != nil {
-		fmt.Println("[kubectl] [create] [RunCreateService] failed to marshal:", err)
+		fmt.Println("[kubectl] [create] [CreateService] failed to marshal:", err)
 	} else {
-		//fmt.Println("[kubectl] [create] [RunCreateReplicaSet] ", string(data))
 	}
 	err = web.SendHttpRequest("PUT", apiconfig.Server_URL+apiconfig.SERVICE_PATH,
-		web.WithPrefix("[kubectl] [create] [RunCreatesService] "),
+		web.WithPrefix("[kubectl] [create] [CreatesService] "),
 		web.WithBody(bytes.NewBuffer(data)),
 		web.WithLog(true))
 	if err != nil {
