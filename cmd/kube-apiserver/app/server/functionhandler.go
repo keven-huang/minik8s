@@ -181,7 +181,18 @@ func InvokeFunction(c *gin.Context, s *Server) {
 			}
 			if len(r) > 0 {
 				if strings.Contains(r[0].Value, `"podIP":"`) {
-					break
+					err = json.Unmarshal([]byte(r[0].Value), pod)
+					if err != nil {
+						fmt.Println("[InvokeFunction] ", "Error unmarshalling pod:", err)
+						c.JSON(http.StatusInternalServerError, gin.H{
+							"message": "Error unmarshalling pod.",
+						})
+						return
+					}
+					if pod.Status.PodIP != "" {
+						podIP = pod.Status.PodIP
+						break
+					}
 				}
 			}
 			time.Sleep(1 * time.Second)
