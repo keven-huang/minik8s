@@ -65,7 +65,7 @@ func deletePodWithFunctionName(s *Server, func_name string) {
 	for _, v := range res {
 		pod := core.Pod{}
 		_ = json.Unmarshal([]byte(v.Value), &pod)
-		if pod.OwnerReferences[0].Name == func_name && pod.OwnerReferences[0].Kind == "Function" {
+		if len(pod.OwnerReferences) > 0 && pod.OwnerReferences[0].Name == func_name && pod.OwnerReferences[0].Kind == "Function" {
 			_ = s.Etcdstore.Del(v.Key)
 		}
 	}
