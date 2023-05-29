@@ -61,62 +61,46 @@ func Watch(resourses string) WatchInterface {
 	watcher := &watcher{}
 	watcher.resultChan = make(chan Event)
 	reader := func(wc chan<- Event) {
-		fmt.Println("[httpclient] [Watch] start watch")
-		url := apiconfig.Server_URL + "/watch" + resourses + "?prefix=true"
-		resp, err := http.Get(url)
-		if err != nil {
-			// handle error
-			fmt.Println("[httpclient] [Watch] web get error:", err)
-		}
-		defer resp.Body.Close()
-		buf := make([]byte, 40960)
-		// Need to optimize
 		for {
-			n, err := resp.Body.Read(buf)
-			if n != 0 || err != io.EOF {
-				event := Event{}
-				strings := myJson.ExtractNestedContent(string(buf[:n]))
-				for _, s := range strings {
-					if len(s) > 0 {
-						err = json.Unmarshal([]byte(s), &event)
-						if err != nil {
-							fmt.Println("[httpclient] [Watch] unmarshal:", err)
-							continue
-						}
-						fmt.Println("[httpclient] [Watch] unmarshal:", event.Key, event.Val, event.Type)
-						// send event to watcher.resultChan
-						wc <- event
-					}
-				}
-			} else {
-				fmt.Println("[httpclient] [Watch] break")
-				break
+			fmt.Println("[httpclient] [Watch] start watch")
+			url := apiconfig.Server_URL + "/watch" + resourses + "?prefix=true"
+			resp, err := http.Get(url)
+			buf := make([]byte, 40960)
+			if err != nil {
+				// handle error
+				fmt.Println("[httpclient] [Watch] web get error:", err)
+				goto Reconnect
 			}
+			defer resp.Body.Close()
+			// Need to optimize
+			for {
+				n, err := resp.Body.Read(buf)
+				if n != 0 {
+					event := Event{}
+					strings := myJson.ExtractNestedContent(string(buf[:n]))
+					for _, s := range strings {
+						if len(s) > 0 {
+							err = json.Unmarshal([]byte(s), &event)
+							if err != nil {
+								fmt.Println("[httpclient] [Watch] unmarshal:", err)
+								continue
+							}
+							fmt.Println("[httpclient] [Watch] unmarshal:", event.Key, event.Val, event.Type)
+							// send event to watcher.resultChan
+							wc <- event
+						}
+					}
+				} else {
+					fmt.Println("[httpclient] [Watch] break", err)
+					goto Reconnect
+				}
+				time.Sleep(1 * time.Second)
+			}
+			//todo : try to reconnect
+		Reconnect:
+			fmt.Println("[httpclient] [Watch] try to reconnect")
 			time.Sleep(1 * time.Second)
 		}
-		// This doesn't work(don't know why)
-		// reader := bufio.NewReader(resp.Body)
-		// for {
-		// 	line, err := reader.ReadString('\n')
-		// 	if len(line) > 0 {
-		// 		fmt.Println("[httpclient] [Watch] getline")
-		// 		// handle Watch Response
-		// 		fmt.Println("[httpclient] [Watch] ", line)
-		// 		event := Event{}
-		// 		// json.Unmarshal([]byte(line), &event)
-		// 		// TO DO: send event to watcher.resultChan
-		// 		wc <- event
-		// 	}
-		// 	if err == io.EOF {
-		// 		break
-		// 	}
-		// 	if err != nil {
-		// 		// disconnect , cause watch is controlled by client,should try to reconnect
-		// 		// TO DO: reconnect
-		// 		fmt.Println("[httpclient] [Watch] break")
-		// 		break
-		// 	}
-		// }
 	}
 	go reader(watcher.resultChan)
 	return watcher

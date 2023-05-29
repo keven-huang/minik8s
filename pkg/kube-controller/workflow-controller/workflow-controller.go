@@ -8,7 +8,6 @@ import (
 	"minik8s/pkg/client/informer"
 	"minik8s/pkg/client/tool"
 	q "minik8s/pkg/util/concurrentqueue"
-	"minik8s/pkg/util/web"
 	"time"
 )
 
@@ -18,7 +17,7 @@ type WorkflowController struct {
 	mark             map[string]bool
 }
 
-func NewHPAController() *WorkflowController {
+func NewWorkflowController() *WorkflowController {
 	return &WorkflowController{
 		WorkflowInformer: informer.NewInformer(apiconfig.WORKFLOW_PATH),
 		queue:            q.NewConcurrentQueue(),
@@ -73,6 +72,7 @@ func DoWorkflowDAG(dag *core.DAG) {
 			fmt.Println("[workflow] running func:", err)
 			return
 		}
+		// whether should break up to the functional requirement
 		success := false
 		for _, edge := range curnode.OutEdges {
 			if edge.Condition == "true" {
@@ -99,9 +99,10 @@ func evalCondition(condition string, result string) bool {
 
 // TO DO when func end
 func TriggerFunc(f core.TMPfunction, input string) (string, error) {
-	url := "http://localhost:10000/" // trigger function url
-	bodyBytes := make([]byte, 0)
-	web.SendHttpRequest("PUT", url, web.WithBodyBytes(&bodyBytes))
+	// url := "http://localhost:10000/" // trigger function url
+	// bodyBytes := make([]byte, 0)
+	// web.SendHttpRequest("PUT", url, web.WithBodyBytes(&bodyBytes))
+	fmt.Println("TriggerFunc: ", f.Name)
 	return "result", nil
 }
 

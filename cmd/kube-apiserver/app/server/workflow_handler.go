@@ -38,7 +38,8 @@ func AddWorkflow(c *gin.Context, s *Server) {
 
 	dag.UID = random.GenerateUUID()
 	dag.ObjectMeta.CreationTimestamp = v1.Now()
-
+	fmt.Println("[Node]:", dag.Nodes)
+	fmt.Println("[Edge]:", dag.Edges)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err,
