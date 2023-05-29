@@ -618,3 +618,7 @@ func ImageBuild(buildPath string, image string) error {
 	fmt.Println("Docker build completed.")
 	return nil
 }
+
+func ImageRemove(name string) error {
+	return nil
+}
