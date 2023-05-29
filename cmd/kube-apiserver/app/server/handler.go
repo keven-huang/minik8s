@@ -58,4 +58,7 @@ var HandlerTable = []Handler{
 	{Type: "PUT", Path: apiconfig.FUNCTION_PATH, Eventhandler: AddFunction},
 	{Type: "DELETE", Path: apiconfig.FUNCTION_PATH, Eventhandler: DeleteFunction},
 	// watch
-	{Type: "GET", Path: "/watch/*resource", Eventhandler: Watch}}
+	{Type: "GET", Path: "/watch/*resource", Eventhandler: Watch},
+	// invoke
+	{Type: "POST", Path: "/invoke/*function_name", Eventhandler: InvokeFunction},
+}
