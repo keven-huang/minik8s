@@ -191,6 +191,29 @@ func scheduler(s *Server, func_name string) (*core.Pod, error) {
 	return p[function.Spec.InvokeTimes%len(p)], nil
 }
 
+func GetFunctionPod(function_name string) *core.Pod {
+	pod_name := "function-" + function_name + "-" + random.GenerateRandomString(5)
+	return &core.Pod{
+		ObjectMeta: v1.ObjectMeta{
+			Name: pod_name,
+			OwnerReferences: []v1.OwnerReference{
+				{
+					Kind: "Function",
+					Name: function_name,
+				},
+			},
+		},
+		Spec: core.PodSpec{
+			Containers: []core.Container{
+				{
+					Name:  "container",
+					Image: "luhaoqi/my_module:" + function_name,
+				},
+			},
+		},
+	}
+}
+
 func InvokeFunction(c *gin.Context, s *Server) {
 	function_name := c.Param("function_name")[1:]
 
@@ -210,31 +233,11 @@ func InvokeFunction(c *gin.Context, s *Server) {
 		return
 	}
 
-	pod_name := "function-" + function_name + "-" + random.GenerateRandomString(5)
-
 	pod, err := scheduler(s, function_name)
 	var podIP string
 
 	if pod == nil {
-		pod = &core.Pod{
-			ObjectMeta: v1.ObjectMeta{
-				Name: pod_name,
-				OwnerReferences: []v1.OwnerReference{
-					{
-						Kind: "Function",
-						Name: function_name,
-					},
-				},
-			},
-			Spec: core.PodSpec{
-				Containers: []core.Container{
-					{
-						Name:  "container",
-						Image: "luhaoqi/my_module:" + function_name,
-					},
-				},
-			},
-		}
+		pod = GetFunctionPod(function_name)
 
 		err = create.CreatePod(pod)
 		if err != nil {
@@ -310,4 +313,45 @@ func InvokeFunction(c *gin.Context, s *Server) {
 
 	// 返回响应体
 	c.Data(resp.StatusCode, resp.Header.Get("Content-Type"), body)
+}
+
+func ScaleFunction(c *gin.Context, s *Server) {
+	prefix := "[api-server] [ScaleFunction] "
+
+	cbody, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		return
+	}
+
+	type ScaleBody struct {
+		Message       string `json:"message" yaml:"message"`
+		Function_name string `json:"function_name" yaml:"function_name"`
+	}
+
+	var body ScaleBody
+
+	err = json.Unmarshal(cbody, &body)
+	if err != nil {
+		fmt.Println(prefix, "Error unmarshalling body:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error unmarshalling body.",
+		})
+		return
+	}
+
+	fmt.Println(prefix, "function name:", body.Function_name)
+	pod := GetFunctionPod(body.Function_name)
+
+	err = create.CreatePod(pod)
+	if err != nil {
+		fmt.Println(prefix, "Error creating pod:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error creating pod.",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "OK.",
+	})
 }

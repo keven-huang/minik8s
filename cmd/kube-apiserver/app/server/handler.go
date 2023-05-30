@@ -61,4 +61,6 @@ var HandlerTable = []Handler{
 	{Type: "GET", Path: "/watch/*resource", Eventhandler: Watch},
 	// invoke
 	{Type: "POST", Path: "/invoke/*function_name", Eventhandler: InvokeFunction},
+	// scale up
+	{Type: "POST", Path: "/scale", Eventhandler: ScaleFunction},
 }

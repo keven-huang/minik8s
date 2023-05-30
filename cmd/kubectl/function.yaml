@@ -2,5 +2,3 @@ apiVersion: app/v1
 kind: Function
 metadata:
   name: calc
-spec:
-  image: "my_module:calc"
