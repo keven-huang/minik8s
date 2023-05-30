@@ -1,6 +1,7 @@
 package workflowcontroller
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
@@ -8,6 +9,7 @@ import (
 	"minik8s/pkg/client/informer"
 	"minik8s/pkg/client/tool"
 	q "minik8s/pkg/util/concurrentqueue"
+	"minik8s/pkg/util/web"
 	"time"
 )
 
@@ -62,20 +64,29 @@ func worker(wfc *WorkflowController) {
 func DoWorkflowDAG(dag *core.DAG) {
 	fmt.Println("DoWorkflow")
 	startnode := dag.StartNode
-	curnode := startnode.OutEdges[0].To
+	curnode := startnode
 	var result string
 	var err error
-	for curnode.Type != core.StateTypeEnd {
-		fmt.Println(curnode)
-		result, err = TriggerFunc(curnode.Function, result)
-		if err != nil {
-			fmt.Println("[workflow] running func:", err)
+	for {
+		if curnode.Type == core.StateTypeInput {
+			result = dag.Input
+		} else if curnode.Type == core.StateTypeTask || curnode.Type == core.StateTypeEnd {
+			result, err = TriggerFunc(curnode.Function, result)
+			if err != nil {
+				fmt.Println("[workflow] running func:", err)
+				return
+			}
+		}
+		// if end node, break
+		if curnode.Type == core.StateTypeEnd {
+			fmt.Println("[workflow] end node")
+			dag.Result = result
 			return
 		}
 		// whether should break up to the functional requirement
 		success := false
-		for _, edge := range curnode.OutEdges {
-			if edge.Condition == "true" {
+		for _, edge := range dag.Edges[string(curnode.UID)] {
+			if edge.Condition.Type == core.ConditionTypeTrue {
 				curnode = edge.To
 				success = true
 				break
@@ -92,18 +103,48 @@ func DoWorkflowDAG(dag *core.DAG) {
 	}
 }
 
-// TO DO when func end
-func evalCondition(condition string, result string) bool {
-	return true
+// func condition
+func evalCondition(condition core.ChoiceCondition, result string) bool {
+	var cond map[string]interface{}
+	err := json.Unmarshal([]byte(result), &cond)
+	if err != nil {
+		fmt.Println("[workflow] evalCondition:", err)
+		return false
+	}
+	val, ok := cond[condition.Variable]
+	if !ok {
+		fmt.Println("[workflow] evalCondition: no variable:", condition.Variable)
+		return false
+	}
+	fmt.Println("[workflow] evalCondition: val:", val, "Operator:", condition.Operator)
+	switch condition.Operator {
+	case "==":
+		return int(val.(float64)) == condition.Value
+	case "!=":
+		return int(val.(float64)) != condition.Value
+	case ">":
+		return int(val.(float64)) > condition.Value
+	case ">=":
+		return int(val.(float64)) >= condition.Value
+	case "<":
+		return int(val.(float64)) < condition.Value
+	case "<=":
+		return int(val.(float64)) <= condition.Value
+	}
+	fmt.Println("[workflow] evalCondition: no operator", condition.Operator)
+	return false
 }
 
-// TO DO when func end
-func TriggerFunc(f core.TMPfunction, input string) (string, error) {
-	// url := "http://localhost:10000/" // trigger function url
-	// bodyBytes := make([]byte, 0)
-	// web.SendHttpRequest("PUT", url, web.WithBodyBytes(&bodyBytes))
-	fmt.Println("TriggerFunc: ", f.Name)
-	return "result", nil
+// func invoke
+func TriggerFunc(f core.Function, input string) (string, error) {
+	url := apiconfig.Server_URL + "/invoke/" + f.Name
+	fmt.Println("url: ", url)
+	bodyBytes := make([]byte, 4096)
+	fmt.Println("[workflow][TriggerFunc]input: ", input)
+	web.SendHttpRequest("POST", url, web.WithBody(bytes.NewBuffer([]byte(input))), web.WithBodyBytes(&bodyBytes))
+	fmt.Println("[workflow][TriggerFunc]TriggerFunc: ", f.Name)
+	fmt.Println("[workflow][TriggerFunc]TriggerFuncResult: ", string(bodyBytes))
+	return string(bodyBytes), nil
 }
 
 func (wfc *WorkflowController) AddWorkflow(event tool.Event) {

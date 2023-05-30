@@ -3,6 +3,8 @@ package core
 import (
 	"fmt"
 	metav1 "minik8s/pkg/apis/meta/v1"
+	"minik8s/pkg/types"
+	"minik8s/pkg/util/random"
 )
 
 // workflow
@@ -13,18 +15,19 @@ type Workflow struct {
 }
 
 type WorkflowSpec struct {
-	States []State `json:"states,omitempty" yaml:"states,omitempty"`
-	Result string  `json:"result,omitempty" yaml:"result,omitempty"`
+	InputData string  `json:"InputData,omitempty" yaml:"InputData,omitempty"`
+	States    []State `json:"states,omitempty" yaml:"states,omitempty"`
+	Input     string  `json:"input,omitempty" yaml:"input,omitempty"`
+	Result    string  `json:"result,omitempty" yaml:"result,omitempty"`
 }
 
 type State struct {
-	Name      string    `json:"Name" yaml:"Name"`
-	Type      StateType `json:"Type" yaml:"Type"`
-	Choices   []Choice  `json:"Choices,omitempty" yaml:"Choices,omitempty"`
-	Resource  string    `json:"Resource,omitempty" yaml:"Resource,omitempty"`
-	Next      string    `json:"Next,omitempty" yaml:"Next,omitempty"`
-	End       bool      `json:"End,omitempty" yaml:"End,omitempty"`
-	InputData string    `json:"InputData,omitempty" yaml:"InputData,omitempty"`
+	Name     string    `json:"Name" yaml:"Name"`
+	Type     StateType `json:"Type" yaml:"Type"`
+	Choices  []Choice  `json:"Choices,omitempty" yaml:"Choices,omitempty"`
+	Resource string    `json:"Resource,omitempty" yaml:"Resource,omitempty"`
+	Next     string    `json:"Next,omitempty" yaml:"Next,omitempty"`
+	End      bool      `json:"End,omitempty" yaml:"End,omitempty"`
 }
 
 type StateType string
@@ -37,9 +40,23 @@ const (
 )
 
 type Choice struct {
-	Condition string `json:"Condition" yaml:"Condition"`
-	Next      string `json:"Next" yaml:"Next"`
+	Condition ChoiceCondition `json:"Condition" yaml:"Condition"`
+	Next      string          `json:"Next" yaml:"Next"`
 }
+
+type ChoiceCondition struct {
+	Type     ConditionType `json:"Type" yaml:"Type"`
+	Variable string        `json:"Variable" yaml:"Variable"`
+	Operator string        `json:"Operator" yaml:"Operator"`
+	Value    int           `json:"Value" yaml:"Value"`
+}
+
+type ConditionType string
+
+const (
+	ConditionTypeNumeric = "Numeric"
+	ConditionTypeTrue    = "True"
+)
 
 // DAG
 
@@ -47,35 +64,27 @@ type DAG struct {
 	metav1.TypeMeta   `json:",inline" yaml:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty" yaml:"metadata,omitempty"`
 	StartNode         DAGNode
-	Nodes             []DAGNode `json:"nodes,omitempty" yaml:"nodes,omitempty"`
-	Edges             []DAGEdge `json:"edges,omitempty" yaml:"edges,omitempty"`
-}
-
-// 占位符
-type TMPfunction struct {
-	Name string `json:"name" yaml:"name"`
+	Input             string
+	Nodes             []DAGNode            `json:"nodes,omitempty" yaml:"nodes,omitempty"`
+	Edges             map[string][]DAGEdge `json:"edges,omitempty" yaml:"edges,omitempty"`
+	Result            string               `json:"result,omitempty" yaml:"result,omitempty"`
 }
 
 type DAGNode struct {
 	Type     StateType `json:"type" yaml:"type"`
-	Function TMPfunction
-	OutEdges []DAGEdge
+	UID      types.UID `json:"uid" yaml:"uid"`
+	Function Function  `json:"function" yaml:"function"`
 }
 
 type DAGEdge struct {
-	From      DAGNode `json:"from" yaml:"from"`
-	To        DAGNode `json:"to" yaml:"to"`
-	Condition string  `json:"condition" yaml:"condition"`
+	From      DAGNode         `json:"from" yaml:"from"`
+	To        DAGNode         `json:"to" yaml:"to"`
+	Condition ChoiceCondition `json:"condition" yaml:"condition"`
 }
 
-func GetFunc(resource string) TMPfunction {
-	return TMPfunction{
-		Name: resource,
-	}
-}
-
-func (w *Workflow) Workflow2DAG() (*DAG, error) {
+func (w *Workflow) Workflow2DAG(getfunc func(string) (Function, error)) (*DAG, error) {
 	var dag DAG
+	dag.Edges = make(map[string][]DAGEdge)
 	mapState := make(map[string]State)
 	mapNode := make(map[string]*DAGNode)
 	for _, state := range w.Spec.States {
@@ -89,7 +98,9 @@ func (w *Workflow) Workflow2DAG() (*DAG, error) {
 		if state.Type == StateTypeInput {
 			dag.StartNode = DAGNode{
 				Type: StateTypeInput,
+				UID:  random.GenerateUUID(),
 			}
+			dag.Nodes = append(dag.Nodes, dag.StartNode)
 			node = &dag.StartNode
 		}
 		if state.Type == StateTypeTask {
@@ -97,17 +108,24 @@ func (w *Workflow) Workflow2DAG() (*DAG, error) {
 			if state.End {
 				nodeType = StateTypeEnd
 			}
+			function, err := getfunc(state.Resource)
+			if err != nil {
+				return nil, err
+			}
 			node = &DAGNode{
 				Type:     nodeType,
-				Function: GetFunc(state.Resource),
+				Function: function,
+				UID:      random.GenerateUUID(),
 			}
+			dag.Nodes = append(dag.Nodes, *node)
 		}
 		if state.Type == StateTypeChoice {
 			node = &DAGNode{
 				Type: StateTypeChoice,
+				UID:  random.GenerateUUID(),
 			}
+			dag.Nodes = append(dag.Nodes, *node)
 		}
-
 		mapNode[state.Name] = node
 	}
 	for _, state := range w.Spec.States {
@@ -122,10 +140,9 @@ func (w *Workflow) Workflow2DAG() (*DAG, error) {
 					edge := DAGEdge{
 						From:      *curNode,
 						To:        *nextNode,
-						Condition: "true",
+						Condition: ChoiceCondition{Type: ConditionTypeTrue},
 					}
-					dag.Edges = append(dag.Edges, edge)
-					curNode.OutEdges = append(curNode.OutEdges, edge)
+					dag.Edges[string(curNode.UID)] = append(dag.Edges[string(curNode.UID)], edge)
 				} else {
 					return nil, fmt.Errorf("state name %s is not exist", state.Next)
 				}
@@ -139,16 +156,12 @@ func (w *Workflow) Workflow2DAG() (*DAG, error) {
 						To:        *nextNode,
 						Condition: choice.Condition,
 					}
-					dag.Edges = append(dag.Edges, edge)
-					curNode.OutEdges = append(curNode.OutEdges, edge)
+					dag.Edges[string(curNode.UID)] = append(dag.Edges[string(curNode.UID)], edge)
 				} else {
 					return nil, fmt.Errorf("state name %s is not exist", choice.Next)
 				}
 			}
 		}
-	}
-	for _, node := range mapNode {
-		dag.Nodes = append(dag.Nodes, *node)
 	}
 	return &dag, nil
 }

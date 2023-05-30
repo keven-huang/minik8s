@@ -25,17 +25,19 @@ func AddWorkflow(c *gin.Context, s *Server) {
 		return
 	}
 	key := c.Request.URL.Path + "/" + w.Name
-	res, _ := s.Etcdstore.Get(key)
-	if len(res) > 0 {
+	ServerGetFunc := func(name string) (core.Function, error) {
+		return GetFunc(s, name)
+	}
+	dag, err := w.Workflow2DAG(ServerGetFunc)
+	if err != nil {
+		log.Println("[ERROR] ", prefix, err)
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Workflow Name Duplicate.",
+			"message": err.Error(),
 		})
 		return
 	}
-
-	dag, err := w.Workflow2DAG()
 	dag.Name = w.Name
-
+	dag.Input = w.Spec.Input
 	dag.UID = random.GenerateUUID()
 	dag.ObjectMeta.CreationTimestamp = v1.Now()
 	fmt.Println("[Node]:", dag.Nodes)
@@ -51,8 +53,14 @@ func AddWorkflow(c *gin.Context, s *Server) {
 	err = s.Etcdstore.Put(key, string(body))
 	if err != nil {
 		log.Println("[ERROR] ", prefix, err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
 		return
 	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Add Workflow Success.",
+	})
 }
 
 // GetWorkflow Body传入Name
@@ -131,4 +139,25 @@ func DeleteWorkflow(c *gin.Context, s *Server) {
 		"message":       "delete Workflow success",
 		"deletePodName": Name,
 	})
+}
+
+func GetFunc(s *Server, resource string) (core.Function, error) {
+	prefix := "[api-server] [WorkflowHandler] [GetFunc]"
+	fmt.Println(prefix)
+	key := apiconfig.FUNCTION_PATH + "/" + resource
+	res, err := s.Etcdstore.GetExact(key)
+	if err != nil {
+		log.Println(err)
+		return core.Function{}, err
+	}
+	if len(res) == 0 {
+		return core.Function{}, fmt.Errorf("function %s not found", resource)
+	}
+	f := core.Function{}
+	err = json.Unmarshal([]byte(res[0].Value), &f)
+	if err != nil {
+		log.Println(err)
+		return core.Function{}, err
+	}
+	return f, nil
 }
