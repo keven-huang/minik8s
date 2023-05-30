@@ -9,7 +9,7 @@ RUN set -eux && sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk
 # 更新操作系统和安装依赖
 RUN apk update && apk upgrade && \
     apk add --no-cache bash && \
-    apt install curl && \
+    apk add --no-cache bash curl && \
     pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host https://pypi.tuna.tsinghua.edu.cn --default-timeout=60
 
 # install python requirements
