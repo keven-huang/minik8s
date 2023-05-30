@@ -11,7 +11,7 @@ request_count = 0
 last_request_time = time.time()
 
 FAILED_TIME = 30
-Request_10_second = 5
+Request_20_second = 4
 
 Function_name = ""
 
@@ -31,7 +31,9 @@ def check_timer():
 def send_notification(url):
     requests.post(url, json={"message": "Exceeded request limit", "function_name": Function_name})
 
+
 count_lock = threading.Lock()
+
 
 def reset_count():
     global request_count
@@ -52,7 +54,7 @@ def execute_function(module_name: str, function_name: str):
     reset_timer()
     increment_count()
 
-    if request_count >= Request_10_second:
+    if request_count >= Request_20_second:
         send_notification("https://192.168.1.7:8080/scale")  # 替换为你要发送通知的URL
 
     module = importlib.import_module(module_name)
@@ -72,7 +74,7 @@ if __name__ == '__main__':
     timer_thread = threading.Timer(FAILED_TIME, check_timer)
     timer_thread.start()
 
-    reset_count_thread = threading.Timer(10, reset_count)
+    reset_count_thread = threading.Timer(20, reset_count)
     reset_count_thread.start()
 
     app.run(host='0.0.0.0', port=8888, processes=True)
