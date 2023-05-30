@@ -12,7 +12,7 @@ RUN apk update && apk upgrade && \
     pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host https://pypi.tuna.tsinghua.edu.cn --default-timeout=60
 
 # install python requirements
-RUN pip3 install flask requests time threading os -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host https://pypi.tuna.tsinghua.edu.cn --default-timeout=60
+RUN pip3 install flask requests -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host https://pypi.tuna.tsinghua.edu.cn --default-timeout=60
 
 # 如果用户需要安装额外的库，那么还需要提供requirements.txt
 COPY requirements.txt ./
@@ -22,5 +22,5 @@ RUN pip3 install --no-cache-dir -r requirements.txt -i https://pypi.tuna.tsinghu
 COPY ./serverless_server.py serverless_server.py
 COPY ./my_module.py my_module.py
 
-# define command for this image
-CMD ["python3","serverless_server.py", ">","serverless_server.log"]
+
+CMD python serverless_server.py

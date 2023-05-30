@@ -5,6 +5,7 @@ import threading
 import time
 import requests
 import os
+import sys
 
 app = Flask(__name__)
 request_count = 0
@@ -14,6 +15,13 @@ FAILED_TIME = 30
 Request_20_second = 4
 
 Function_name = ""
+
+
+# 打开日志文件
+log_file = open("serverless_server.log", "a")
+
+# 重定向标准输出到日志文件
+sys.stdout = log_file
 
 
 def reset_timer():
@@ -26,7 +34,7 @@ def check_timer():
     if time.time() - last_request_time >= FAILED_TIME:
         print("No requests received for 1 minute. Exiting...")
         # 进行异常退出的操作，例如抛出异常或者调用系统退出函数
-        os._exit(0)  # 退出整个程序
+        os._exit(666)  # 退出整个程序
 
 def send_notification(url):
     requests.post(url, json={"message": "Exceeded request limit", "function_name": Function_name})
