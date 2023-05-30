@@ -79,11 +79,11 @@ def execute_function(module_name: str, function_name: str):
         j = {"message": "Exceeded request limit", "function_name": Function_name}
         logger.info(j)
         try:
-            response = requests.post("https://192.168.1.7:8080/scale", json={"message": "Exceeded request limit", "function_name": Function_name})
+            response = requests.post("https://192.168.1.7:8080/scale", json={"message": "Exceeded request limit", "function_name": Function_name}, timeout=3)
             response.raise_for_status()  # 检查请求是否成功
             logger.info("Notification sent successfully")
         except Exception as e:
-            logger.info("Failed to send notification.")
+            logger.info("Failed to send notification. %s", str(e))
 
 
     module = importlib.import_module(module_name)
