@@ -11,6 +11,7 @@ import (
 	myJson "minik8s/pkg/util/json"
 	"minik8s/pkg/util/log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -345,8 +346,10 @@ func GetPod(name string) (*core.Pod, error) {
 }
 
 func DeleteNode(key string) {
-	url := apiconfig.Server_URL + key
-	fmt.Println("[tool][deleteService]: url=" + url)
+	strs := strings.Split(key, "/")
+	nodeName := strs[4]
+	url := apiconfig.Server_URL + apiconfig.NODE_PATH + "?Name=" + nodeName
+	fmt.Println("[tool][deleteNode]: url=" + url)
 	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		fmt.Println(err.Error())

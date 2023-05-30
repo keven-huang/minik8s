@@ -72,6 +72,7 @@ func (k *Kubelet) AddNodeHandler(event tool.Event) {
 // this should be executed by a thread
 func (k *Kubelet) MasterChecker() {
 	for {
+		var des []string
 		for k, v := range k.workers {
 			fmt.Println("[Kubelet][MasterChecker], key:=" + k)
 			cur := time.Now()
@@ -79,7 +80,11 @@ func (k *Kubelet) MasterChecker() {
 			if dur > 10*time.Second { // deleteNode in database
 				fmt.Println("[Kubelet][MasterChecker], delete key:=" + k)
 				tool.DeleteNode(k)
+				des = append(des, k)
 			}
+		}
+		for _, v := range des {
+			delete(k.workers, v)
 		}
 		time.Sleep(5 * time.Second)
 	}

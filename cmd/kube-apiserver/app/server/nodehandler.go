@@ -38,8 +38,9 @@ func GetNode(c *gin.Context, s *Server) {
 }
 
 func DeleteNode(c *gin.Context, s *Server) {
-	key := c.Request.URL.Path
 	prefix := "[apiserver][nodehandler]"
+	nodeName := c.Query("Name")
+	key := c.Request.URL.Path + "/" + string(nodeName)
 	fmt.Println(prefix + ": delete node key:" + key)
 	err := s.Etcdstore.Del(key)
 	if err != nil {
