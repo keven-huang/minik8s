@@ -5,6 +5,7 @@ import threading
 import time
 import requests
 import os
+import sys
 
 app = Flask(__name__)
 request_count = 0
@@ -14,6 +15,13 @@ FAILED_TIME = 30
 Request_20_second = 4
 
 Function_name = ""
+
+
+# 打开日志文件
+log_file = open("serverless_server.log", "a")
+
+# 重定向标准输出到日志文件
+sys.stdout = log_file
 
 
 def reset_timer():
