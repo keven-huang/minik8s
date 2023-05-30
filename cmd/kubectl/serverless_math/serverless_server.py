@@ -6,7 +6,7 @@ import threading
 import time
 import requests
 import os
-import sys
+import logging
 
 app = Flask(__name__)
 request_count = 0
@@ -18,14 +18,24 @@ Request_20_second = 4
 Function_name = ""
 
 
-# 打开日志文件
-script_dir = os.path.dirname(os.path.abspath(__file__))
-log_file_path = os.path.join(script_dir, "serverless_server.log")
-log_file = open(log_file_path, "a")
+# 创建日志记录器
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
-# 重定向标准输出到日志文件
-sys.stdout = log_file
+# 获取当前目录的绝对路径
+current_dir = os.path.abspath(os.path.dirname(__file__))
 
+# 日志文件路径
+log_file_path = os.path.join(current_dir, "serverless_server.log")
+file_handler = logging.FileHandler(log_file_path)
+file_handler.setLevel(logging.INFO)
+
+# 创建格式化器，设置日志格式
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
+
+# 将文件处理器添加到日志记录器
+logger.addHandler(file_handler)
 
 def reset_timer():
     global last_request_time
@@ -34,19 +44,11 @@ def reset_timer():
 
 def check_timer():
     global last_request_time
-    print(time.time(), last_request_time)
+    logger.info(f"Checking timer - current time: {time.time()}, last request time: {last_request_time}")
     if time.time() - last_request_time >= FAILED_TIME:
-        print("No requests received for 1 minute. Exiting...")
+        logger.info("No requests received for 1 minute. Exiting...")
         # 进行异常退出的操作，例如抛出异常或者调用系统退出函数
         os._exit(666)  # 退出整个程序
-
-def send_notification(url):
-    try:
-        response = requests.post(url, json={"message": "Exceeded request limit", "function_name": Function_name})
-        response.raise_for_status()  # 检查请求是否成功
-        print("Notification sent successfully")
-    except requests.exceptions.RequestException as e:
-        print("Failed to send notification:", e)
 
 
 count_lock = threading.Lock()
@@ -63,6 +65,8 @@ def increment_count():
     with count_lock:
         request_count += 1
 
+
+
 @app.route('/function/<string:module_name>/<string:function_name>', methods=['POST'])
 def execute_function(module_name: str, function_name: str):
     global Function_name
@@ -72,7 +76,12 @@ def execute_function(module_name: str, function_name: str):
     increment_count()
 
     if request_count == Request_20_second:
-        send_notification("https://192.168.1.7:8080/scale")  # 替换为你要发送通知的URL
+        try:
+            response = requests.post("https://192.168.1.7:8080/scale", json={"message": "Exceeded request limit", "function_name": Function_name},timeout=3)
+            response.raise_for_status()  # 检查请求是否成功
+            logger.info("Notification sent successfully")
+        except Exception as e:
+            logger.info("Failed to send notification.")
 
 
     module = importlib.import_module(module_name)
@@ -87,7 +96,7 @@ def execute_function(module_name: str, function_name: str):
         result = getattr(module, function_name)(event, context)
         return result, 200
     except Exception as e:
-        print("An error occurred during function execution:", e)
+        logger.info("An error occurred during function execution:", e)
         return "Error during function execution", 500
 
 
