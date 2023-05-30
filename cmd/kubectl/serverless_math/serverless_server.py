@@ -12,7 +12,7 @@ app = Flask(__name__)
 request_count = 0
 last_request_time = time.time()
 
-FAILED_TIME = 10
+FAILED_TIME = 30
 Request_20_second = 4
 
 Function_name = ""
