@@ -68,11 +68,14 @@ func DoWorkflowDAG(dag *core.DAG) {
 	var result string
 	var err error
 	for {
-		fmt.Println(curnode)
-		result, err = TriggerFunc(curnode.Function, result)
-		if err != nil {
-			fmt.Println("[workflow] running func:", err)
-			return
+		if curnode.Type == core.StateTypeInput {
+			result = dag.Input
+		} else if curnode.Type == core.StateTypeTask {
+			result, err = TriggerFunc(curnode.Function, result)
+			if err != nil {
+				fmt.Println("[workflow] running func:", err)
+				return
+			}
 		}
 		// if end node, break
 		if curnode.Type == core.StateTypeEnd {
@@ -112,6 +115,7 @@ func evalCondition(condition core.ChoiceCondition, result string) bool {
 		fmt.Println("[workflow] evalCondition: no variable:", condition.Variable)
 		return false
 	}
+	fmt.Println("[workflow] evalCondition: val:", val, "Operator:", condition.Operator)
 	switch condition.Operator {
 	case "==":
 		return val.(int) == condition.Value
@@ -129,9 +133,12 @@ func evalCondition(condition core.ChoiceCondition, result string) bool {
 // func invoke
 func TriggerFunc(f core.Function, input string) (string, error) {
 	url := apiconfig.Server_URL + "/invoke/" + f.Name
+	fmt.Println("url: ", url)
 	bodyBytes := make([]byte, 4096)
+	fmt.Println("[workflow][TriggerFunc]input: ", input)
 	web.SendHttpRequest("PUT", url, web.WithBody(bytes.NewBuffer([]byte(input))), web.WithBodyBytes(&bodyBytes))
-	fmt.Println("TriggerFunc: ", f.Name)
+	fmt.Println("[workflow][TriggerFunc]TriggerFunc: ", f.Name)
+	fmt.Println("[workflow][TriggerFunc]TriggerFuncResult: ", string(bodyBytes))
 	return string(bodyBytes), nil
 }
 

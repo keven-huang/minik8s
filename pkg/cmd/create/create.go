@@ -404,11 +404,29 @@ func CreateHPA(hpa *core.HPA) error {
 }
 
 func CreateWorkflow(workflow *core.Workflow) error {
+	if workflow.Spec.InputData != "" {
+		inputdata, err := ioutil.ReadFile(workflow.Spec.InputData)
+		if err != nil {
+			return fmt.Errorf("read program error")
+		}
+		var inputs map[string]interface{}
+		err = yaml.Unmarshal(inputdata, &inputs)
+		if err != nil {
+			return fmt.Errorf("unmarshal input error")
+		}
+		data, err := json.Marshal(inputs)
+		if err != nil {
+			return fmt.Errorf("marshal input error")
+		}
+		fmt.Println("[kubectl] [create] [RunCreateWorkflow] ", string(data))
+		// workflow.Spec.InputData = string(data)
+	}
 	data, err := json.Marshal(workflow)
 	if err != nil {
 		fmt.Println("[kubectl] [create] [RunCreateWorkflow] failed to marshal:", err)
 	} else {
 		fmt.Println("[kubectl] [create] [RunCreateWorkflow] ", string(data))
+		// fmt.Println("[kubectl] [create] [RunCreateWorkflow] ", workflow.Spec.States[1].Choices[1].Condition.Operator)
 	}
 	err = web.SendHttpRequest("PUT", apiconfig.Server_URL+apiconfig.WORKFLOW_PATH,
 		web.WithPrefix("[kubectl] [create] [RunCreateWorkflow] "),

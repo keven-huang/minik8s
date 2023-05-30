@@ -15,18 +15,19 @@ type Workflow struct {
 }
 
 type WorkflowSpec struct {
-	States []State `json:"states,omitempty" yaml:"states,omitempty"`
-	Result string  `json:"result,omitempty" yaml:"result,omitempty"`
+	InputData string  `json:"InputData,omitempty" yaml:"InputData,omitempty"`
+	States    []State `json:"states,omitempty" yaml:"states,omitempty"`
+	Input     string  `json:"input,omitempty" yaml:"input,omitempty"`
+	Result    string  `json:"result,omitempty" yaml:"result,omitempty"`
 }
 
 type State struct {
-	Name      string    `json:"Name" yaml:"Name"`
-	Type      StateType `json:"Type" yaml:"Type"`
-	Choices   []Choice  `json:"Choices,omitempty" yaml:"Choices,omitempty"`
-	Resource  string    `json:"Resource,omitempty" yaml:"Resource,omitempty"`
-	Next      string    `json:"Next,omitempty" yaml:"Next,omitempty"`
-	End       bool      `json:"End,omitempty" yaml:"End,omitempty"`
-	InputData string    `json:"InputData,omitempty" yaml:"InputData,omitempty"`
+	Name     string    `json:"Name" yaml:"Name"`
+	Type     StateType `json:"Type" yaml:"Type"`
+	Choices  []Choice  `json:"Choices,omitempty" yaml:"Choices,omitempty"`
+	Resource string    `json:"Resource,omitempty" yaml:"Resource,omitempty"`
+	Next     string    `json:"Next,omitempty" yaml:"Next,omitempty"`
+	End      bool      `json:"End,omitempty" yaml:"End,omitempty"`
 }
 
 type StateType string
@@ -63,6 +64,7 @@ type DAG struct {
 	metav1.TypeMeta   `json:",inline" yaml:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty" yaml:"metadata,omitempty"`
 	StartNode         DAGNode
+	Input             string
 	Nodes             []DAGNode            `json:"nodes,omitempty" yaml:"nodes,omitempty"`
 	Edges             map[string][]DAGEdge `json:"edges,omitempty" yaml:"edges,omitempty"`
 }

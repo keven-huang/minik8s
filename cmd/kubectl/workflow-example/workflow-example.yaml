@@ -3,23 +3,23 @@ kind: Workflow
 metadata:
   name: my-workflow
 spec:
+  InputData : ./workflow-example/input.yaml
   states:
     - Name: StartState 
       Type: Input
-      InputData: ./input.param
       Next: branchstate
     - Name: branchstate
       Type: Choice
       Choices:
         - Condition:
             Type: Numeric
-            Variable: a
+            Variable: x
             Operator: ">"
             Value: 10
           Next: Function1
         - Condition:
             Type: Numeric
-            Variable: a
+            Variable: x
             Operator: "<="
             Value: 10
           Next: Function2
