@@ -21,8 +21,7 @@ func NewInvokeOptions() *InvokeOptions {
 	}
 }
 
-// NewCmdGet returns new initialized instance of Get sub command
-func NewCmdGet() *cobra.Command {
+func NewCmdInvoke() *cobra.Command {
 	o := NewInvokeOptions()
 
 	cmd := &cobra.Command{

@@ -90,6 +90,9 @@ func DeleteFunction(c *gin.Context, s *Server) {
 		})
 		return
 	}
+
+	deletePodWithFunctionName(s, FunctionName)
+
 	c.JSON(http.StatusOK, gin.H{
 		"message":            "delete Function success",
 		"deleteFunctionName": FunctionName,
