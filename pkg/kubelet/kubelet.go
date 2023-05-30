@@ -17,6 +17,7 @@ import (
 	"net"
 	"net/url"
 	"regexp"
+	"strings"
 	"time"
 )
 
@@ -152,6 +153,7 @@ func (k *Kubelet) HeartBeatClient() { // linking and send
 	}
 	defer conn.Close()
 	for {
+		fmt.Println("[Kubelet][HeartBeatClient]:" + "sent hb key:" + k.node.Name)
 		_, err := conn.Write([]byte(apiconfig.NODE_PATH + "/" + k.node.Name))
 		if err != nil {
 			fmt.Println(prefix + err.Error())
@@ -196,8 +198,11 @@ func (k *Kubelet) UpdatePod(event tool.Event) {
 		return
 	}
 
-	for i, v := range pod.Spec.Containers {
-		pod.Spec.Containers[i].Name = pod.Name + "-" + v.Name
+	// Gateway's pod is specific, it's name's can't be changed
+	if !strings.Contains(pod.ObjectMeta.Name, kube_proxy.GatewayPodPrefix) {
+		for i, v := range pod.Spec.Containers {
+			pod.Spec.Containers[i].Name = pod.Name + "-" + v.Name
+		}
 	}
 
 	// 判断创建pod是否是gpu类型

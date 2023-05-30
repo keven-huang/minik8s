@@ -57,6 +57,12 @@ func (s *Scheduler) AddPod(event tool.Event) {
 		return
 	}
 	if pod.Spec.NodeName != "" {
+		fmt.Println("[scheduler][schedule] pod" + pod.Name + " should on " + pod.Spec.NodeName)
+		err := tool.UpdatePod(pod)
+		if err != nil {
+			fmt.Println("[scheduler][schedule] addPod" + err.Error())
+			return
+		}
 		return
 	}
 	s.queue.Push(pod)
@@ -83,7 +89,7 @@ func (s *Scheduler) Schedule(pod *core.Pod) {
 		nodeName = random_strategy(node)
 	}
 	pod.Spec.NodeName = nodeName
-	fmt.Println("[scheduler] [Schedule] schedule to node:", nodeName)
+	fmt.Println("[scheduler] [Schedule] schedule "+pod.Name+"to node:", nodeName)
 	err := tool.UpdatePod(pod)
 	if err != nil {
 		return

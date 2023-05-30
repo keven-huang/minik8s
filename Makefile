@@ -29,7 +29,7 @@ run:
 	mkdir -p /root/nginx
 	/usr/local/go/bin/go run ./cmd/kube-apiserver/kube-apiserver.go > log/apiserver.log &
 	sleep 8
-	/usr/local/go/bin/go run ./cmd/kube-scheduler/kube-scheduler.go --strategy=RandomStrategy > log/scheduler.log &
+	/usr/local/go/bin/go run ./cmd/kube-scheduler/kube-scheduler.go --strategy=RRStrategy > log/scheduler.log &
 	/usr/local/go/bin/go run ./cmd/kubelet/kubelet.go --nodename=node1 --nodeip=127.0.0.1 --masterip=http://127.0.0.1:8080 > log/kubelet.log &
 	/usr/local/go/bin/go run ./cmd/kube-controller-manager/kube-controller-manager.go > log/controller-manager.log &
 	/usr/local/go/bin/go run ./cmd/kube-proxy/kubeproxy.go > log/kubeproxy.log &
@@ -53,97 +53,24 @@ kill:
 	sudo docker ps -aq --filter "name=^my-replicaset|^test" | xargs -r docker rm
 
 testsch:
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go create -f ./cmd/kubectl/sche-example/sche-pod.yaml
-	sleep 1
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go create -f ./cmd/kubectl/sche-example/sche-pod2.yaml
-	sleep 1
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go create -f ./cmd/kubectl/sche-example/sche-pod3.yaml
-	sleep 1
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go create -f ./cmd/kubectl/sche-example/sche-pod4.yaml
-	sleep 1
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go create -f ./cmd/kubectl/sche-example/sche-pod5.yaml
-	sleep 1
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go create -f ./cmd/kubectl/sche-example/sche-pod6.yaml
-	sleep 5
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go get pod sche
+	./scripts/linux/testsch.sh
 
 delsch:
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go delete pod sche-pod-1
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go delete pod sche-pod-2
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go delete pod sche-pod-3
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go delete pod sche-pod-4
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go delete pod sche-pod-5
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go delete pod sche-pod-6
+	./scripts/linux/delsch.sh
 
 testsvc:
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go create -f ./cmd/kubectl/service-example/server-pod.yaml
-	sleep 1
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go create -f ./cmd/kubectl/service-example/server-pod2.yaml
-	sleep 1
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go create -f ./cmd/kubectl/service-example/server-service.yaml
-	sleep 10
-	curl 11.1.1.1
-	curl 11.1.1.1
-	curl 11.1.1.1
-	curl 11.1.1.1
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go get service webservice
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go create -f ./cmd/kubectl/service-example/server-pod3.yaml
-	sleep 5
-	curl 11.1.1.1
-	curl 11.1.1.1
-	curl 11.1.1.1
-	curl 11.1.1.1
-	curl 11.1.1.1
-	curl 11.1.1.1
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go get service webservice
+	./scripts/linux/testsvc.sh
+
 
 delsvc:
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go delete service webservice
-	sleep 5
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go delete pod tinyserver1
-	sleep 2
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go delete pod tinyserver2
-	sleep 2
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go delete pod tinyserver3
+	./scripts/linux/delsvc.sh
 
 # need project in /home/minik8s, webs in /home/webs
 testdns:
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go create -f ./cmd/kubectl/dns-example/server-pod1.yaml
-	sleep 1
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go create -f ./cmd/kubectl/dns-example/server-pod2.yaml
-	sleep 1
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go create -f ./cmd/kubectl/dns-example/server-service1.yaml
-	sleep 5
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go create -f ./cmd/kubectl/dns-example/server-service2.yaml
-	sleep 5
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go create -f ./cmd/kubectl/dns-example/dns-example.yaml
-	sleep 30
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go create -f ./cmd/kubectl/dns-example/user-pod.yaml
-	sleep 5
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go get dns testDns
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go get service service1
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go get service service2
-	#docker logs user1-server
-	sleep 1
-	curl hanjinbo.com/path1
-	curl hanjinbo.com/path2
+	./scripts/linux/testdns.sh
 
 deltestdns:
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go delete dns testDns
-	sleep 10
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go delete service service1
-	sleep 5
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go delete service service2
-	sleep 5
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go delete pod dns-example-pod1
-	sleep 2
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go delete pod dns-example-pod2
-	sleep 2
-	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go delete pod user1
-	sleep 3
-	docker volume ls -q --filter "name=^gatewayvolume" | xargs -r docker volume rm || true
-	docker volume ls -q --filter "name=^volume0" | xargs -r docker volume rm || true
-	docker volume ls -q --filter "name=^volume-usr" | xargs -r docker volume rm || true
+	./scripts/linux/deldns.sh
 
 testnode:
 	/usr/local/go/bin/go run ./cmd/kubectl/kubectl.go get node
