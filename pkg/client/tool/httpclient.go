@@ -329,6 +329,22 @@ func GetPod(name string) (*core.Pod, error) {
 	return &core.Pod{}, fmt.Errorf("no such pod")
 }
 
+func UpdateDag(dag *core.DAG) error {
+	url := apiconfig.Server_URL + apiconfig.WORKFLOW_PATH
+	fmt.Println("[tool][updateDAG]: url=" + url)
+	data, err := json.Marshal(dag)
+	if err != nil {
+		return err
+	}
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	fmt.Println("Response Status:", resp.Status)
+	return nil
+}
+
 func GetTypeName(event Event) string {
 	var s string
 	switch event.Type {

@@ -40,6 +40,7 @@ func AddWorkflow(c *gin.Context, s *Server) {
 	dag.Input = w.Spec.Input
 	dag.UID = random.GenerateUUID()
 	dag.ObjectMeta.CreationTimestamp = v1.Now()
+	dag.Result = "Pending"
 	fmt.Println("[Node]:", dag.Nodes)
 	fmt.Println("[Edge]:", dag.Edges)
 	if err != nil {
@@ -138,6 +139,26 @@ func DeleteWorkflow(c *gin.Context, s *Server) {
 	c.JSON(http.StatusOK, gin.H{
 		"message":       "delete Workflow success",
 		"deletePodName": Name,
+	})
+}
+
+func UpdateWorkflow(c *gin.Context, s *Server) {
+	val, _ := io.ReadAll(c.Request.Body)
+	w := core.DAG{}
+	err := json.Unmarshal([]byte(val), &w)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	key := c.Request.URL.Path + "/" + w.Name
+	body, _ := json.Marshal(w)
+	err = s.Etcdstore.Put(key, string(body))
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Update Workflow Success.",
 	})
 }
 

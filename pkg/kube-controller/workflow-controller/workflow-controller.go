@@ -29,6 +29,7 @@ func NewWorkflowController() *WorkflowController {
 
 func (wfc *WorkflowController) Register() {
 	wfc.WorkflowInformer.AddEventHandler(tool.Added, wfc.AddWorkflow)
+	wfc.WorkflowInformer.AddEventHandler(tool.Modified, wfc.AddWorkflow)
 	wfc.WorkflowInformer.AddEventHandler(tool.Deleted, wfc.DeleteWorkflow)
 }
 
@@ -54,15 +55,20 @@ func worker(wfc *WorkflowController) {
 				fmt.Println("[ERROR] ", prefix, err)
 				return
 			}
-			go DoWorkflowDAG(dag)
+			if mark, exist := wfc.mark[string(dag.UID)]; exist && mark {
+				fmt.Println("[INFO] ", prefix, "dag have been runned")
+				continue
+			}
+			go wfc.DoWorkflowDAG(dag)
 		} else {
 			time.Sleep(1 * time.Second)
 		}
 	}
 }
 
-func DoWorkflowDAG(dag *core.DAG) {
+func (wfc *WorkflowController) DoWorkflowDAG(dag *core.DAG) {
 	fmt.Println("DoWorkflow")
+	wfc.mark[string(dag.UID)] = true
 	startnode := dag.StartNode
 	curnode := startnode
 	var result string
@@ -74,6 +80,8 @@ func DoWorkflowDAG(dag *core.DAG) {
 			result, err = TriggerFunc(curnode.Function, result)
 			if err != nil {
 				fmt.Println("[workflow] running func:", err)
+				dag.Result = "running func: " + curnode.Function.Name + " error: " + err.Error()
+				tool.UpdateDag(dag)
 				return
 			}
 		}
@@ -81,6 +89,7 @@ func DoWorkflowDAG(dag *core.DAG) {
 		if curnode.Type == core.StateTypeEnd {
 			fmt.Println("[workflow] end node")
 			dag.Result = result
+			tool.UpdateDag(dag)
 			return
 		}
 		// whether should break up to the functional requirement
@@ -98,6 +107,8 @@ func DoWorkflowDAG(dag *core.DAG) {
 		}
 		if !success {
 			fmt.Println("[workflow] no edge can be triggered")
+			dag.Result = "no edge can be triggered"
+			tool.UpdateDag(dag)
 			return
 		}
 	}
