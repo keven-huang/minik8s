@@ -37,6 +37,25 @@ func GetNode(c *gin.Context, s *Server) {
 	c.JSON(http.StatusOK, res)
 }
 
+func DeleteNode(c *gin.Context, s *Server) {
+	key := c.Request.URL.Path
+	prefix := "[apiserver][nodehandler]"
+	fmt.Println(prefix + ": delete node key:" + key)
+	err := s.Etcdstore.Del(key)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "delete node failed",
+			"error":   err,
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "delete node success",
+		"key":     key,
+	})
+}
+
 func AddNode(c *gin.Context, s *Server) {
 	val, _ := io.ReadAll(c.Request.Body)
 	node := core.Node{}

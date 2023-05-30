@@ -344,6 +344,23 @@ func GetPod(name string) (*core.Pod, error) {
 	return &core.Pod{}, fmt.Errorf("no such pod")
 }
 
+func DeleteNode(key string) {
+	url := apiconfig.Server_URL + key
+	fmt.Println("[tool][deleteService]: url=" + url)
+	req, err := http.NewRequest("DELETE", url, nil)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	fmt.Println("Response Status:", resp.Status)
+	return
+}
+
 func GetTypeName(event Event) string {
 	var s string
 	switch event.Type {
