@@ -319,7 +319,7 @@ func (o *GetOptions) RunGetWorkflow(cmd *cobra.Command, args []string) error {
 	table.RightAlign(10)
 	table.AddRow("NAME", "RESULT")
 	for _, val := range res {
-		w := core.Workflow{}
+		w := core.DAG{}
 		err := json.Unmarshal([]byte(val.Value), &w)
 		if err != nil {
 			log.Println(prefix, err)
@@ -327,7 +327,7 @@ func (o *GetOptions) RunGetWorkflow(cmd *cobra.Command, args []string) error {
 		}
 		fmt.Println("workflow:", w)
 		table.AddRow(color.RedString(w.Name),
-			color.BlueString(string(w.Spec.Result)))
+			color.BlueString(string(w.Result)))
 	}
 	fmt.Println(table)
 

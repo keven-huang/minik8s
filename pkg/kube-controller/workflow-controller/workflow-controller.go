@@ -70,7 +70,7 @@ func DoWorkflowDAG(dag *core.DAG) {
 	for {
 		if curnode.Type == core.StateTypeInput {
 			result = dag.Input
-		} else if curnode.Type == core.StateTypeTask {
+		} else if curnode.Type == core.StateTypeTask || curnode.Type == core.StateTypeEnd {
 			result, err = TriggerFunc(curnode.Function, result)
 			if err != nil {
 				fmt.Println("[workflow] running func:", err)
@@ -80,6 +80,7 @@ func DoWorkflowDAG(dag *core.DAG) {
 		// if end node, break
 		if curnode.Type == core.StateTypeEnd {
 			fmt.Println("[workflow] end node")
+			dag.Result = result
 			return
 		}
 		// whether should break up to the functional requirement
@@ -118,13 +119,17 @@ func evalCondition(condition core.ChoiceCondition, result string) bool {
 	fmt.Println("[workflow] evalCondition: val:", val, "Operator:", condition.Operator)
 	switch condition.Operator {
 	case "==":
-		return val.(int) == condition.Value
+		return int(val.(float64)) == condition.Value
 	case "!=":
-		return val.(int) != condition.Value
+		return int(val.(float64)) != condition.Value
 	case ">":
-		return val.(int) > condition.Value
+		return int(val.(float64)) > condition.Value
 	case ">=":
-		return val.(int) >= condition.Value
+		return int(val.(float64)) >= condition.Value
+	case "<":
+		return int(val.(float64)) < condition.Value
+	case "<=":
+		return int(val.(float64)) <= condition.Value
 	}
 	fmt.Println("[workflow] evalCondition: no operator", condition.Operator)
 	return false
@@ -136,7 +141,7 @@ func TriggerFunc(f core.Function, input string) (string, error) {
 	fmt.Println("url: ", url)
 	bodyBytes := make([]byte, 4096)
 	fmt.Println("[workflow][TriggerFunc]input: ", input)
-	web.SendHttpRequest("PUT", url, web.WithBody(bytes.NewBuffer([]byte(input))), web.WithBodyBytes(&bodyBytes))
+	web.SendHttpRequest("POST", url, web.WithBody(bytes.NewBuffer([]byte(input))), web.WithBodyBytes(&bodyBytes))
 	fmt.Println("[workflow][TriggerFunc]TriggerFunc: ", f.Name)
 	fmt.Println("[workflow][TriggerFunc]TriggerFuncResult: ", string(bodyBytes))
 	return string(bodyBytes), nil

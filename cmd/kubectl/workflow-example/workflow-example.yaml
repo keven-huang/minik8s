@@ -25,14 +25,14 @@ spec:
           Next: Function2
     - Name: Function1
       Type: Task
-      Resource : function1
+      Resource : Function1
       Next: Function3
     - Name: Function2
       Type: Task
-      Resource: function2
+      Resource: Function2
       Next: Function3
     - Name: Function3
       Type: Task
-      Resource: function3
+      Resource: Function3
       End : true
   

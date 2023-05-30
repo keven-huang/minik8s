@@ -419,7 +419,7 @@ func CreateWorkflow(workflow *core.Workflow) error {
 			return fmt.Errorf("marshal input error")
 		}
 		fmt.Println("[kubectl] [create] [RunCreateWorkflow] ", string(data))
-		// workflow.Spec.InputData = string(data)
+		workflow.Spec.Input = string(data)
 	}
 	data, err := json.Marshal(workflow)
 	if err != nil {

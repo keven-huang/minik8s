@@ -25,13 +25,6 @@ func AddWorkflow(c *gin.Context, s *Server) {
 		return
 	}
 	key := c.Request.URL.Path + "/" + w.Name
-	res, _ := s.Etcdstore.Get(key)
-	if len(res) > 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Workflow Name Duplicate.",
-		})
-		return
-	}
 	ServerGetFunc := func(name string) (core.Function, error) {
 		return GetFunc(s, name)
 	}

@@ -67,6 +67,7 @@ type DAG struct {
 	Input             string
 	Nodes             []DAGNode            `json:"nodes,omitempty" yaml:"nodes,omitempty"`
 	Edges             map[string][]DAGEdge `json:"edges,omitempty" yaml:"edges,omitempty"`
+	Result            string               `json:"result,omitempty" yaml:"result,omitempty"`
 }
 
 type DAGNode struct {
