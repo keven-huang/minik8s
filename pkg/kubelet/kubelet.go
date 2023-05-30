@@ -73,9 +73,11 @@ func (k *Kubelet) AddNodeHandler(event tool.Event) {
 func (k *Kubelet) MasterChecker() {
 	for {
 		for k, v := range k.workers {
+			fmt.Println("[Kubelet][MasterChecker], key:=" + k)
 			cur := time.Now()
 			dur := cur.Sub(v)
 			if dur > 10*time.Second { // deleteNode in database
+				fmt.Println("[Kubelet][MasterChecker], delete key:=" + k)
 				tool.DeleteNode(k)
 			}
 		}
@@ -361,6 +363,7 @@ func (k *Kubelet) Run() {
 	go k.Listener(true)
 	if k.node.Labels["kind"] == "Master" {
 		go k.HeartBeatServer()
+		go k.MasterChecker()
 	} else {
 		go k.HeartBeatClient()
 	}
