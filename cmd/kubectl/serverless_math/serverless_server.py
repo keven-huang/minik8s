@@ -41,7 +41,12 @@ def check_timer():
         os._exit(666)  # 退出整个程序
 
 def send_notification(url):
-    requests.post(url, json={"message": "Exceeded request limit", "function_name": Function_name})
+    try:
+        response = requests.post(url, json={"message": "Exceeded request limit", "function_name": Function_name})
+        response.raise_for_status()  # 检查请求是否成功
+        print("Notification sent successfully")
+    except requests.exceptions.RequestException as e:
+        print("Failed to send notification:", e)
 
 
 count_lock = threading.Lock()
@@ -66,8 +71,9 @@ def execute_function(module_name: str, function_name: str):
     reset_timer()
     increment_count()
 
-    if request_count >= Request_20_second:
+    if request_count == Request_20_second:
         send_notification("https://192.168.1.7:8080/scale")  # 替换为你要发送通知的URL
+
 
     module = importlib.import_module(module_name)
     event = {"method": "http"}
@@ -77,9 +83,12 @@ def execute_function(module_name: str, function_name: str):
     else:
         context = request.form.to_dict()
 
-    result = getattr(module, function_name)(event, context)
-
-    return result, 200
+    try:
+        result = getattr(module, function_name)(event, context)
+        return result, 200
+    except Exception as e:
+        print("An error occurred during function execution:", e)
+        return "Error during function execution", 500
 
 
 # 创建一个新线程并启动该线程
