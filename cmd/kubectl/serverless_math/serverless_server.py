@@ -34,7 +34,7 @@ def check_timer():
     if time.time() - last_request_time >= FAILED_TIME:
         print("No requests received for 1 minute. Exiting...")
         # 进行异常退出的操作，例如抛出异常或者调用系统退出函数
-        os._exit(1)  # 退出整个程序
+        os._exit(666)  # 退出整个程序
 
 def send_notification(url):
     requests.post(url, json={"message": "Exceeded request limit", "function_name": Function_name})

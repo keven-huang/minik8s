@@ -22,9 +22,5 @@ RUN pip3 install --no-cache-dir -r requirements.txt -i https://pypi.tuna.tsinghu
 COPY ./serverless_server.py serverless_server.py
 COPY ./my_module.py my_module.py
 
-# 定义 shell 脚本来运行 Python 程序并捕获 SIGTERM 信号
-RUN echo '#!/bin/sh\npython3 serverless_server.py "$@"\nexit $?' > /entrypoint.sh
-RUN chmod +x /entrypoint.sh
 
-# 定义 entrypoint，运行 shell 脚本
-ENTRYPOINT ["/entrypoint.sh"]
+CMD python serverless_server.py
