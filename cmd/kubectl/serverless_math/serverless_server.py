@@ -1,6 +1,7 @@
 # serverless_server.py
 from flask import Flask, request
 import importlib
+import schedule
 import threading
 import time
 import requests
@@ -11,14 +12,16 @@ app = Flask(__name__)
 request_count = 0
 last_request_time = time.time()
 
-FAILED_TIME = 30
+FAILED_TIME = 10
 Request_20_second = 4
 
 Function_name = ""
 
 
 # 打开日志文件
-log_file = open("serverless_server.log", "a")
+script_dir = os.path.dirname(os.path.abspath(__file__))
+log_file_path = os.path.join(script_dir, "serverless_server.log")
+log_file = open(log_file_path, "a")
 
 # 重定向标准输出到日志文件
 sys.stdout = log_file
@@ -31,6 +34,7 @@ def reset_timer():
 
 def check_timer():
     global last_request_time
+    print(time.time(), last_request_time)
     if time.time() - last_request_time >= FAILED_TIME:
         print("No requests received for 1 minute. Exiting...")
         # 进行异常退出的操作，例如抛出异常或者调用系统退出函数
@@ -78,11 +82,17 @@ def execute_function(module_name: str, function_name: str):
     return result, 200
 
 
-if __name__ == '__main__':
-    timer_thread = threading.Timer(FAILED_TIME, check_timer)
-    timer_thread.start()
+# 创建一个新线程并启动该线程
+def run_thread():
+    while True:
+        schedule.run_pending()
 
-    reset_count_thread = threading.Timer(20, reset_count)
-    reset_count_thread.start()
+if __name__ == '__main__':
+    job1 = schedule.every(2).seconds.do(check_timer)
+
+    job2 = schedule.every(20).seconds.do(reset_count)
+
+    t = threading.Thread(target=run_thread)
+    t.start()
 
     app.run(host='0.0.0.0', port=8888, processes=True)
