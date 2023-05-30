@@ -70,6 +70,10 @@ func (o *DeleteOptions) RunDelete(cmd *cobra.Command, args []string) error {
 		{
 			return o.RunDeleteDNS(cmd, args)
 		}
+	case "function":
+		{
+			return o.RunDeleteFunction(cmd, args)
+		}
 	default:
 		{
 			fmt.Printf("[kubectl] [delete] [RunDelete] %s is not supported.\n", args[0])
@@ -189,5 +193,27 @@ func (o *DeleteOptions) RunDeleteHPA(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Println("hpa Delete successfully")
+	return nil
+}
+
+func (o *DeleteOptions) RunDeleteFunction(cmd *cobra.Command, args []string) error {
+	prefix := "[kubectl] [delete] [DeleteHPA] "
+	values := url.Values{}
+	if o.DeleteAll {
+		values.Add("all", "true")
+	}
+	if len(args) > 1 {
+		values.Add("FunctionName", args[1])
+		//body = bytes.NewBuffer([]byte(args[1]))
+	}
+
+	err := web.SendHttpRequest("DELETE", apiconfig.Server_URL+apiconfig.FUNCTION_PATH+"?"+values.Encode(),
+		web.WithPrefix(prefix),
+		web.WithLog(true))
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("function Delete successfully")
 	return nil
 }

@@ -11,6 +11,7 @@ import (
 	"minik8s/pkg/api/core"
 	v1 "minik8s/pkg/apis/meta/v1"
 	"minik8s/pkg/cmd/create"
+	"minik8s/pkg/kube-apiserver/etcd"
 	"minik8s/pkg/util/random"
 	"net/http"
 	"strings"
@@ -18,11 +19,84 @@ import (
 )
 
 func GetFunction(c *gin.Context, s *Server) {
+	prefix := "[api-server] [functionHandler] [GetFunction]"
+	fmt.Println(prefix)
+	if c.Query("all") == "true" {
+		// delete the keys
+		res, err := s.Etcdstore.GetWithPrefix(apiconfig.FUNCTION_PATH)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		c.JSON(http.StatusOK, res)
+		return
+	}
+
+	FunctionName := c.Query("Name")
+	key := c.Request.URL.Path + "/" + string(FunctionName)
+
+	var res []etcd.ListRes
+	var err error
+
+	if c.Query("prefix") == "true" {
+		res, err = s.Etcdstore.GetWithPrefix(key)
+		fmt.Println(res)
+	} else {
+		res, err = s.Etcdstore.GetExact(key)
+	}
+
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "etcd get funtion failed",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, res)
 
 }
 
 func DeleteFunction(c *gin.Context, s *Server) {
+	prefix := "[api-server] [functionHandler] [DeleteFunction]"
+	fmt.Println(prefix)
+	err := c.Request.ParseForm()
+	if err != nil {
+		return
+	}
+	if c.Query("all") == "true" {
+		// delete the keys
+		num, err := s.Etcdstore.DelAll(apiconfig.FUNCTION_PATH)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"message":   "delete all pods successfully.",
+			"deleteNum": num,
+		})
+		return
+	}
 
+	FunctionName := c.Query("FunctionName")
+	fmt.Println("FunctionName:", FunctionName)
+	key := c.Request.URL.Path + "/" + FunctionName
+	err = s.Etcdstore.Del(key)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "delete Function failed",
+			"error":   err,
+		})
+		return
+	}
+
+	deletePodWithFunctionName(s, FunctionName)
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":            "delete Function success",
+		"deleteFunctionName": FunctionName,
+	})
 }
 
 func AddFunction(c *gin.Context, s *Server) {
@@ -192,6 +266,7 @@ func InvokeFunction(c *gin.Context, s *Server) {
 					}
 					if pod.Status.PodIP != "" {
 						podIP = pod.Status.PodIP
+						time.Sleep(1 * time.Second)
 						break
 					}
 				}
