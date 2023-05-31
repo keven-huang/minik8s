@@ -1,9 +1,9 @@
 clean:
 	etcdctl del "/api" --prefix
+	iptables-restore < /root/iptable_ori
 	#rm -rf ./bin 2>/dev/null || true
 	pwd
 	rm -rf /root/nginx 2>/dev/null || true
-	rm ./iptable_ori 2>/dev/null || true
 
 # deprecated
 construct:
@@ -46,7 +46,6 @@ m2:
 stop:
 	./scripts/linux/stop.sh
 	sleep 2
-	iptables-restore < /root/iptable_ori
 	docker ps -aq --filter "name=^coreDNS" | xargs -r docker stop
 	docker ps -aq --filter "name=^coreDNS" | xargs -r docker rm
 	docker volume rm volume-coredns 2>/dev/null || true

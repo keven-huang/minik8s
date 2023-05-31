@@ -269,7 +269,7 @@ func InvokeFunction(c *gin.Context, s *Server) {
 					}
 					if pod.Status.PodIP != "" {
 						podIP = pod.Status.PodIP
-						time.Sleep(1 * time.Second)
+						time.Sleep(5 * time.Second)
 						break
 					}
 				}
