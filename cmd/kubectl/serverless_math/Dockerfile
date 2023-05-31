@@ -9,10 +9,11 @@ RUN set -eux && sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk
 # 更新操作系统和安装依赖
 RUN apk update && apk upgrade && \
     apk add --no-cache bash && \
+    apk add --no-cache bash curl && \
     pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host https://pypi.tuna.tsinghua.edu.cn --default-timeout=60
 
 # install python requirements
-RUN pip3 install flask requests -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host https://pypi.tuna.tsinghua.edu.cn --default-timeout=60
+RUN pip3 install flask requests schedule -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host https://pypi.tuna.tsinghua.edu.cn --default-timeout=60
 
 # 如果用户需要安装额外的库，那么还需要提供requirements.txt
 COPY requirements.txt ./
