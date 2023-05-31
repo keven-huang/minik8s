@@ -51,8 +51,8 @@ stop:
 	docker volume rm volume-coredns 2>/dev/null || true
 
 kill:
-	sudo docker ps -aq --filter "name=^my-replicaset|^test" | xargs -r docker stop
-	sudo docker ps -aq --filter "name=^my-replicaset|^test" | xargs -r docker rm
+	sudo docker ps -aq --filter "name=^my-replicaset|^test|^function" | xargs -r docker stop
+	sudo docker ps -aq --filter "name=^my-replicaset|^test|^function" | xargs -r docker rm
 
 testsch:
 	./scripts/linux/testsch.sh
