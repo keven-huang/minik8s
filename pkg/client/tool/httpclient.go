@@ -11,6 +11,7 @@ import (
 	myJson "minik8s/pkg/util/json"
 	"minik8s/pkg/util/log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -59,7 +60,7 @@ func List(resource string) []ListRes {
 
 func Watch(resourses string) WatchInterface {
 	watcher := &watcher{}
-	watcher.resultChan = make(chan Event)
+	watcher.resultChan = make(chan Event, 1000)
 	reader := func(wc chan<- Event) {
 		for {
 			fmt.Println("[httpclient] [Watch] start watch")
@@ -343,6 +344,25 @@ func UpdateDag(dag *core.DAG) error {
 	defer resp.Body.Close()
 	fmt.Println("Response Status:", resp.Status)
 	return nil
+}
+
+func DeleteNode(key string) {
+	strs := strings.Split(key, "/")
+	nodeName := strs[4]
+	url := apiconfig.Server_URL + apiconfig.NODE_PATH + "?Name=" + nodeName
+	fmt.Println("[tool][deleteNode]: url=" + url)
+	req, err := http.NewRequest("DELETE", url, nil)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	fmt.Println("Response Status:", resp.Status)
+	return
 }
 
 func GetTypeName(event Event) string {

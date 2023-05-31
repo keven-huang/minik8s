@@ -21,6 +21,7 @@ var HandlerTable = []Handler{
 	// node
 	{Type: "GET", Path: apiconfig.NODE_PATH, Eventhandler: GetNode},
 	{Type: "PUT", Path: apiconfig.NODE_PATH, Eventhandler: AddNode},
+	{Type: "DELETE", Path: apiconfig.NODE_PATH, Eventhandler: DeleteNode},
 	// pod
 	{Type: "GET", Path: apiconfig.POD_PATH, Eventhandler: GetPod},
 	{Type: "PUT", Path: apiconfig.POD_PATH, Eventhandler: AddPod},

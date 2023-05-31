@@ -5,16 +5,10 @@ metadata:
   labels:
     app: tinyserver
 spec:
-  nodeName: "node1"
   containers:
     - name: server
-      image: chasingdreams/tinyweb:2
+      image: chasingdreams/tinyweb:3
       ports:
         - name: http
           containerPort: 80
-      volumeMounts:
-        - name: volume05
-          mountPath: /usr/share/nginx/html
-  volumes:
-    - name: volume05
-      hostPath: /home/webs/web1
+

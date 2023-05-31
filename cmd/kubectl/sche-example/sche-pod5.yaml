@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: dns-example-pod1
+  name: sche-pod-5
   labels:
-    app: dns-example-pod1
+    app: sche-pod-5
 spec:
   containers:
     - name: server

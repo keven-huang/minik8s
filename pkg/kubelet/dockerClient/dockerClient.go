@@ -221,7 +221,8 @@ func GetContainerInfo(id string) (types.ContainerJSON, error) {
 	return info, nil
 }
 
-// TODO 如果已经存在volume，如何处理？
+// 如果已经存在volume， 不管
+// 注意
 func CreateVolume(name string, hostpath *string) (volume.Volume, error) {
 	cli, err := GetNewClient()
 	if err != nil {

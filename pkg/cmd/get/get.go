@@ -7,6 +7,7 @@ import (
 	"minik8s/cmd/kube-apiserver/app/apiconfig"
 	"minik8s/pkg/api/core"
 	"minik8s/pkg/kube-apiserver/etcd"
+	"minik8s/pkg/service"
 	"minik8s/pkg/util/web"
 	"net/url"
 	"strconv"
@@ -89,6 +90,18 @@ func (o *GetOptions) RunGet(cmd *cobra.Command, args []string) error {
 		{
 			return o.RunGetFunction(cmd, args)
 		}
+	case "service":
+		{
+			return o.RunGetService(cmd, args)
+		}
+	case "dns":
+		{
+			return o.RunGetDns(cmd, args)
+		}
+	case "node":
+		{
+			return o.RunGetNode(cmd, args)
+		}
 	default:
 		{
 			fmt.Printf(prefix, "%s is not supported.\n", args[0])
@@ -96,6 +109,61 @@ func (o *GetOptions) RunGet(cmd *cobra.Command, args []string) error {
 		}
 	}
 
+}
+
+func (o *GetOptions) RunGetNode(cmd *cobra.Command, args []string) error {
+	prefix := "[kubectl] [get] [RunGetNode] "
+	values := url.Values{}
+	if o.GetAll {
+		values.Add("all", "true")
+	}
+	if len(args) == 1 {
+		values.Add("all", "true")
+	}
+	if len(args) > 1 {
+		values.Add("NodeName", args[1])
+		//body = bytes.NewBuffer([]byte(args[1]))
+	}
+
+	bodyBytes := make([]byte, 0)
+
+	err := web.SendHttpRequest("GET", apiconfig.Server_URL+apiconfig.NODE_PATH+"?"+values.Encode(),
+		web.WithPrefix(prefix),
+		web.WithLog(false),
+		web.WithBodyBytes(&bodyBytes))
+	if err != nil {
+		return err
+	}
+
+	var res []etcd.ListRes
+	err = json.Unmarshal(bodyBytes, &res)
+	if err != nil {
+		log.Println(prefix, err)
+		return err
+	}
+	fmt.Println(prefix, "Node Get successfully. Here are the results:")
+
+	fmt.Println("total number:", len(res))
+
+	table := uitable.New()
+	table.MaxColWidth = 100
+	table.RightAlign(10)
+	table.AddRow("NAME", "KIND", "NODE_IP", "CREATE_TIME")
+	for _, val := range res {
+		node := core.Node{}
+		err := json.Unmarshal([]byte(val.Value), &node)
+		if err != nil {
+			log.Println(prefix, err)
+			return err
+		}
+		table.AddRow(color.RedString(node.Name),
+			color.GreenString(node.Labels["kind"]),
+			color.BlueString(node.Spec.NodeIP),
+			color.YellowString(node.CreationTimestamp.Format(time.UnixDate)))
+	}
+	fmt.Println(table)
+
+	return nil
 }
 
 func (o *GetOptions) RunGetPod(cmd *cobra.Command, args []string) error {
@@ -276,6 +344,110 @@ func (o *GetOptions) RunGetJob(cmd *cobra.Command, args []string) error {
 	}
 	fmt.Println(table)
 
+	return nil
+}
+
+func (o *GetOptions) RunGetService(cmd *cobra.Command, args []string) error {
+	prefix := "[kubectl] [get] [RunGetService] "
+	values := url.Values{}
+	if o.GetAll {
+		values.Add("all", "true")
+	}
+
+	values.Add("prefix", "true")
+
+	if len(args) > 1 {
+		values.Add("Name", args[1])
+		//body = bytes.NewBuffer([]byte(args[1]))
+	}
+
+	bodyBytes := make([]byte, 0)
+	err := web.SendHttpRequest("GET", apiconfig.Server_URL+apiconfig.SERVICE_PATH+"?"+values.Encode(),
+		web.WithPrefix(prefix),
+		web.WithLog(false),
+		web.WithBodyBytes(&bodyBytes))
+	if err != nil {
+		return err
+	}
+	var res []etcd.ListRes
+	err = json.Unmarshal(bodyBytes, &res)
+	if err != nil {
+		log.Println(prefix, err)
+		return err
+	}
+	fmt.Println(prefix, "Service Get successfully. Here are the results:")
+	fmt.Println("total number:", len(res))
+	table := uitable.New()
+	table.MaxColWidth = 100
+	table.RightAlign(10)
+	table.AddRow("ServiceName", "ClusterIp", "PodName", "PodIp")
+	for _, val := range res {
+		svc := service.Service{}
+		err := json.Unmarshal([]byte(val.Value), &svc)
+		if err != nil {
+			log.Println(prefix, err)
+			return err
+		}
+		for _, pod := range svc.PodNameAndIps {
+			table.AddRow(color.RedString(svc.ServiceMeta.Name), color.BlueString(svc.ServiceSpec.ClusterIP),
+				color.WhiteString(pod.Name), color.WhiteString(pod.Ip))
+		}
+	}
+	fmt.Println(table)
+	return nil
+}
+
+func (o *GetOptions) RunGetDns(cmd *cobra.Command, args []string) error {
+	prefix := "[kubectl] [get] [RunGetDns] "
+	values := url.Values{}
+	if o.GetAll {
+		values.Add("all", "true")
+	}
+
+	values.Add("prefix", "true")
+
+	if len(args) > 1 {
+		values.Add("Name", args[1])
+		//body = bytes.NewBuffer([]byte(args[1]))
+	}
+
+	bodyBytes := make([]byte, 0)
+	err := web.SendHttpRequest("GET", apiconfig.Server_URL+apiconfig.DNS_PATH+"?"+values.Encode(),
+		web.WithPrefix(prefix),
+		web.WithLog(false),
+		web.WithBodyBytes(&bodyBytes))
+	if err != nil {
+		return err
+	}
+	var res []etcd.ListRes
+	err = json.Unmarshal(bodyBytes, &res)
+	if err != nil {
+		log.Println(prefix, err)
+		return err
+	}
+	fmt.Println(prefix, "Dns Get successfully. Here are the results:")
+	fmt.Println("total number:", len(res))
+	table := uitable.New()
+	table.MaxColWidth = 100
+	table.RightAlign(10)
+	table.AddRow("DnsName", "Host", "GatewayIp", "Path", "SvcName", "SvcIp")
+	for _, val := range res {
+		dns := core.DNS{}
+		err := json.Unmarshal([]byte(val.Value), &dns)
+		if err != nil {
+			log.Println(prefix, err)
+			return err
+		}
+		for _, path := range dns.Spec.Paths {
+			table.AddRow(color.RedString(dns.Metadata.Name),
+				color.BlueString(dns.Spec.Host),
+				color.GreenString(dns.Spec.GatewayIp),
+				color.WhiteString(path.Name),
+				color.WhiteString(path.Service),
+				color.WhiteString(path.Ip))
+		}
+	}
+	fmt.Println(table)
 	return nil
 }
 
