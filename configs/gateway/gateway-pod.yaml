@@ -5,6 +5,7 @@ metadata:
   labels:
     dnsName: toBeReplaced
 spec:
+  nodeName: "node1"
   volumes:
     - name: toBeReplaced
       hostPath: toBeReplaced

@@ -96,6 +96,7 @@ func GetGatewayPodSingleton(name string) *core.Pod {
 	tmpLabels := gatewayPod.Labels
 	resPod.Labels = tmpLabels
 	resPod.Labels["dnsName"] = name // pod label for select
+	resPod.Spec.NodeName = "node1"
 	return resPod
 }
 

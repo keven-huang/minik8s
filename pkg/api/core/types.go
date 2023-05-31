@@ -221,7 +221,7 @@ type PodSpec struct {
 	// the scheduler simply schedules this pod onto that node, assuming that it fits resource
 	// requirements.
 	// +optional
-	NodeName string `json:"nodeName,omitempty" protobuf:"bytes,10,opt,name=nodeName"`
+	NodeName string `json:"nodeName,omitempty" protobuf:"bytes,10,opt,name=nodeName" yaml:"nodeName"`
 	// whether pod is to support GPU job
 	// +optional
 	GPUJob     bool   `json:"gpu,omitempty" protobuf:"bytes,11,opt,name=gpu"`

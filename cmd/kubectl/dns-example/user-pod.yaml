@@ -5,7 +5,6 @@ metadata:
   labels:
     app: user1
 spec:
-  nodeName: "node1"
   containers:
     - name: server
       image: chasingdreams/minor_ubuntu:v3

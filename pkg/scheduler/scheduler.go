@@ -14,25 +14,38 @@ import (
 type Scheduler struct {
 	PodInformer  informer.Informer
 	NodeInformer informer.Informer
+	Strategy     string
 	queue        *q.ConcurrentQueue
 }
 
-func NewScheduler() *Scheduler {
+const (
+	RandomStrategy string = "RandomStrategy"
+	RRStrategy     string = "RRStrategy"
+)
+
+func NewScheduler(Strategy *string) *Scheduler {
 	return &Scheduler{
 		PodInformer:  informer.NewInformer(apiconfig.POD_PATH),
 		NodeInformer: informer.NewInformer(apiconfig.NODE_PATH),
 		queue:        q.NewConcurrentQueue(),
+		Strategy:     *Strategy,
 	}
 }
 
 func (s *Scheduler) Register() {
 	s.PodInformer.AddEventHandler(tool.Added, s.AddPod)
 	s.NodeInformer.AddEventHandler(tool.Added, s.AddNode)
+	s.NodeInformer.AddEventHandler(tool.Deleted, s.DeleteNode)
 }
 
 func (s *Scheduler) AddNode(event tool.Event) {
 	fmt.Println("[scheduler] [AddNode]")
 	s.NodeInformer.Set(event.Key, event.Val)
+}
+
+func (s *Scheduler) DeleteNode(event tool.Event) {
+	fmt.Println("[scheduler] [DeleteNode]")
+	s.NodeInformer.Delete(event.Key)
 }
 
 func (s *Scheduler) AddPod(event tool.Event) {
@@ -44,6 +57,12 @@ func (s *Scheduler) AddPod(event tool.Event) {
 		return
 	}
 	if pod.Spec.NodeName != "" {
+		fmt.Println("[scheduler][schedule] pod" + pod.Name + " should on " + pod.Spec.NodeName)
+		err := tool.UpdatePod(pod)
+		if err != nil {
+			fmt.Println("[scheduler][schedule] addPod" + err.Error())
+			return
+		}
 		return
 	}
 	s.queue.Push(pod)
@@ -64,10 +83,17 @@ func (s *Scheduler) worker() {
 func (s *Scheduler) Schedule(pod *core.Pod) {
 	node := s.GetNode()
 	var nodeName string
-	nodeName = roundrobin_strategy(node)
+	if s.Strategy == RRStrategy {
+		nodeName = roundrobin_strategy(node)
+	} else {
+		nodeName = random_strategy(node)
+	}
 	pod.Spec.NodeName = nodeName
-	fmt.Println("[scheduler] [Schedule] schedule to node:", nodeName)
-	tool.UpdatePod(pod)
+	fmt.Println("[scheduler] [Schedule] schedule "+pod.Name+"to node:", nodeName)
+	err := tool.UpdatePod(pod)
+	if err != nil {
+		return
+	}
 }
 
 func (s *Scheduler) GetNode() []core.Node {

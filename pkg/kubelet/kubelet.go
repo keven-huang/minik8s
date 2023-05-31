@@ -14,14 +14,20 @@ import (
 	"minik8s/pkg/kubelet/monitor"
 	"minik8s/pkg/util/file"
 	"minik8s/pkg/util/web"
+	"net"
+	"net/url"
 	"regexp"
+	"strings"
 	"time"
 )
 
 type Kubelet struct {
-	Monitor     *monitor.Monitor
-	PodInformer informer.Informer
-	node        core.Node
+	Monitor      *monitor.Monitor
+	PodInformer  informer.Informer
+	NodeInformer informer.Informer
+	node         core.Node
+	workers      map[string]time.Time
+	masterIp     string
 }
 
 func NewKubelet(name string, nodeIp string, masterIp string) (*Kubelet, error) {
@@ -29,21 +35,132 @@ func NewKubelet(name string, nodeIp string, masterIp string) (*Kubelet, error) {
 	node.Name = name
 	node.Spec.NodeIP = nodeIp
 	apiconfig.Server_URL = masterIp
-	err := tool.AddNode(&node)
+	node.Labels = make(map[string]string)
+	parseUrl, err := url.Parse(masterIp)
+	tmp := parseUrl.Hostname()
+	if tmp == nodeIp { // is master
+		node.Labels["kind"] = "Master"
+		fmt.Println("I am Master")
+	} else {
+		node.Labels["kind"] = "Worker"
+		fmt.Println("I am Worker")
+	}
+	err = tool.AddNode(&node)
 	if err != nil {
 		return nil, err
 	}
 	return &Kubelet{
-		Monitor:     monitor.NewMonitor(9400, &node),
-		PodInformer: informer.NewInformer(apiconfig.POD_PATH),
-		node:        node,
+		Monitor:      monitor.NewMonitor(9400, &node),
+		PodInformer:  informer.NewInformer(apiconfig.POD_PATH),
+		NodeInformer: informer.NewInformer(apiconfig.NODE_PATH),
+		workers:      make(map[string]time.Time),
+		node:         node,
+		masterIp:     tmp,
 	}, nil
+}
+
+func (k *Kubelet) AddNodeHandler(event tool.Event) {
+	prefix := "[Kubelet][AddNodeHandler]"
+	if k.node.Labels["kind"] == "Master" {
+		if event.Key == apiconfig.NODE_PATH+"/"+"node1" { // TODO, master must be node1
+			return
+		}
+		fmt.Println(prefix + "Add worker to master's worker map")
+		k.workers[event.Key] = time.Now()
+	}
+}
+
+// this should be executed by a thread
+func (k *Kubelet) MasterChecker() {
+	for {
+		var des []string
+		for k, v := range k.workers {
+			fmt.Println("[Kubelet][MasterChecker], key:=" + k)
+			cur := time.Now()
+			dur := cur.Sub(v)
+			if dur > 10*time.Second { // deleteNode in database
+				fmt.Println("[Kubelet][MasterChecker], delete key:=" + k)
+				tool.DeleteNode(k)
+				des = append(des, k)
+			}
+		}
+		for _, v := range des {
+			delete(k.workers, v)
+		}
+		time.Sleep(5 * time.Second)
+	}
+}
+
+func (k *Kubelet) DeleteNodeHandler(event tool.Event) {
+	prefix := "[Kubelet][DeleteNodeHandler]"
+	if k.node.Labels["kind"] == "Master" {
+		if event.Key == apiconfig.NODE_PATH+"/"+"node1" { // TODO, master must be node1
+			return
+		}
+		fmt.Println(prefix + "Delete worker in master")
+		delete(k.workers, event.Key)
+	}
 }
 
 func (k *Kubelet) Register() {
 	k.PodInformer.AddEventHandler(tool.Added, k.CreatePod)
 	k.PodInformer.AddEventHandler(tool.Modified, k.UpdatePod)
 	k.PodInformer.AddEventHandler(tool.Deleted, k.DeletePod)
+}
+
+// this should be a thread
+func (k *Kubelet) HandleConnection(conn net.Conn) {
+	prefix := "[Kubelet][HandleConnection]"
+	buf := make([]byte, 1024)
+	for {
+		n, err := conn.Read(buf)
+		if err != nil {
+			fmt.Println(prefix + err.Error())
+			break
+		}
+		fmt.Println(prefix + "got heartbeart from key:" + string(buf[:n]))
+		key := string(buf[:n])
+		k.workers[key] = time.Now() // update
+	}
+	fmt.Println(prefix + "Connection closed!")
+}
+
+func (k *Kubelet) HeartBeatServer() {
+	prefix := "[Kubelet][HeartBeatServer]"
+	ln, err := net.Listen("tcp", ":12345")
+	if err != nil {
+		fmt.Println(prefix + err.Error())
+		return
+	}
+	defer ln.Close()
+	fmt.Println(prefix + "Started")
+	for {
+		conn, err := ln.Accept() // waiting for a connection
+		if err != nil {
+			fmt.Println(prefix + err.Error())
+			continue
+		}
+		go k.HandleConnection(conn)
+	}
+}
+
+func (k *Kubelet) HeartBeatClient() { // linking and send
+	prefix := "[Kubelet][HeartBeatClient]"
+	conn, err := net.Dial("tcp", k.masterIp+":12345")
+	if err != nil {
+		fmt.Println(prefix + err.Error())
+		return
+	}
+	defer conn.Close()
+	for {
+		fmt.Println("[Kubelet][HeartBeatClient]:" + "sent hb key:" + k.node.Name)
+		_, err := conn.Write([]byte(apiconfig.NODE_PATH + "/" + k.node.Name))
+		if err != nil {
+			fmt.Println(prefix + err.Error())
+			continue
+		}
+		time.Sleep(5 * time.Second)
+	}
 }
 
 func (k *Kubelet) CreatePod(event tool.Event) {
@@ -81,8 +198,11 @@ func (k *Kubelet) UpdatePod(event tool.Event) {
 		return
 	}
 
-	for i, v := range pod.Spec.Containers {
-		pod.Spec.Containers[i].Name = pod.Name + "-" + v.Name
+	// Gateway's pod is specific, it's name's can't be changed
+	if !strings.Contains(pod.ObjectMeta.Name, kube_proxy.GatewayPodPrefix) {
+		for i, v := range pod.Spec.Containers {
+			pod.Spec.Containers[i].Name = pod.Name + "-" + v.Name
+		}
 	}
 
 	// 判断创建pod是否是gpu类型
@@ -251,5 +371,11 @@ func (k *Kubelet) Run() {
 	go k.Monitor.Run()
 	go k.PodInformer.Run()
 	go k.Listener(true)
+	if k.node.Labels["kind"] == "Master" {
+		go k.HeartBeatServer()
+		go k.MasterChecker()
+	} else {
+		go k.HeartBeatClient()
+	}
 	select {}
 }
