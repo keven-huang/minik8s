@@ -208,20 +208,19 @@ func (k *Kubelet) HeartBeatServer() {
 
 func (k *Kubelet) HeartBeatClient() { // linking and send
 	prefix := "[Kubelet][HeartBeatClient]"
-	conn, err := net.Dial("tcp", k.masterIp+":12345")
-	if err != nil {
-		fmt.Println(prefix + err.Error())
-		return
-	}
-	defer conn.Close()
 	for {
-		fmt.Println("[Kubelet][HeartBeatClient]:" + "sent hb key:" + k.node.Name)
-		_, err := conn.Write([]byte(apiconfig.NODE_PATH + "/" + k.node.Name))
+		conn, err := net.Dial("tcp", k.masterIp+":12345")
 		if err != nil {
 			fmt.Println(prefix + err.Error())
-			continue
+			return
+		}
+		fmt.Println("[Kubelet][HeartBeatClient]:" + "sent hb key:" + k.node.Name)
+		_, err1 := conn.Write([]byte(apiconfig.NODE_PATH + "/" + k.node.Name))
+		if err1 != nil {
+			fmt.Println(prefix + err1.Error())
 		}
 		time.Sleep(5 * time.Second)
+		conn.Close()
 	}
 }
 
