@@ -4,6 +4,9 @@ clean:
 	#rm -rf ./bin 2>/dev/null || true
 	pwd
 	rm -rf /root/nginx 2>/dev/null || true
+	docker ps -aq --filter "name=^coreDNS" | xargs -r docker stop
+	docker ps -aq --filter "name=^coreDNS" | xargs -r docker rm
+	docker volume rm volume-coredns 2>/dev/null || true
 
 # deprecated
 construct:
@@ -45,10 +48,6 @@ m2:
 
 stop:
 	./scripts/linux/stop.sh
-	sleep 2
-	docker ps -aq --filter "name=^coreDNS" | xargs -r docker stop
-	docker ps -aq --filter "name=^coreDNS" | xargs -r docker rm
-	docker volume rm volume-coredns 2>/dev/null || true
 
 kill:
 	sudo docker ps -aq --filter "name=^my-replicaset|^test|^function" | xargs -r docker stop

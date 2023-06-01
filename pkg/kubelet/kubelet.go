@@ -89,7 +89,7 @@ func (k *Kubelet) MasterChecker() {
 		for _, v := range des {
 			delete(k.workers, v)
 		}
-		time.Sleep(5 * time.Second)
+		time.Sleep(10 * time.Second)
 	}
 }
 
@@ -174,6 +174,7 @@ func (k *Kubelet) Register() {
 func (k *Kubelet) HandleConnection(conn net.Conn) {
 	prefix := "[Kubelet][HandleConnection]"
 	buf := make([]byte, 1024)
+	fmt.Println(prefix + "server connected a client " + conn.RemoteAddr().Network())
 	for {
 		n, err := conn.Read(buf)
 		if err != nil {
