@@ -49,6 +49,7 @@ var HandlerTable = []Handler{
 	{Type: "POST", Path: apiconfig.JOB_FILE_PATH, Eventhandler: AddJobFile},
 	{Type: "GET", Path: apiconfig.JOB_FILE_PATH, Eventhandler: GetJobFile},
 	//hpa
+	{Type: "GET", Path: apiconfig.HPA_PATH, Eventhandler: GetHPA},
 	{Type: "PUT", Path: apiconfig.HPA_PATH, Eventhandler: AddHPA},
 	{Type: "DELETE", Path: apiconfig.HPA_PATH, Eventhandler: DeleteHPA},
 	// workflow

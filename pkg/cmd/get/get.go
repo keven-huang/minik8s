@@ -102,6 +102,10 @@ func (o *GetOptions) RunGet(cmd *cobra.Command, args []string) error {
 		{
 			return o.RunGetNode(cmd, args)
 		}
+	case "hpa":
+		{
+			return o.RunGetHPA(cmd, args)
+		}
 	default:
 		{
 			fmt.Printf(prefix, "%s is not supported.\n", args[0])
@@ -539,7 +543,7 @@ func (o *GetOptions) RunGetFunction(cmd *cobra.Command, args []string) error {
 	//json.Unmarshal(bodyBytes, &s)
 	var res []etcd.ListRes
 	json.Unmarshal(bodyBytes, &res)
-	fmt.Println(prefix, "Pod Get successfully. Here are the results:")
+	fmt.Println(prefix, "Function Get successfully. Here are the results:")
 
 	fmt.Println("total number:", len(res))
 
@@ -558,6 +562,64 @@ func (o *GetOptions) RunGetFunction(cmd *cobra.Command, args []string) error {
 		table.AddRow(color.RedString(function.Name),
 			color.WhiteString(strconv.Itoa(function.Spec.InvokeTimes)),
 			color.GreenString(function.Spec.Image))
+	}
+	fmt.Println(table)
+
+	return nil
+}
+
+func (o *GetOptions) RunGetHPA(cmd *cobra.Command, args []string) error {
+	prefix := "[kubectl] [get] [RunGetHPA] "
+	values := url.Values{}
+	if o.GetAll {
+		values.Add("all", "true")
+	}
+
+	if o.WithNoPrefix {
+		values.Add("prefix", "false")
+	} else {
+		values.Add("prefix", "true")
+	}
+
+	if len(args) > 1 {
+		values.Add("Name", args[1])
+		//body = bytes.NewBuffer([]byte(args[1]))
+	}
+
+	bodyBytes := make([]byte, 0)
+
+	err := web.SendHttpRequest("GET", apiconfig.Server_URL+apiconfig.HPA_PATH+"?"+values.Encode(),
+		web.WithPrefix(prefix),
+		web.WithLog(false),
+		web.WithBodyBytes(&bodyBytes))
+	if err != nil {
+		return err
+	}
+
+	// 将字节数组转换为字符串并打印
+	//var s GetRespond
+	//json.Unmarshal(bodyBytes, &s)
+	var res []etcd.ListRes
+	json.Unmarshal(bodyBytes, &res)
+	fmt.Println(prefix, "HPA Get successfully. Here are the results:")
+
+	fmt.Println("total number:", len(res))
+
+	table := uitable.New()
+	table.MaxColWidth = 100
+	table.RightAlign(10)
+	table.AddRow("NAME", "Min", "Max")
+	for _, val := range res {
+		hpa := core.HPA{}
+		err := json.Unmarshal([]byte(val.Value), &hpa)
+		if err != nil {
+			log.Println(prefix, err)
+			return err
+		}
+
+		table.AddRow(color.RedString(hpa.Name),
+			color.WhiteString(strconv.Itoa(int(hpa.Spec.MinReplicas))),
+			color.GreenString(strconv.Itoa(int(hpa.Spec.MaxReplicas))))
 	}
 	fmt.Println(table)
 
