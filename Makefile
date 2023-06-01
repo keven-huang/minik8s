@@ -42,11 +42,11 @@ run:
 
 m3:
 	go run ./cmd/kubelet/kubelet.go --nodename=node3 --nodeip=192.168.1.11 --masterip=http://192.168.1.7:8080 > log/kubelet-m3.log &
-	/usr/local/go/bin/go run ./cmd/kube-proxy/kubeproxy.go > log/kubeproxy.log &
+	/usr/local/go/bin/go run ./cmd/kube-proxy/kubeproxy.go --masterip=http://192.168.1.7:8080 > log/kubeproxy.log &
 
 m2:
 	go run ./cmd/kubelet/kubelet.go --nodename=node2 --nodeip=192.168.1.8 --masterip=http://192.168.1.7:8080 > log/kubelet-m2.log &
-	/usr/local/go/bin/go run ./cmd/kube-proxy/kubeproxy.go > log/kubeproxy.log &
+	/usr/local/go/bin/go run ./cmd/kube-proxy/kubeproxy.go --masterip=http://192.168.1.7:8080 > log/kubeproxy.log &
 
 stop:
 	./scripts/linux/stop.sh
