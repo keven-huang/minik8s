@@ -212,8 +212,8 @@ func (k *Kubelet) HeartBeatClient() { // linking and send
 	defer func() { // handler error, not exit
 		if err := recover(); err != nil {
 			fmt.Println(err)
-			//time.Sleep(2)
-			//go k.HeartBeatClient()
+			time.Sleep(2 * time.Second)
+			go k.HeartBeatClient()
 		}
 	}()
 	for {
