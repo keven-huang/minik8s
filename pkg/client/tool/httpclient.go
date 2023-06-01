@@ -38,24 +38,28 @@ type ListRes struct {
 
 func List(resource string) []ListRes {
 	url := apiconfig.Server_URL + resource + "?all=true"
-	resp, err := http.Get(url)
-	if err != nil {
-		// handle error
-		fmt.Println("[httpclient] [List] web get error:", err)
+	for {
+		resp, err := http.Get(url)
+		if err != nil {
+			// handle error
+			fmt.Println("[httpclient] [List] web get error:", err)
+			time.Sleep(1 * time.Second)
+			continue
+		}
+		defer resp.Body.Close()
+		reader := resp.Body
+		data, err := io.ReadAll(reader)
+		if err != nil {
+			return nil
+		}
+		var resList []ListRes
+		err = json.Unmarshal(data, &resList)
+		if err != nil {
+			return nil
+		}
+		fmt.Println("[httpclient] [List] ", resList)
+		return resList
 	}
-	defer resp.Body.Close()
-	reader := resp.Body
-	data, err := io.ReadAll(reader)
-	if err != nil {
-		return nil
-	}
-	var resList []ListRes
-	err = json.Unmarshal(data, &resList)
-	if err != nil {
-		return nil
-	}
-	fmt.Println("[httpclient] [List] ", resList)
-	return resList
 }
 
 func Watch(resourses string) WatchInterface {

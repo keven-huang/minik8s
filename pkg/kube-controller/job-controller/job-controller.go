@@ -44,13 +44,14 @@ func (jc *JobController) AddJob(event tool.Event) {
 func (jc *JobController) DeleteJob(event tool.Event) {
 	fmt.Println("[jobcontroller][DeleteJob] delete job")
 	var job *core.Job
-	err := json.Unmarshal([]byte(event.Val), &job)
+	val := jc.JobInformer.Get(event.Key)
+	jc.JobInformer.Delete(event.Key)
+	err := json.Unmarshal([]byte(val), &job)
 	if err != nil {
 		fmt.Println("[jobcontroller] delete job error")
 		return
 	}
 	tool.DeletePod(job.Name)
-	jc.JobInformer.Delete(event.Key)
 }
 
 func (jc *JobController) worker() {
