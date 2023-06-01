@@ -84,6 +84,10 @@ func (wfc *WorkflowController) DoWorkflowDAG(dag *core.DAG) {
 				tool.UpdateDag(dag)
 				return
 			}
+			if result == "" {
+				time.Sleep(1 * time.Second)
+				continue
+			}
 		}
 		// if end node, break
 		if curnode.Type == core.StateTypeEnd {

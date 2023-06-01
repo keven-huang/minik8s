@@ -102,6 +102,60 @@ func GetJob(c *gin.Context, s *Server) {
 	c.JSON(http.StatusOK, res)
 }
 
+func DeleteJob(c *gin.Context, s *Server) {
+	prefix := "[api-server] [ReplicaSetHandler] [DeleteReplicaSet]"
+	fmt.Println(prefix)
+	err := c.Request.ParseForm()
+	if err != nil {
+		return
+	}
+	if c.Query("all") == "true" {
+		// delete the keys
+		num, err := s.Etcdstore.DelAll(apiconfig.JOB_PATH)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		num, err = s.Etcdstore.DelAll(apiconfig.JOB_FILE_PATH)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"message":   "delete all pods successfully.",
+			"deleteNum": num,
+		})
+		return
+	}
+
+	Name := c.Query("JobName")
+	fmt.Println("JobName:", Name)
+	key := c.Request.URL.Path + "/" + Name
+	err = s.Etcdstore.Del(key)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "delete job failed",
+			"error":   err,
+		})
+		return
+	}
+	key = apiconfig.JOB_FILE_PATH + "/" + Name
+	err = s.Etcdstore.Del(key)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "delete job failed",
+			"error":   err,
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message":       "delete job success",
+		"deletePodName": Name,
+	})
+}
+
 func AddJobFile(c *gin.Context, s *Server) {
 	val, _ := io.ReadAll(c.Request.Body)
 	job := core.JobUpload{}

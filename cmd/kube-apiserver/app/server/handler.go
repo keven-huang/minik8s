@@ -45,6 +45,7 @@ var HandlerTable = []Handler{
 	//job
 	{Type: "POST", Path: apiconfig.JOB_PATH, Eventhandler: AddJob},
 	{Type: "GET", Path: apiconfig.JOB_PATH, Eventhandler: GetJob},
+	{Type: "DELETE", Path: apiconfig.JOB_PATH, Eventhandler: DeleteJob},
 	{Type: "POST", Path: apiconfig.JOB_FILE_PATH, Eventhandler: AddJobFile},
 	{Type: "GET", Path: apiconfig.JOB_FILE_PATH, Eventhandler: GetJobFile},
 	//hpa

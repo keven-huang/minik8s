@@ -3,7 +3,7 @@ kind: Workflow
 metadata:
   name: my-workflow
 spec:
-  InputData : ./workflow-example/input.yaml
+  InputData : ./cmd/kubectl/workflow-example/input.yaml
   states:
     - Name: StartState 
       Type: Input

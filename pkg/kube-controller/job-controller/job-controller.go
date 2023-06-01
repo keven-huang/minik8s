@@ -26,6 +26,7 @@ func NewJobController() *JobController {
 
 func (jc *JobController) Register() {
 	jc.JobInformer.AddEventHandler(tool.Added, jc.AddJob)
+	jc.JobInformer.AddEventHandler(tool.Deleted, jc.DeleteJob)
 }
 
 func (jc *JobController) AddJob(event tool.Event) {
@@ -38,6 +39,11 @@ func (jc *JobController) AddJob(event tool.Event) {
 		return
 	}
 	jc.queue.Push(job)
+}
+
+func (jc *JobController) DeleteJob(event tool.Event) {
+	fmt.Println("[jobcontroller][DeleteJob] delete job")
+	jc.JobInformer.Delete(event.Key)
 }
 
 func (jc *JobController) worker() {
