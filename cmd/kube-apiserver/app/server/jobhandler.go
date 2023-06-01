@@ -10,6 +10,7 @@ import (
 	"minik8s/pkg/kube-apiserver/etcd"
 	"minik8s/pkg/util/random"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -111,6 +112,22 @@ func DeleteJob(c *gin.Context, s *Server) {
 	}
 	if c.Query("all") == "true" {
 		// delete the keys
+		// delete job file in /home/job
+		res, err := s.Etcdstore.GetAll(apiconfig.JOB_PATH)
+		for _, val := range res {
+			var job core.Job
+			err = json.Unmarshal([]byte(val.Value), &job)
+			if err != nil {
+				fmt.Println(prefix, err)
+				return
+			}
+			dirPath := apiconfig.JOB_FILE_DIR_PATH + "/" + job.Name
+			err := os.RemoveAll(dirPath)
+			if err != nil {
+				fmt.Println(prefix, err)
+				return
+			}
+		}
 		num, err := s.Etcdstore.DelAll(apiconfig.JOB_PATH)
 		if err != nil {
 			log.Println(err)
@@ -130,6 +147,7 @@ func DeleteJob(c *gin.Context, s *Server) {
 
 	Name := c.Query("JobName")
 	fmt.Println("JobName:", Name)
+	os.RemoveAll(apiconfig.JOB_FILE_DIR_PATH + "/" + Name)
 	key := c.Request.URL.Path + "/" + Name
 	err = s.Etcdstore.Del(key)
 	if err != nil {
