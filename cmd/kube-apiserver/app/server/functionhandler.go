@@ -146,12 +146,12 @@ func deletePodWithFunctionName(s *Server, func_name string) {
 	}
 }
 
-func scheduler(s *Server, func_name string) (*core.Pod, error) {
+func scheduler(s *Server, func_name string) (*core.Pod, *core.Function, error) {
 	var p []*core.Pod = make([]*core.Pod, 0)
 	res, err := s.Etcdstore.GetWithPrefix(apiconfig.POD_PATH)
 	if err != nil {
 		fmt.Println("[ERROR] [scheduler] ", err)
-		return nil, err
+		return nil, nil, err
 	}
 	for _, v := range res {
 		pod := &core.Pod{}
@@ -163,35 +163,35 @@ func scheduler(s *Server, func_name string) (*core.Pod, error) {
 
 	if len(p) == 0 {
 		fmt.Println("[ERROR] [scheduler] no pod instance")
-		return nil, nil
+		return nil, nil, nil
 	}
 
 	function := core.Function{}
 	r, err := s.Etcdstore.GetExact(apiconfig.FUNCTION_PATH + "/" + func_name)
 	if err != nil {
 		fmt.Println("[ERROR] [scheduler] [GetExact]", err)
-		return nil, err
+		return nil, nil, err
 	}
 	err = json.Unmarshal([]byte(r[0].Value), &function)
 	if err != nil {
 		fmt.Println("[ERROR] [scheduler] [Unmarshal]", err)
-		return nil, err
+		return nil, nil, err
 	}
 	function.Spec.InvokeTimes++
 	data, err := json.Marshal(function)
 	if err != nil {
 		fmt.Println("[ERROR] [scheduler] [Marshal]", err)
-		return nil, err
+		return nil, nil, err
 	}
 	err = s.Etcdstore.Put(apiconfig.FUNCTION_PATH+"/"+func_name, string(data))
 	if err != nil {
 		fmt.Println("[ERROR] [scheduler] [Put]", err)
-		return nil, err
+		return nil, nil, err
 	}
-	return p[function.Spec.InvokeTimes%len(p)], nil
+	return p[function.Spec.InvokeTimes%len(p)], &function, nil
 }
 
-func GetFunctionPod(function_name string) *core.Pod {
+func GetFunctionPod(function_name string, image_name string) *core.Pod {
 	pod_name := "function-" + function_name + "-" + random.GenerateRandomString(5)
 	return &core.Pod{
 		ObjectMeta: v1.ObjectMeta{
@@ -207,7 +207,7 @@ func GetFunctionPod(function_name string) *core.Pod {
 			Containers: []core.Container{
 				{
 					Name:  "container",
-					Image: "luhaoqi/my_module:" + function_name,
+					Image: image_name,
 				},
 			},
 		},
@@ -233,11 +233,11 @@ func InvokeFunction(c *gin.Context, s *Server) {
 		return
 	}
 
-	pod, err := scheduler(s, function_name)
+	pod, function, err := scheduler(s, function_name)
 	var podIP string
 
 	if pod == nil {
-		pod = GetFunctionPod(function_name)
+		pod = GetFunctionPod(function_name, function.Spec.Image)
 
 		err = create.CreatePod(pod)
 		if err != nil {
@@ -340,7 +340,34 @@ func ScaleFunction(c *gin.Context, s *Server) {
 	}
 
 	fmt.Println(prefix, "function name:", body.Function_name)
-	pod := GetFunctionPod(body.Function_name)
+
+	// get function from etcd
+	x, err := s.Etcdstore.GetExact(apiconfig.FUNCTION_PATH + "/" + body.Function_name)
+	if err != nil {
+		fmt.Println(prefix, "Error getting function:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error getting function.",
+		})
+		return
+	}
+	if len(x) == 0 {
+		fmt.Println(prefix, "Function not found.")
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "Function not found.",
+		})
+		return
+	}
+	function := core.Function{}
+	err = json.Unmarshal([]byte(x[0].Value), &function)
+	if err != nil {
+		fmt.Println(prefix, "Error unmarshalling function:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error unmarshalling function.",
+		})
+		return
+	}
+
+	pod := GetFunctionPod(body.Function_name, function.Spec.Image)
 
 	err = create.CreatePod(pod)
 	if err != nil {

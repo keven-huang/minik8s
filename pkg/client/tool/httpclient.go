@@ -50,7 +50,9 @@ func List(resource string) []ListRes {
 		reader := resp.Body
 		data, err := io.ReadAll(reader)
 		if err != nil {
-			return nil
+			fmt.Println("[httpclient] [List] read error:", err)
+			time.Sleep(1 * time.Second)
+			continue
 		}
 		var resList []ListRes
 		err = json.Unmarshal(data, &resList)

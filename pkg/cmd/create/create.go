@@ -11,6 +11,7 @@ import (
 	"minik8s/pkg/api/core"
 	"minik8s/pkg/kubelet/dockerClient"
 	"minik8s/pkg/service"
+	"minik8s/pkg/util/random"
 	"minik8s/pkg/util/web"
 	"net/http"
 	"os"
@@ -233,7 +234,7 @@ func (o *CreateOptions) RunCreateFunction(cmd *cobra.Command, args []string, yam
 	}
 
 	function.Spec.FileDirectory = o.Directory
-	function.Spec.Image = "luhaoqi/my_module:" + function.Name
+	function.Spec.Image = "luhaoqi/my_module-" + function.Name + ":" + random.GenerateRandomString(4)
 
 	err = CreateFunction(function)
 	if err != nil {
