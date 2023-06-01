@@ -49,8 +49,8 @@ stop:
 	./scripts/linux/stop.sh
 
 kill:
-	sudo docker ps -aq --filter "name=^my-replicaset|^test|^function" | xargs -r docker stop
-	sudo docker ps -aq --filter "name=^my-replicaset|^test|^function" | xargs -r docker rm
+	sudo docker ps -aq --filter "name=^my-replicaset|^test|^function|^two-con|^sche|^tinyserver" | xargs -r docker stop
+	sudo docker ps -aq --filter "name=^my-replicaset|^test|^function|^two-con|^sche|^tinyserver" | xargs -r docker rm
 
 testsch:
 	./scripts/linux/testsch.sh
