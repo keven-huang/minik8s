@@ -1,6 +1,6 @@
 clean:
-	etcdctl del "/api" --prefix
 	iptables-restore < /root/iptable_ori
+	etcdctl del "/api" --prefix
 	#rm -rf ./bin 2>/dev/null || true
 	pwd
 	rm -rf /root/nginx 2>/dev/null || true
@@ -34,7 +34,7 @@ run:
 	/usr/local/go/bin/go run ./cmd/kube-scheduler/kube-scheduler.go --strategy=RRStrategy > log/scheduler.log &
 	/usr/local/go/bin/go run ./cmd/kubelet/kubelet.go --nodename=node1 --nodeip=192.168.1.7 --masterip=http://192.168.1.7:8080 > log/kubelet.log &
 	/usr/local/go/bin/go run ./cmd/kube-controller-manager/kube-controller-manager.go > log/controller-manager.log &
-	/usr/local/go/bin/go run ./cmd/kube-proxy/kubeproxy.go > log/kubeproxy.log &
+	/usr/local/go/bin/go run ./cmd/kube-proxy/kubeproxy.go --masterip=http://192.168.1.7:8080 > log/kubeproxy.log &
 	/usr/local/go/bin/go run ./cmd/kube-service/kubeservice.go > log/kubeservice.log &
 
 m3:
@@ -49,8 +49,8 @@ stop:
 	./scripts/linux/stop.sh
 
 kill:
-	sudo docker ps -aq --filter "name=^my-replicaset|^test|^function|^two-con|^sche|^tinyserver" | xargs -r docker stop
-	sudo docker ps -aq --filter "name=^my-replicaset|^test|^function|^two-con|^sche|^tinyserver" | xargs -r docker rm
+	sudo docker ps -aq --filter "name=^my-replicaset|^test|^function|^two-con|^sche|^tinyserver|^Gateway|^coreDNS" | xargs -r docker stop
+	sudo docker ps -aq --filter "name=^my-replicaset|^test|^function|^two-con|^sche|^tinyserver|^Gateway|^coreDNS" | xargs -r docker rm
 
 testsch:
 	./scripts/linux/testsch.sh
