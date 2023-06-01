@@ -181,20 +181,26 @@ func AddNode(node *core.Node) error {
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(data))
-	if err != nil {
-		return err
-	}
+	for {
+		req, err := http.NewRequest("PUT", url, bytes.NewBuffer(data))
+		if err != nil {
+			time.Sleep(1 * time.Second)
+			continue
+		}
 
-	// 发送请求
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	defer resp.Body.Close()
-	err = log.CheckHttpStatus("[httpclient] [AddNode] ", resp)
-	if err != nil {
-		return err
+		// 发送请求
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			time.Sleep(1 * time.Second)
+			continue
+		}
+		defer resp.Body.Close()
+		err = log.CheckHttpStatus("[httpclient] [AddNode] ", resp)
+		if err != nil {
+			return err
+		}
 	}
-	return nil
 }
 func GetService(name string) (*service.Service, error) {
 	prefix := "[tool][GetService]"
