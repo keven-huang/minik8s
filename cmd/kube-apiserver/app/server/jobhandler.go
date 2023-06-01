@@ -147,7 +147,6 @@ func DeleteJob(c *gin.Context, s *Server) {
 
 	Name := c.Query("JobName")
 	fmt.Println("JobName:", Name)
-	os.RemoveAll(apiconfig.JOB_FILE_DIR_PATH + "/" + Name)
 	key := c.Request.URL.Path + "/" + Name
 	err = s.Etcdstore.Del(key)
 	if err != nil {
@@ -167,6 +166,9 @@ func DeleteJob(c *gin.Context, s *Server) {
 			"error":   err,
 		})
 		return
+	}
+	if Name != "" {
+		os.RemoveAll(apiconfig.JOB_FILE_DIR_PATH + "/" + Name)
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"message":       "delete job success",
