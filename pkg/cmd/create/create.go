@@ -233,6 +233,7 @@ func (o *CreateOptions) RunCreateFunction(cmd *cobra.Command, args []string, yam
 	}
 
 	function.Spec.FileDirectory = o.Directory
+	function.Spec.Image = "luhaoqi/my_module:" + function.Name
 
 	err = CreateFunction(function)
 	if err != nil {
@@ -257,7 +258,7 @@ func CreateFunction(function *core.Function) error {
 		return err
 	}
 
-	image := "luhaoqi/my_module:" + function.Name
+	image := function.Spec.Image
 
 	err = dockerClient.ImageBuild(function.Spec.FileDirectory, image)
 	if err != nil {
