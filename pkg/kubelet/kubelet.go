@@ -89,7 +89,7 @@ func (k *Kubelet) MasterChecker() {
 		for _, v := range des {
 			delete(k.workers, v)
 		}
-		time.Sleep(5 * time.Second)
+		time.Sleep(10 * time.Second)
 	}
 }
 
@@ -174,6 +174,7 @@ func (k *Kubelet) Register() {
 func (k *Kubelet) HandleConnection(conn net.Conn) {
 	prefix := "[Kubelet][HandleConnection]"
 	buf := make([]byte, 1024)
+	fmt.Println(prefix + "server connected a client " + conn.RemoteAddr().Network())
 	for {
 		n, err := conn.Read(buf)
 		if err != nil {
@@ -208,20 +209,25 @@ func (k *Kubelet) HeartBeatServer() {
 
 func (k *Kubelet) HeartBeatClient() { // linking and send
 	prefix := "[Kubelet][HeartBeatClient]"
-	conn, err := net.Dial("tcp", k.masterIp+":12345")
-	if err != nil {
-		fmt.Println(prefix + err.Error())
-		return
-	}
-	defer conn.Close()
+	defer func() { // handler error, not exit
+		if err := recover(); err != nil {
+			fmt.Println(err)
+			time.Sleep(2 * time.Second)
+			go k.HeartBeatClient()
+		}
+	}()
 	for {
-		fmt.Println("[Kubelet][HeartBeatClient]:" + "sent hb key:" + k.node.Name)
-		_, err := conn.Write([]byte(apiconfig.NODE_PATH + "/" + k.node.Name))
+		conn, err := net.Dial("tcp", k.masterIp+":12345")
 		if err != nil {
 			fmt.Println(prefix + err.Error())
-			continue
+		}
+		fmt.Println("[Kubelet][HeartBeatClient]:" + "sent hb key:" + k.node.Name)
+		_, err1 := conn.Write([]byte(apiconfig.NODE_PATH + "/" + k.node.Name))
+		if err1 != nil {
+			fmt.Println(prefix + err1.Error())
 		}
 		time.Sleep(5 * time.Second)
+		conn.Close()
 	}
 }
 
