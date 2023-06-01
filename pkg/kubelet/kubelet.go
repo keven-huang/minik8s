@@ -209,11 +209,17 @@ func (k *Kubelet) HeartBeatServer() {
 
 func (k *Kubelet) HeartBeatClient() { // linking and send
 	prefix := "[Kubelet][HeartBeatClient]"
+	defer func() { // handler error, not exit
+		if err := recover(); err != nil {
+			fmt.Println(err)
+			//time.Sleep(2)
+			//go k.HeartBeatClient()
+		}
+	}()
 	for {
 		conn, err := net.Dial("tcp", k.masterIp+":12345")
 		if err != nil {
 			fmt.Println(prefix + err.Error())
-			return
 		}
 		fmt.Println("[Kubelet][HeartBeatClient]:" + "sent hb key:" + k.node.Name)
 		_, err1 := conn.Write([]byte(apiconfig.NODE_PATH + "/" + k.node.Name))
