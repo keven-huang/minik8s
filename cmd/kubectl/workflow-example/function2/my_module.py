@@ -1,5 +1,5 @@
 # Function2: multi
-def Function2(event: dict, context: dict)->dict:
+def function2(event: dict, context: dict)->dict:
     x = context.get('x')
     y = context.get('y')
 
