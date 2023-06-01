@@ -146,12 +146,12 @@ func deletePodWithFunctionName(s *Server, func_name string) {
 	}
 }
 
-func scheduler(s *Server, func_name string) (*core.Pod, *core.Function, error) {
+func scheduler(s *Server, func_name string) (*core.Pod, error) {
 	var p []*core.Pod = make([]*core.Pod, 0)
 	res, err := s.Etcdstore.GetWithPrefix(apiconfig.POD_PATH)
 	if err != nil {
 		fmt.Println("[ERROR] [scheduler] ", err)
-		return nil, nil, err
+		return nil, err
 	}
 	for _, v := range res {
 		pod := &core.Pod{}
@@ -163,32 +163,32 @@ func scheduler(s *Server, func_name string) (*core.Pod, *core.Function, error) {
 
 	if len(p) == 0 {
 		fmt.Println("[ERROR] [scheduler] no pod instance")
-		return nil, nil, nil
+		return nil, nil
 	}
 
 	function := core.Function{}
 	r, err := s.Etcdstore.GetExact(apiconfig.FUNCTION_PATH + "/" + func_name)
 	if err != nil {
 		fmt.Println("[ERROR] [scheduler] [GetExact]", err)
-		return nil, nil, err
+		return nil, err
 	}
 	err = json.Unmarshal([]byte(r[0].Value), &function)
 	if err != nil {
 		fmt.Println("[ERROR] [scheduler] [Unmarshal]", err)
-		return nil, nil, err
+		return nil, err
 	}
 	function.Spec.InvokeTimes++
 	data, err := json.Marshal(function)
 	if err != nil {
 		fmt.Println("[ERROR] [scheduler] [Marshal]", err)
-		return nil, nil, err
+		return nil, err
 	}
 	err = s.Etcdstore.Put(apiconfig.FUNCTION_PATH+"/"+func_name, string(data))
 	if err != nil {
 		fmt.Println("[ERROR] [scheduler] [Put]", err)
-		return nil, nil, err
+		return nil, err
 	}
-	return p[function.Spec.InvokeTimes%len(p)], &function, nil
+	return p[function.Spec.InvokeTimes%len(p)], nil
 }
 
 func GetFunctionPod(function_name string, image_name string) *core.Pod {
@@ -233,7 +233,14 @@ func InvokeFunction(c *gin.Context, s *Server) {
 		return
 	}
 
-	pod, function, err := scheduler(s, function_name)
+	function := core.Function{}
+	res, err := s.Etcdstore.GetExact(apiconfig.FUNCTION_PATH + "/" + function_name)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal([]byte(res[0].Value), &function)
+
+	pod, err := scheduler(s, function_name)
 	var podIP string
 
 	if pod == nil {
