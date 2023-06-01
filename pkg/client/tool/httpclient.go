@@ -200,6 +200,7 @@ func AddNode(node *core.Node) error {
 		if err != nil {
 			return err
 		}
+		return nil
 	}
 }
 func GetService(name string) (*service.Service, error) {
