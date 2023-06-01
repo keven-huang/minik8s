@@ -43,7 +43,12 @@ func List(resource string) []ListRes {
 		// handle error
 		fmt.Println("[httpclient] [List] web get error:", err)
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+	}(resp.Body)
 	reader := resp.Body
 	data, err := io.ReadAll(reader)
 	if err != nil {
