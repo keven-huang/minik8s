@@ -5,24 +5,24 @@
 
 using namespace std;
 
-__global__ void multi_gpu(int *d_matrixA, int *d_matrixB, int *d_matrixC, int x, int y)
+__global__ void multi_gpu(int *c_matrixA, int *c_matrixB, int *c_matrixC, int n, int m)
 {
     int ix = threadIdx.x + blockDim.x * blockIdx.x;
     int iy = threadIdx.y + blockDim.y * blockIdx.y;
-    unsigned int idx = iy * x + ix;
-    if (ix < x && iy < y)
+    unsigned int idx = iy * n + ix;
+    if (ix < n && iy < m)
     {
         int k;
         int sum = 0;
-        for (k = 0; k < x; k++)
+        for (k = 0; k < n; k++)
         {
-            sum += d_matrixA[iy * x + k] * d_matrixB[k * x + ix];
+            sum += c_matrixA[iy * n + k] * c_matrixB[k * n + ix];
         }
-        d_matrixC[idx] = sum;
-    }
+        c_matrixC[idx] = sum;
+    }-
 }
 
-vector<vector<int>> matrix_add(vector<vector<int>> &a, vector<vector<int>> &b)
+vector<vector<int>> matrix_multi(vector<vector<int>> &a, vector<vector<int>> &b)
 {
     const int m = a.size(), n = a[0].size();
     int *matrixA = (int *)malloc(sizeof(int) * m * n);
@@ -38,21 +38,19 @@ vector<vector<int>> matrix_add(vector<vector<int>> &a, vector<vector<int>> &b)
         }
     }
 
-    int *d_matrixA, *d_matrixB, *d_matrixC;
-    cudaMalloc((void **)&d_matrixA, sizeof(int) * n * m);
-    cudaMalloc((void **)&d_matrixB, sizeof(int) * n * m);
-    cudaMalloc((void **)&d_matrixC, sizeof(int) * n * m);
-    cudaMemcpy(d_matrixA, matrixA, sizeof(int) * n * m, cudaMemcpyHostToDevice);
-    cudaMemcpy(d_matrixB, matrixB, sizeof(int) * n * m, cudaMemcpyHostToDevice);
-    int x = n, y = m;
-    int dimx = 32;
-    int dimy = 32;
+    int *c_matrixA, *c_matrixB, *c_matrixC;
+    cudaMalloc((void **)&c_matrixA, sizeof(int) * n * m);
+    cudaMalloc((void **)&c_matrixB, sizeof(int) * n * m);
+    cudaMalloc((void **)&c_matrixC, sizeof(int) * n * m);
+    cudaMemcpy(c_matrixA, matrixA, sizeof(int) * n * m, cudaMemcpyHostToDevice);
+    cudaMemcpy(c_matrixB, matrixB, sizeof(int) * n * m, cudaMemcpyHostToDevice);
+    int dimx = 16;
+    int dimy = 16;
     dim3 block(dimx, dimy);
-    dim3 grid(x / block.x + 1, y / block.y + 1);
-    multi_gpu<<<grid, block>>>(d_matrixA, d_matrixB, d_matrixC, x, y);
-    cudaMemcpy(matrixC, d_matrixC, sizeof(int) * n * m, cudaMemcpyDeviceToHost);
-    vector<int> temp(n, 0);
-    vector<vector<int>> c(m, temp);
+    dim3 grid(n / block.x + 1, m / block.y + 1);
+    multi_gpu<<<grid, block>>>(c_matrixA, c_matrixB, c_matrixC, n, m);
+    cudaMemcpy(matrixC, c_matrixC, sizeof(int) * n * m, cudaMemcpyDeviceToHost);
+    vector<vector<int>> c(m, vector<int>(n, 0));
     for (int i = 0; i < m; i++)
     {
         for (int j = 0; j < n; j++)
@@ -63,16 +61,16 @@ vector<vector<int>> matrix_add(vector<vector<int>> &a, vector<vector<int>> &b)
     free(matrixA);
     free(matrixB);
     free(matrixC);
-    cudaFree(d_matrixA);
-    cudaFree(d_matrixB);
-    cudaFree(d_matrixC);
+    cudaFree(c_matrixA);
+    cudaFree(c_matrixB);
+    cudaFree(c_matrixC);
     return c;
 }
 
 int main(int argc, char *argv[])
 {
-    vector<vector<int>> a{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}, b{{2, 2, 2}, {2, 2, 2}, {2, 2, 2}};
-    vector<vector<int>> c = matrix_add(a, b);
+    vector<vector<int>> a{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}, b{{3, 2, 1}, {2, 2, 2}, {2, 2, 2}};
+    vector<vector<int>> c = matrix_multi(a, b);
     for (int i = 0; i < c.size(); i++)
     {
         for (int j = 0; j < c[0].size(); j++)
