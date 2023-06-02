@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: my-replicaset
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+        - name: my-container
+          image: chasingdreams/tinyweb:3
+          ports:
+            - containerPort: 80
+      volumes:
+        - name: my-volume
+          configMap:
+            name: my-configmap
