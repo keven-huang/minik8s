@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: cpu_stress_container
-          image: chasingdreams/tinyweb:busy
+          image: chasingdreams/tinyweb:busy2
 #          entryPoint: ["/bin/sh"]
 #          command: ["/bin/sh", "-c", "timeout 120s sh -c 'while true; do :; done' ; sleep 30"]
           limitResource:

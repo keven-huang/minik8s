@@ -501,7 +501,7 @@ func (o *GetOptions) RunGetWorkflow(cmd *cobra.Command, args []string) error {
 			log.Println(prefix, err)
 			return err
 		}
-		fmt.Println("workflow:", w)
+		//fmt.Println("workflow:", w)
 		table.AddRow(color.RedString(w.Name),
 			color.BlueString(string(w.Result)))
 	}
