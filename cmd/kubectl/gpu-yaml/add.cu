@@ -5,12 +5,13 @@
 
 using namespace std;
 
-__global__ void add_gpu(int *d_matrixA, int *d_matrixB, int *d_matrixC, int x, int y) {
+// m行N列
+__global__ void add_gpu(int *c_matrixA, int *c_matrixB, int *c_matrixC, int n, int m) {
     int ix = threadIdx.x + blockDim.x*blockIdx.x;
 	int iy = threadIdx.y + blockDim.y*blockIdx.y;
-	unsigned int idx = iy * x + ix;
-	if (ix < x && iy < y){
-		d_matrixC[idx] = d_matrixA[idx] + d_matrixB[idx];
+	unsigned int idx = iy * n + ix;
+	if (ix < n && iy < m){
+		c_matrixC[idx] = c_matrixA[idx] + c_matrixB[idx];
 	}
 }
 
@@ -27,21 +28,19 @@ vector<vector<int>> matrix_add(vector<vector<int>> &a, vector<vector<int>> &b) {
         }
     }
 
-    int *d_matrixA, *d_matrixB, *d_matrixC;
-    cudaMalloc((void **)&d_matrixA, sizeof(int) * n * m);
-    cudaMalloc((void **)&d_matrixB, sizeof(int) * n * m);
-    cudaMalloc((void **)&d_matrixC, sizeof(int) * n * m);
-    cudaMemcpy(d_matrixA, matrixA, sizeof(int) * n * m, cudaMemcpyHostToDevice);
-    cudaMemcpy(d_matrixB, matrixB, sizeof(int) * n * m, cudaMemcpyHostToDevice);
-    int x = n,y = m;
-    int dimx = 32;
-    int dimy = 32;
+    int *c_matrixA, *c_matrixB, *c_matrixC;
+    cudaMalloc((void **)&c_matrixA, sizeof(int) * n * m);
+    cudaMalloc((void **)&c_matrixB, sizeof(int) * n * m);
+    cudaMalloc((void **)&c_matrixC, sizeof(int) * n * m);
+    cudaMemcpy(c_matrixA, matrixA, sizeof(int) * n * m, cudaMemcpyHostToDevice);
+    cudaMemcpy(c_matrixB, matrixB, sizeof(int) * n * m, cudaMemcpyHostToDevice);
+    int dimx = 16;
+    int dimy = 16;
 	dim3 block(dimx, dimy);
-    dim3 grid(x / block.x + 1, y / block.y + 1);
-    add_gpu<<<grid, block>>>(d_matrixA, d_matrixB, d_matrixC, x, y);
-    cudaMemcpy(matrixC, d_matrixC, sizeof(int) * n * m, cudaMemcpyDeviceToHost);
-    vector<int> temp(n, 0);
-    vector<vector<int>> c(m, temp);
+    dim3 grid(n / block.x + 1, m / block.y + 1);
+    add_gpu<<<grid, block>>>(c_matrixA, c_matrixB, c_matrixC, n, m);
+    cudaMemcpy(matrixC, c_matrixC, sizeof(int) * n * m, cudaMemcpyDeviceToHost);
+    vector<vector<int>> c(m, vector<int>(n,0));
     for (int i = 0; i < m; i++) {
         for (int j = 0; j < n; j++) {
             c[i][j] = matrixC[i * n + j];
@@ -50,9 +49,9 @@ vector<vector<int>> matrix_add(vector<vector<int>> &a, vector<vector<int>> &b) {
     free(matrixA);
     free(matrixB);
     free(matrixC);
-    cudaFree(d_matrixA);
-    cudaFree(d_matrixB);
-    cudaFree(d_matrixC);
+    cudaFree(c_matrixA);
+    cudaFree(c_matrixB);
+    cudaFree(c_matrixC);
     return c;
 }
 
