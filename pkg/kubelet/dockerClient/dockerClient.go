@@ -22,6 +22,7 @@ import (
 	kube_proxy "minik8s/configs"
 	"minik8s/pkg/api/core"
 	"minik8s/pkg/kubelet/config"
+	"minik8s/pkg/util/docker"
 	"os"
 )
 
@@ -495,6 +496,17 @@ func CreatePod(pod core.Pod) ([]core.ContainerMeta, *types.NetworkSettings, erro
 				})
 			}
 		}
+		// 配置MEM资源的限制
+		resources := container.Resources{}
+		if v.LimitResource.CPU != "" {
+			resources.NanoCPUs = docker.TranslateCPU(v.LimitResource.CPU)
+			fmt.Println(resources.NanoCPUs)
+		}
+		if v.LimitResource.Memory != "" {
+			resources.Memory = docker.TranslateMem(v.LimitResource.Memory)
+			fmt.Println(resources.Memory)
+		}
+
 		// 创建容器
 		resp, err := cli.ContainerCreate(context.Background(), &container.Config{
 			Image:      v.Image,
@@ -507,6 +519,7 @@ func CreatePod(pod core.Pod) ([]core.ContainerMeta, *types.NetworkSettings, erro
 			IpcMode:     container.IpcMode("container:" + curPauseID),
 			PidMode:     container.PidMode("container:" + curPauseID),
 			Mounts:      mountsInfo,
+			Resources:   resources,
 		}, nil, nil, v.Name)
 		if err != nil {
 			return nil, nil, err
